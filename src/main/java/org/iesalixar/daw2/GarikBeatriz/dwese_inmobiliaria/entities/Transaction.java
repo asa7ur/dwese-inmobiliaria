@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -52,10 +50,31 @@ public class Transaction {
         PENDING, COMPLETED, CANCELLED
     }
 
-    public Transaction(String code, long transactionTimestamp, Status status, double price) {
+    @OneToOne
+    @JoinColumn(name ="property_id")
+    private Property property;
+
+    @NotNull(message = "{msg.transaction.client.notNull}")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Client client;
+
+    @NotNull(message = "{msg.transaction.agent.notNull}")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agent_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Agent agent;
+
+    public Transaction(String code, long transactionTimestamp, Status status, double price, Property property, Client client, Agent agent) {
         this.code = code;
         this.transactionTimestamp = transactionTimestamp;
         this.status = status;
         this.price = price;
+        this.property = property;
+        this.client = client;
+        this.agent = agent;
     }
 }

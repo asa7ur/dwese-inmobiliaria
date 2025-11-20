@@ -2,11 +2,12 @@ package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "agents")
@@ -20,7 +21,7 @@ public class Agent {
 
     @NotEmpty(message = "{msg.agent.code.notEmpty}")
     @Size(max = 5, message = "{msg.agent.code.size}")
-    @Column(name = "code", nullable = false, length = 2)
+    @Column(name = "code", nullable = false, length = 5)
     private String code;
 
     @NotEmpty(message = "{msg.agent.name.notEmpty}")
@@ -38,10 +39,31 @@ public class Agent {
     @Column(name = "email", nullable = false, length = 25)
     private String email;
 
-    public Agent(String code, String name, String phone, String email) {
+    @NotNull(message = "{msg.agent.office.notNull}")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "office_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Office office;
+
+    @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Appointment> appointments;
+
+    @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Transaction> transactions;
+
+    @ManyToMany(mappedBy = "agents")
+    private List<Property> properties;
+
+    public Agent(String code, String name, String phone, String email, Office office) {
         this.code = code;
         this.name = name;
         this.phone = phone;
         this.email = email;
+        this.office = office;
     }
 }
