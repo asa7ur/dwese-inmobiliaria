@@ -1,10 +1,14 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities;
 
 import jakarta.persistence.*;
+import jakarta.transaction.Transaction;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.aspectj.weaver.loadtime.Agent;
+
+import java.util.List;
 
 @Entity
 @Table(name = "properties")
@@ -17,6 +21,11 @@ public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotEmpty(message = "{msg.property.code.notEmpty}")
+    @Size(max = 5, message = "{msg.property.code.size}")
+    @Column(name = "code", nullable = false, length = 5)
+    private String code;
 
     @NotEmpty(message = "{msg.property.description.notEmpty}")
     @Size(max = 500, message = "{msg.property.description.size}")
@@ -32,9 +41,9 @@ public class Property {
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private double price;
 
-    @NotEmpty(message = "{msg.property.type.notEmpty}")
-    @Column(name = "type", nullable = false)
-    private String type;
+    @NotNull(message = "{msg.property.type.notEmpty}")
+    @Enumerated(EnumType.STRING)
+    private Type type;
 
     @NotEmpty(message = "{msg.property.floors.notNull}")
     @Column(name = "floors", nullable = false)
@@ -48,8 +57,41 @@ public class Property {
     @Column(name = "bathrooms", nullable = false)
     private int bathrooms;
 
-    @NotEmpty(message = "{msg.property.status.notEmpty}")
-    @Size(max = 100, message = "{msg.property.status.size}")
-    @Column(name = "status", nullable = false)
-    private String status;
+    @NotNull(message = "{msg.property.status.notNull}")
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @OneToOne(mappedBy = "property")
+    private Transaction transaction;
+
+    @Column(name = "image")
+    private String image;
+
+    @ManyToMany
+    @JoinTable(
+            name = "property_agent",
+            joinColumns = @JoinColumn(name = "property_id"),
+            inverseJoinColumns = @JoinColumn(name = "agent_id")
+    )
+    private List<Agent> agents;
+
+    public enum Status {
+        DISPONIBLE, RESERVADO, VENDIDO;
+    }
+
+    public enum Type {
+        PISO, CASA;
+    }
+
+    public Property (String code, String description, String location, double price, Type type, int floors, int bedrooms, int bathrooms, Status status) {
+        this.code = code;
+        this.description = description;
+        this.location = location;
+        this.price = price;
+        this.type = type;
+        this.floors = floors;
+        this.bedrooms = bedrooms;
+        this.bathrooms = bathrooms;
+        this.status = status;
+    }
 }
