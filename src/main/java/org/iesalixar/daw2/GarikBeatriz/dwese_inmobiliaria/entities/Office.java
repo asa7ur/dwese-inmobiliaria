@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.aspectj.weaver.loadtime.Agent;
+
+import java.util.List;
 
 @Entity
 @Table(name = "offices")
@@ -19,6 +22,11 @@ public class Office {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotEmpty(message = "{msg.office.code.notEmpty}")
+    @Size(max = 5, message = "{msg.office.code.size}")
+    @Column(name = "code", nullable = false, length = 5)
+    private String code;
 
     @NotEmpty(message = "{msg.office.name.notEmpty}")
     @Size(max = 100, message = "{msg.office.name.size}")
@@ -37,4 +45,15 @@ public class Office {
     @NotEmpty(message = "{msg.office.email.notEmpty}")
     @Column(name = "email", nullable = false)
     private String email;
+
+    @OneToMany(mappedBy = "office", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Agent> agents;
+
+    public Office (String code, String name, String address, String phone, String email) {
+        this.code = code;
+        this.name = name;
+        this.address = address;
+        this.phone = phone;
+        this.email = email;
+    }
 }
