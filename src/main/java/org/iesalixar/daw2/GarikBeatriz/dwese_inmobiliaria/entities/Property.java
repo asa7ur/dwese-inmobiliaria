@@ -1,12 +1,12 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities;
 
 import jakarta.persistence.*;
-import jakarta.transaction.Transaction;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.aspectj.weaver.loadtime.Agent;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 
 import java.util.List;
 
@@ -22,9 +22,7 @@ public class Property {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "{msg.property.code.notEmpty}")
-    @Size(max = 5, message = "{msg.property.code.size}")
-    @Column(name = "code", nullable = false, length = 5)
+    @Transient
     private String code;
 
     @NotEmpty(message = "{msg.property.description.notEmpty}")
@@ -45,20 +43,21 @@ public class Property {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    @NotEmpty(message = "{msg.property.floors.notNull}")
+    @Positive(message = "{msg.property.floors.positive}")
     @Column(name = "floors", nullable = false)
     private int floors;
 
-    @NotEmpty(message = "{msg.property.bedrooms.notNull}")
+    @Positive(message = "{msg.property.bedrooms.positive}")
     @Column(name = "bedrooms", nullable = false)
     private int bedrooms;
 
-    @NotEmpty(message = "{msg.property.bathrooms.notNull}")
+    @Positive(message = "{msg.property.bathrooms.positive}")
     @Column(name = "bathrooms", nullable = false)
     private int bathrooms;
 
     @NotNull(message = "{msg.property.status.notNull}")
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Status status;
 
     @OneToOne(mappedBy = "property")
@@ -81,6 +80,13 @@ public class Property {
 
     public enum Type {
         PISO, CASA;
+    }
+
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    private void generateCode() {
+        this.code = EntityCodeGenerator.generateCode(this.getClass(), this.id);
     }
 
     public Property (String code, String description, String location, double price, Type type, int floors, int bedrooms, int bathrooms, Status status) {

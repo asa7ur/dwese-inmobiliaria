@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 
 import java.util.List;
 
@@ -19,10 +20,12 @@ public class Agent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "{msg.agent.code.notEmpty}")
-    @Size(max = 5, message = "{msg.agent.code.size}")
-    @Column(name = "code", nullable = false, length = 5)
+    @Transient
     private String code;
+
+    @NotEmpty(message = "{msg.agent.dni.notEmpty}")
+    @Column(name = "dni", nullable = false, length = 20)
+    private String dni;
 
     @NotEmpty(message = "{msg.agent.name.notEmpty}")
     @Size(max = 100, message = "{msg.agent.name.size}")
@@ -36,7 +39,8 @@ public class Agent {
 
     @NotEmpty(message = "{msg.agent.name.notEmpty}")
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", message = "{msg.agent.email.notValid}")
-    @Column(name = "email", nullable = false, length = 25)
+    @Size(max = 100, message = "{msg.agent.email.size}")
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
 
     @NotNull(message = "{msg.agent.office.notNull}")
@@ -59,9 +63,17 @@ public class Agent {
     @ManyToMany(mappedBy = "agents")
     private List<Property> properties;
 
-    public Agent(String code, String name, String phone, String email, Office office) {
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    private void generateCode() {
+        this.code = EntityCodeGenerator.generateCode(this.getClass(), this.dni);
+    }
+
+    public Agent(String code, String name, String dni, String phone, String email, Office office) {
         this.code = code;
         this.name = name;
+        this.dni = dni;
         this.phone = phone;
         this.email = email;
         this.office = office;

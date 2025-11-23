@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -20,12 +21,11 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "{msg.agent.code.notEmpty}")
-    @Size(max = 5, message = "{msg.agent.code.size}")
-    @Column(name = "code", nullable = false, length = 2)
+    @Transient
     private String code;
 
     @NotNull(message = "{msg.transaction.timestamp.notNull}")
+    @Column(name = "timestamp", nullable = false)
     private long transactionTimestamp;
 
     @NotNull(message = "{msg.transaction.status.notNull}")
@@ -33,6 +33,7 @@ public class Transaction {
     private Status status;
 
     @Positive(message = "{msg.transaction.price.positive}")
+    @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private double price;
 
     public LocalDate getTransactionDate() {
@@ -67,6 +68,13 @@ public class Transaction {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Agent agent;
+
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    private void generateCode() {
+        this.code = EntityCodeGenerator.generateCode(this.getClass(), this.id);
+    }
 
     public Transaction(String code, long transactionTimestamp, Status status, double price, Property property, Client client, Agent agent) {
         this.code = code;

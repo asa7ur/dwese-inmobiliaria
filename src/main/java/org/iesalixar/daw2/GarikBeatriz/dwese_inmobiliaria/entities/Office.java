@@ -2,12 +2,13 @@ package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.aspectj.weaver.loadtime.Agent;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 
 import java.util.List;
 
@@ -23,9 +24,7 @@ public class Office {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "{msg.office.code.notEmpty}")
-    @Size(max = 5, message = "{msg.office.code.size}")
-    @Column(name = "code", nullable = false, length = 5)
+    @Transient
     private String code;
 
     @NotEmpty(message = "{msg.office.name.notEmpty}")
@@ -38,16 +37,25 @@ public class Office {
     private String address;
 
     @NotEmpty(message = "{msg.office.phone.notEmpty}")
-    @Size(max = 10, message = "{msg.office.phone.size}")
-    @Column(name = "phone", nullable = false, length = 10)
+    @Size(max = 25, message = "{msg.office.phone.size}")
+    @Column(name = "phone", nullable = false, length = 25)
     private String phone;
 
     @NotEmpty(message = "{msg.office.email.notEmpty}")
-    @Column(name = "email", nullable = false)
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", message = "{msg.client.email.notValid}")
+    @Size(max = 100)
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
 
     @OneToMany(mappedBy = "office", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Agent> agents;
+
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    private void generateCode() {
+        this.code = EntityCodeGenerator.generateCode(this.getClass(), this.id);
+    }
 
     public Office (String code, String name, String address, String phone, String email) {
         this.code = code;

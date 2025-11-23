@@ -1,6 +1,5 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities;
 
-import ch.qos.logback.core.net.server.Client;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -9,11 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.aspectj.weaver.loadtime.Agent;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 
-import java.time.LocalTime;
-import java.util.Date;
+import java.time.*;
 
 @Entity
 @Table(name = "appointments")
@@ -27,22 +24,12 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "{msg.appointment.code.notEmpty}")
-    @Size(max = 5, message = "{msg.appointment.code.size}")
-    @Column(name = "code", nullable = false, length = 5)
+    @Transient
     private String code;
 
-    @NotNull(message = "{msg.appointment.date.notNull}")
-    @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "date", nullable = false)
-    private Date date;
-
-    @NotNull(message = "{msg.appointment.time.notNull}")
-    @Temporal(TemporalType.TIME)
-    @DateTimeFormat(pattern = "HH:mm")
-    @Column(name = "time", nullable = false)
-    private LocalTime time;
+    @NotNull(message = "{msg.appointment.timestamp.notNull}")
+    @Column(name = "timestamp", nullable = false)
+    private long appointmentTimestamp;
 
     @NotEmpty(message = "{msg.appointment.location.notEmpty}")
     @Size(max = 100, message = "{msg.appointment.location.size}")
@@ -63,10 +50,32 @@ public class Appointment {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    public Appointment(String code, Date date, LocalTime time, String location, String notes, Agent agent, Client client) {
+    public LocalDateTime getDateTime() {
+        return Instant.ofEpochSecond(appointmentTimestamp)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.appointmentTimestamp = dateTime.atZone(ZoneId.systemDefault())
+                .toEpochSecond();
+    }
+
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    private void generateCode() {
+        this.code = EntityCodeGenerator.generateCode(this.getClass(), this.id);
+    }
+
+    public Appointment(String code,
+                       long timestamp,
+                       String location,
+                       String notes,
+                       Agent agent,
+                       Client client) {
         this.code = code;
-        this.date = date;
-        this.time = time;
+        this.appointmentTimestamp = timestamp;
         this.location = location;
         this.notes = notes;
         this.agent = agent;
