@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Inmobiliaria - Listado de Sucursales')"></head>
+<body>
+
+<!-- Incluir el fragmento del header -->
+<header th:replace="fragments/header :: header"></header>
+<main class="container mt-5">
+    <h1>Offices</h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Muestra la lista de citas en una tabla -->
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Code</th>
+            <th>Date/Time</th>
+            <th>Location</th>
+            <th>Notes</th>
+            <th>Agent</th>
+            <th>Client</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="appointment : ${listAppointments}">
+            <td th:text="${appointment.id}"></td>
+            <td th:text="${appointment.code}"></td>
+            <td th:text="${appointment.appointmentTimestamp}"></td>
+            <td th:text="${appointment.location}"></td>
+            <td th:text="${appointment.notes}"></td>
+            <td th:text="${appointment.agent}"></td>
+            <td th:text="${appointment.client}"></td>
+            <td>
+
+                <!-- Botón para editar -->
+                <a th:href="@{/appointments/edit(id=${appointment.id})}" class="btn btn-primary btn-sm">Edit</a>
+
+                <!-- Botón para eliminar -->
+                <form th:action="@{/appointments/delete}" method="post" class="dinline">
+                    <input type="hidden" name="id" th:value="${appointment.id}"/>
+                    <button type="submit" class="btn btn-danger btn-sm" th:onclick="|return confirm('Are you sure you want to delete this appointment?');|">
+                        Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Botón para añadir una nueva cita -->
+    <a th:href="@{/appointments/new}" class="btn btn-success mt-3">Add New Appointment</a>
+
+    <!-- Volver a la página principal -->
+    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3">Back to Home</a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Inmobiliaria - Insertar/Actualizar Cita')"></head>
+<body>
+
+<!-- Incluir el fragmento del header -->
+<header th:replace="fragments/header :: header"></header>
+<main class="container mt-5">
+    <h1 th:text="${appointment.id == null ? 'Add New Appointment' : 'Edit Appointment'}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Mostrar un mensaje de error si existe -->
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <form th:action="${appointment.id == null} ? @{/appointments/insert} :@{/appointments/update}" th:object="${appointment}" method="post" enctype="multipart/form-data" class="mt-4">
+
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-3">
+            <label for="code" class="form-label">Code:</label>
+            <input type="text" th:field="*{code}" id="code" class="form-control" />
+            <div th:if="${#fields.hasErrors('code')}" class="text-danger" th:errors="*{code}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description:</label>
+            <input type="text" th:field="*{description}" id="description" class="form-control" />
+            <div th:if="${#fields.hasErrors('description')}" class="text-danger" th:errors="*{description}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="appointmentTimestamp" class="form-label">Date/Time:</label>
+            <input type="datetime-local" th:field="*{appointmentTimestamp}" id="appointmentTimestamp" class="form-control" />
+            <div th:if="${#fields.hasErrors('appointmentTimestamp')}" class="text-danger" th:errors="*{appointmentTimestamp}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="location" class="form-label">Location:</label>
+            <input type="text" th:field="*{location}" id="location" class="form-control" />
+            <div th:if="${#fields.hasErrors('location')}" class="text-danger" th:errors="*{location}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="notes" class="form-label">Notes:</label>
+            <input type="text" th:field="*{notes}" id="notes" class="form-control" />
+            <div th:if="${#fields.hasErrors('notes')}" class="text-danger" th:errors="*{notes}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="agent" class="form-label">Agent:</label>
+            <select id="agent" class="form-select" th:field="*{agent}">
+                <option value="" disabled selected>Select an agent</option>
+
+                <option th:each="ag : ${agents}"
+                        th:value="${ag.id}"
+                        th:text="${ag.code}">
+                </option>
+            </select>
+            <div th:if="${#fields.hasErrors('agent')}" class="text-danger" th:errors="*{agent}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="client" class="form-label">Client:</label>
+            <select id="client" class="form-select" th:field="*{client}">
+                <option value="" disabled selected>Select a client</option>
+
+                <option th:each="c : ${clients}"
+                        th:value="${c.id}"
+                        th:text="${c.code}">
+                </option>
+            </select>
+            <div th:if="${#fields.hasErrors('client')}" class="text-danger" th:errors="*{clients}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="${appointment.id == null ? 'Create' : 'Update'}"></button>
+    </form>
+
+    <!-- Volver a la lista de citas -->
+    <a href="#" th:href="@{/appointments}" class="btn btn-secondary mt-3">Back to List</a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>
