@@ -25,8 +25,7 @@ public class PropertyController {
     @GetMapping
     public String listProperties(Model model) {
         logger.info("Solicitando la lista de todas las propiedades...");
-        List<Property> listProperties = null;
-        listProperties = propertyRepository.findAll();
+        List<Property> listProperties = propertyRepository.findAll();
         logger.info("Se han cargado {} propiedades.", listProperties.size());
         model.addAttribute("listProperty", listProperties);
         return "property";
@@ -43,8 +42,7 @@ public class PropertyController {
     public String showEditForm(@RequestParam("id") Long id, Model model) {
         logger.info("Mostrando formulario de edición para la propiedad con ID {}", id);
         Optional<Property> propertyOpt = propertyRepository.findById(id);
-        propertyOpt = propertyRepository.findById(id);
-        if (!propertyOpt.isPresent()) {
+        if (propertyOpt.isEmpty()) {
             logger.warn("No se encontró la propiedad con ID {}", id);
         }
         model.addAttribute("property", propertyOpt);
@@ -52,20 +50,15 @@ public class PropertyController {
     }
 
     @PostMapping("/insert")
-    public String insertProperty(@ModelAttribute("property") Property property, RedirectAttributes redirectAttributes) {
+    public String insertProperty(@ModelAttribute("property") Property property) {
         logger.info("Insertando nueva propiedad con código {}", property.getCode());
-        if (propertyRepository.existsPropertyByCode(property.getCode())) {
-            logger.warn("El código de la propiedad {} ya existe.", property.getCode());
-            redirectAttributes.addFlashAttribute("errorMessage", "El código de la propiedad ya existe.");
-            return "redirect:/properties/new";
-        }
         propertyRepository.save(property);
         logger.info("Propiedad {} insertada con éxito.", property.getCode());
         return "redirect:/properties";
     }
 
     @PostMapping("/update")
-    public String updateProperty(@ModelAttribute("property") Property property, RedirectAttributes redirectAttributes) {
+    public String updateProperty(@ModelAttribute("property") Property property) {
         logger.info("Actualizando propiedad con ID {}", property.getId());
         propertyRepository.save(property);
         logger.info("Propiedad con ID {} actualizada con éxito.", property.getId());
@@ -73,7 +66,7 @@ public class PropertyController {
     }
 
     @PostMapping("/delete")
-    public String deleteProperty(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+    public String deleteProperty(@RequestParam("id") Long id) {
         logger.info("Eliminando propiedad con ID {}", id);
         propertyRepository.deleteById(id);
         logger.info("Propiedad con ID {} eliminada con éxito.", id);

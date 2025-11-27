@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +23,7 @@ public class OfficeController {
     @GetMapping
     public String listOffices(Model model) {
         logger.info("Solicitando la lista de todas las sucursales...");
-        List<Office> listOffices = null;
-        listOffices = officeRepository.findAll();
+        List<Office> listOffices = officeRepository.findAll();
         logger.info("Se han cargado {} sucursales.", listOffices.size());
         model.addAttribute("listOffices", listOffices);
         return "office";
@@ -42,8 +40,7 @@ public class OfficeController {
     public String showEditForm(@RequestParam("id") Long id, Model model) {
         logger.info("Mostrando formulario de edición para la sucursal con ID {}", id);
         Optional<Office> officeOpt = officeRepository.findById(id);
-        officeOpt = officeRepository.findById(id);
-        if (!officeOpt.isPresent()) {
+        if (officeOpt.isEmpty()) {
             logger.warn("No se encontró la sucursal con ID {}", id);
         }
         model.addAttribute("office", officeOpt);
@@ -51,20 +48,15 @@ public class OfficeController {
     }
 
     @PostMapping("/insert")
-    public String insertOffice(@ModelAttribute("office") Office office, RedirectAttributes redirectAttributes) {
+    public String insertOffice(@ModelAttribute("office") Office office) {
         logger.info("Insertando nueva sucursal con código {}", office.getCode());
-        if (officeRepository.existsOfficeByCode(office.getCode())) {
-            logger.warn("El código de la sucursal {} ya existe.", office.getCode());
-            redirectAttributes.addFlashAttribute("errorMessage", "El código de la sucursal ya existe.");
-            return "redirect:/offices/new";
-        }
         officeRepository.save(office);
         logger.info("Sucursal {} insertada con éxito.", office.getCode());
         return "redirect:/offices";
     }
 
     @PostMapping("/update")
-    public String updateOffice(@ModelAttribute("office") Office office, RedirectAttributes redirectAttributes) {
+    public String updateOffice(@ModelAttribute("office") Office office) {
         logger.info("Actualizando sucursal con ID {}", office.getId());
         officeRepository.save(office);
         logger.info("Sucursal con ID {} actualizada con éxito.", office.getId());
@@ -72,7 +64,7 @@ public class OfficeController {
     }
 
     @PostMapping("/delete")
-    public String deleteOffice(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+    public String deleteOffice(@RequestParam("id") Long id) {
         logger.info("Eliminando sucursal con ID {}", id);
         officeRepository.deleteById(id);
         logger.info("Sucursal con ID {} eliminada con éxito.", id);
