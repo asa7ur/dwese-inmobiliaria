@@ -1,7 +1,9 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Appointment;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AppointmentRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.ClientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +16,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/appointment")
+@RequestMapping("/appointments")
 public class AppointmentController {
     private static final Logger logger = LoggerFactory.getLogger(AppointmentController.class);
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private AgentRepository agentRepository;
+
+    @Autowired
+    private ClientRepository clientRepository;
 
     @GetMapping
     public String listAppointments(Model model) {
@@ -34,6 +42,8 @@ public class AppointmentController {
     public String showNewForm(Model model) {
         logger.info("Mostrando formulario para nueva cita.");
         model.addAttribute("appointment", new Appointment());
+        model.addAttribute("agents", agentRepository.findAll());
+        model.addAttribute("clients", clientRepository.findAll());
         return "appointment-form";
     }
 
@@ -44,21 +54,32 @@ public class AppointmentController {
         if (appointmentOpt.isEmpty()) {
             logger.warn("No se encontró la cita con ID {}", id);
         }
-        model.addAttribute("appointment", appointmentOpt);
+
+        model.addAttribute("appointment", appointmentOpt.get());
+        model.addAttribute("agents", agentRepository.findAll());
+        model.addAttribute("clients", clientRepository.findAll());
         return "appointment-form";
     }
 
     @PostMapping("/insert")
-    public String insertAppointment(@ModelAttribute("appointment") Appointment appointment) {
+    public String insertAppointment(@ModelAttribute("appointment") Appointment appointment, @RequestParam("agent") Long agentId, @RequestParam("client") Long clientId) {
         logger.info("Insertando nueva cita con código {}", appointment.getCode());
+
+        appointment.setAgent(agentRepository.findById(agentId).orElse(null));
+        appointment.setClient(clientRepository.findById(clientId).orElse(null));
+
         appointmentRepository.save(appointment);
         logger.info("Cita {} insertada con éxito.", appointment.getCode());
         return "redirect:/appointments";
     }
 
     @PostMapping("/update")
-    public String updateAppointment(@ModelAttribute("appointment") Appointment appointment) {
+    public String updateAppointment(@ModelAttribute("appointment") Appointment appointment, @RequestParam("agent") Long agentId, @RequestParam("client") Long clientId) {
         logger.info("Actualizando cita con ID {}", appointment.getId());
+
+        appointment.setAgent(agentRepository.findById(agentId).orElse(null));
+        appointment.setClient(clientRepository.findById(clientId).orElse(null));
+
         appointmentRepository.save(appointment);
         logger.info("Cita con ID {} actualizada con éxito.", appointment.getId());
         return "redirect:/appointments";
