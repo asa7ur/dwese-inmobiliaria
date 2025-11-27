@@ -73,14 +73,14 @@ public class ClientController {
             return "client-form";
         }
 
-        if(clientRepository.existsClientByCode(client.getCode())){
-            logger.warn("Existe un cliente con el código {}", client.getCode());
+        if(clientRepository.existsClientByDni(client.getDni())){
+            logger.warn("Existe un cliente con el DNI {}", client.getDni());
             redirectAttributes.addFlashAttribute("message", "El cliente ya existe");
             return "client-form";
         }
 
         clientRepository.save(client);
-        logger.info("Cliente {} insertado con éxito", client.getCode());
+        logger.info("Cliente con DNI {} insertado con éxito", client.getDni());
         redirectAttributes.addFlashAttribute("message", "Cliente insertado");
         return "redirect:/clients";
     }
@@ -99,9 +99,9 @@ public class ClientController {
             return "client-form";
         }
 
-        if(clientRepository.existsClientByCode(client.getCode())){
-            logger.warn("Existe un cliente con el codigo {}", client.getCode());
-            model.addAttribute("message", "El código del cliente ya existe");
+        if(clientRepository.existsClientByDni(client.getDni())){
+            logger.warn("Existe un cliente con DNI {}", client.getDni());
+            model.addAttribute("message", "El DNI del cliente ya existe");
             return "client-form";
         }
 
