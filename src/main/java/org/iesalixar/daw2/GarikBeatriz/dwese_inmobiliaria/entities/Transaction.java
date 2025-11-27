@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -34,7 +35,7 @@ public class Transaction {
 
     @Positive(message = "{msg.transaction.price.positive}")
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
-    private double price;
+    private BigDecimal price;
 
     public LocalDate getTransactionDate() {
         return Instant.ofEpochSecond(transactionTimestamp)
@@ -76,7 +77,7 @@ public class Transaction {
         this.code = EntityCodeGenerator.generateCode(this.getClass(), this.id);
     }
 
-    public Transaction(String code, long transactionTimestamp, Status status, double price, Property property, Client client, Agent agent) {
+    public Transaction(String code, long transactionTimestamp, Status status, BigDecimal price, Property property, Client client, Agent agent) {
         this.code = code;
         this.transactionTimestamp = transactionTimestamp;
         this.status = status;

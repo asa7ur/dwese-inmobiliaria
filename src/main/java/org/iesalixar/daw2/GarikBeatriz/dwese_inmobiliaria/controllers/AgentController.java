@@ -84,7 +84,7 @@ public class AgentController {
             return "agent-form";
         }
 
-        if(agentRepository.existsAgentByCode(agent.getCode())){
+        if(agentRepository.existsAgentByDni(agent.getCode())){
             logger.warn("Agente con código {} ya existe",  agent.getCode());
             redirectAttributes.addFlashAttribute("errorMessage", "El código del agente ya existe");
             model.addAttribute("offices",  officeRepository.findAll());

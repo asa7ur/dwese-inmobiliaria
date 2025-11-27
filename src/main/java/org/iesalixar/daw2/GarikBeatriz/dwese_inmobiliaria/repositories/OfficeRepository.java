@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OfficeRepository extends JpaRepository<Office, Long> {
 
-    @Query("SELECT COUNT(o) > 0 FROM offices o WHERE o.code =? :code")
+    @Query("SELECT COUNT(o) > 0 FROM Office o WHERE o.code =? :code")
     boolean existsOfficeByCode(String code);
 }

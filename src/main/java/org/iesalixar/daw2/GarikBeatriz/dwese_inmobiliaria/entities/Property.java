@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -37,7 +38,7 @@ public class Property {
 
     @NotNull(message = "{msg.property.price.notNull}")
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
-    private double price;
+    private BigDecimal price;
 
     @NotNull(message = "{msg.property.type.notEmpty}")
     @Enumerated(EnumType.STRING)
@@ -89,7 +90,7 @@ public class Property {
         this.code = EntityCodeGenerator.generateCode(this.getClass(), this.id);
     }
 
-    public Property (String code, String description, String location, double price, Type type, int floors, int bedrooms, int bathrooms, Status status) {
+    public Property (String code, String description, String location, BigDecimal price, Type type, int floors, int bedrooms, int bathrooms, Status status) {
         this.code = code;
         this.description = description;
         this.location = location;

@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
-    @Query("SELECT COUNT(a) > 0 FROM appointments a WHERE a.code =? :code")
+    @Query("SELECT COUNT(a) > 0 FROM Appointment a WHERE a.code =? :code")
     boolean existsAppointmentByCode(String code);
 }
