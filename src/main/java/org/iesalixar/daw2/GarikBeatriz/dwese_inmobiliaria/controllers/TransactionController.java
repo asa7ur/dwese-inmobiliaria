@@ -101,15 +101,6 @@ public class TransactionController {
             return "transaction-form";
         }
 
-        if(transactionRepository.existsTransactionByCode(transaction.getCode())){
-            logger.warn("Transaccion con código {} ya existe", transaction.getCode());
-            redirectAttributes.addFlashAttribute("errorMessage", "El código de la transaccion ya existe");
-            model.addAttribute("properties",  propertyRepository.findAll());
-            model.addAttribute("clients", clientRepository.findAll());
-            model.addAttribute("agents", agentRepository.findAll());
-            return "transaction-form";
-        }
-
         transactionRepository.save(transaction);
         logger.info("Transaccion {} insertado con éxito", transaction.getCode());
         redirectAttributes.addFlashAttribute("successMessage", "Transaccion insertada correctamente.");
@@ -127,15 +118,6 @@ public class TransactionController {
 
         if(result.hasErrors()){
             logger.warn("Errores de validación al actualizar la transaccion.");
-            model.addAttribute("properties",  propertyRepository.findAll());
-            model.addAttribute("clients", clientRepository.findAll());
-            model.addAttribute("agents", agentRepository.findAll());
-            return "transaction-form";
-        }
-
-        if(transactionRepository.existsTransactionByCode(transaction.getCode())){
-            logger.warn("El código de la transaccion {} ya existe para otra transaccion.", transaction.getCode());
-            model.addAttribute("errorMessage", "El código de la transaccion ya existe para otra transaccion.");
             model.addAttribute("properties",  propertyRepository.findAll());
             model.addAttribute("clients", clientRepository.findAll());
             model.addAttribute("agents", agentRepository.findAll());

@@ -84,15 +84,15 @@ public class AgentController {
             return "agent-form";
         }
 
-        if(agentRepository.existsAgentByDni(agent.getCode())){
-            logger.warn("Agente con código {} ya existe",  agent.getCode());
-            redirectAttributes.addFlashAttribute("errorMessage", "El código del agente ya existe");
+        if(agentRepository.existsAgentByDni(agent.getDni())){
+            logger.warn("Agente con DNI {} ya existe",  agent.getDni());
+            redirectAttributes.addFlashAttribute("errorMessage", "El Dni del agente ya existe");
             model.addAttribute("offices",  officeRepository.findAll());
             return "agent-form";
         }
 
         agentRepository.save(agent);
-        logger.info("Agente {} insertado con éxito", agent.getCode());
+        logger.info("Agente con DNI {} insertado con éxito", agent.getDni());
         redirectAttributes.addFlashAttribute("successMessage", "Agente insertado correctamente.");
         return "redirect:/agents";
     }
@@ -112,9 +112,9 @@ public class AgentController {
             return "agent-form";
         }
 
-        if(agentRepository.existsAgentByCode(agent.getCode())){
-            logger.warn("El código del agente {} ya existe para otro agente.", agent.getCode());
-            model.addAttribute("errorMessage", "El código del agente ya existe para otro agente.");
+        if(agentRepository.existsAgentByDni(agent.getDni())){
+            logger.warn("El DNI del agente {} ya existe para otro agente.", agent.getDni());
+            model.addAttribute("errorMessage", "El DNI del agente ya existe para otro agente.");
             model.addAttribute("offices",  officeRepository.findAll());
             return "agent-form";
         }
