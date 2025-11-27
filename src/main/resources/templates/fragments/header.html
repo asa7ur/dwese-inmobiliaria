@@ -15,13 +15,33 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
-                           th:classappend="${activePage == 'regions'} ? 'active'"
-                           th:href="@{/regions}">Comunidades Autónomas</a>
+                           th:classappend="${activePage == 'agents'} ? 'active'"
+                           th:href="@{/agents}">Agentes</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
-                           th:classappend="${activePage == 'provinces'} ? 'active'"
-                           th:href="@{/provinces}">Provincias</a>
+                           th:classappend="${activePage == 'appointments'} ? 'active'"
+                           th:href="@{/appointments}">Citas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'clients'} ? 'active'"
+                           th:href="@{/clients}">Clientes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'offices'} ? 'active'"
+                           th:href="@{/offices}">Oficinas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'properties'} ? 'active'"
+                           th:href="@{/properties}">Propiedades</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           th:classappend="${activePage == 'transactions'} ? 'active'"
+                           th:href="@{/transactions}">Transacciones</a>
                     </li>
                 </ul>
             </div>

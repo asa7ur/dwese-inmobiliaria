@@ -1,4 +1,73 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.*;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.ClientRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.TransactionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/transactions")
 public class TransactionController {
+    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
+    private PropertyRepository propertyRepository;
+
+    @Autowired
+    private ClientRepository clientRepository;
+
+    @Autowired
+    private AgentRepository agentRepository;
+
+    @GetMapping
+    public String listTransactions(Model model) {
+        logger.info("Solicitando la lista de todas las transacciones...");
+        List<Transaction> listTransactions = transactionRepository.findAll();
+        logger.info("Se han cargado {} transaciiones.", listTransactions.size());
+        model.addAttribute("listTransactions", listTransactions);
+        model.addAttribute("activePage", "transactions");
+        return "transaction";
+    }
+
+    @GetMapping("/new")
+    public String showNewForm(Model model) {
+        logger.info("Solicitando formulario para nueva transacción...");
+        model.addAttribute("transaction", new Transaction());
+
+        List<Property> properties = propertyRepository.findAll();
+        model.addAttribute("properties", properties);
+
+        List<Client> clients = clientRepository.findAll();
+        model.addAttribute("clients", clients);
+
+        List<Agent> agents = agentRepository.findAll();
+        model.addAttribute("agents", agents);
+
+        return "transaction-form";
+    }
+
+    @GetMapping("/edit")
+    public String showEditForm(
+            @RequestParam("id") Long id,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ){
+        logger.info("Solicitando formulario para editar transaciión con ID {}", id);
+
+    }
 }
