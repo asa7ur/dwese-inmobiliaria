@@ -24,8 +24,7 @@ public class AppointmentController {
     @GetMapping
     public String listAppointments(Model model) {
         logger.info("Solicitando la lista de todas las citas...");
-        List<Appointment> listAppointments = null;
-        listAppointments = appointmentRepository.findAll();
+        List<Appointment> listAppointments = appointmentRepository.findAll();
         logger.info("Se han cargado {} citas.", listAppointments.size());
         model.addAttribute("listAppointments", listAppointments);
         return "appointment";
@@ -42,8 +41,7 @@ public class AppointmentController {
     public String showEditForm(@RequestParam("id") Long id, Model model) {
         logger.info("Mostrando formulario de edición para la cita con ID {}", id);
         Optional<Appointment> appointmentOpt = appointmentRepository.findById(id);
-        appointmentOpt = appointmentRepository.findById(id);
-        if (!appointmentOpt.isPresent()) {
+        if (appointmentOpt.isEmpty()) {
             logger.warn("No se encontró la cita con ID {}", id);
         }
         model.addAttribute("appointment", appointmentOpt);
@@ -51,20 +49,15 @@ public class AppointmentController {
     }
 
     @PostMapping("/insert")
-    public String insertAppointment(@ModelAttribute("appointment") Appointment appointment, RedirectAttributes redirectAttributes) {
+    public String insertAppointment(@ModelAttribute("appointment") Appointment appointment) {
         logger.info("Insertando nueva cita con código {}", appointment.getCode());
-        if (appointmentRepository.existsAppointmentByCode(appointment.getCode())) {
-            logger.warn("El código de la cita {} ya existe.", appointment.getCode());
-            redirectAttributes.addFlashAttribute("errorMessage", "El código de la cita ya existe.");
-            return "redirect:/appointments/new";
-        }
         appointmentRepository.save(appointment);
         logger.info("Cita {} insertada con éxito.", appointment.getCode());
         return "redirect:/appointments";
     }
 
     @PostMapping("/update")
-    public String updateAppointment(@ModelAttribute("appointment") Appointment appointment, RedirectAttributes redirectAttributes) {
+    public String updateAppointment(@ModelAttribute("appointment") Appointment appointment) {
         logger.info("Actualizando cita con ID {}", appointment.getId());
         appointmentRepository.save(appointment);
         logger.info("Cita con ID {} actualizada con éxito.", appointment.getId());
@@ -72,7 +65,7 @@ public class AppointmentController {
     }
 
     @PostMapping("/delete")
-    public String deleteAppointment(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+    public String deleteAppointment(@RequestParam("id") Long id) {
         logger.info("Eliminando cita con ID {}", id);
         appointmentRepository.deleteById(id);
         logger.info("Cita con ID {} eliminada con éxito.", id);
