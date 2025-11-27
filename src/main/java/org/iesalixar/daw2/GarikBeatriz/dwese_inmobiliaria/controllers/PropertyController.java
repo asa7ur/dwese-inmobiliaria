@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/property")
+@RequestMapping("/properties")
 public class PropertyController {
     private static final Logger logger = LoggerFactory.getLogger(PropertyController.class);
 
@@ -27,7 +27,7 @@ public class PropertyController {
         logger.info("Solicitando la lista de todas las propiedades...");
         List<Property> listProperties = propertyRepository.findAll();
         logger.info("Se han cargado {} propiedades.", listProperties.size());
-        model.addAttribute("listProperty", listProperties);
+        model.addAttribute("listProperties", listProperties);
         return "property";
     }
 

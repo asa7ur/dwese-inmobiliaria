@@ -6,18 +6,22 @@
 <!-- Incluir el fragmento del header -->
 <header th:replace="fragments/header :: header"></header>
 <main class="container mt-5">
-    <h1>Offices</h1>
+    <h1>Appointments</h1>
 
-    <!-- Muestra un mensaje de error si hay algún problema -->
+    <!-- Error Message -->
     <div th:if="${errorMessage}" class="alert alert-danger">
         <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Success Message -->
+    <div th:if="${successMessage}" class="alert alert-success">
+        <p th:text="${successMessage}"></p>
     </div>
 
     <!-- Muestra la lista de citas en una tabla -->
     <table class="table table-bordered mt-3">
         <thead>
         <tr>
-            <th>ID</th>
             <th>Code</th>
             <th>Date/Time</th>
             <th>Location</th>
@@ -34,8 +38,8 @@
             <td th:text="${appointment.appointmentTimestamp}"></td>
             <td th:text="${appointment.location}"></td>
             <td th:text="${appointment.notes}"></td>
-            <td th:text="${appointment.agent}"></td>
-            <td th:text="${appointment.client}"></td>
+            <td th:text="${appointment.agent.name}"></td>
+            <td th:text="${appointment.client.name}"></td>
             <td>
 
                 <!-- Botón para editar -->

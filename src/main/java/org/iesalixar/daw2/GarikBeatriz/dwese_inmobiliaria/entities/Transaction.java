@@ -26,7 +26,7 @@ public class Transaction {
     private String code;
 
     @NotNull(message = "{msg.transaction.timestamp.notNull}")
-    @Column(name = "timestamp", nullable = false)
+    @Column(name = "transaction_timestamp", nullable = false)
     private long transactionTimestamp;
 
     @NotNull(message = "{msg.transaction.status.notNull}")

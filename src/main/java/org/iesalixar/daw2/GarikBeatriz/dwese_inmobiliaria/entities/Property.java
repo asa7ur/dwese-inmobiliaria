@@ -76,11 +76,11 @@ public class Property {
     private List<Agent> agents;
 
     public enum Status {
-        DISPONIBLE, RESERVADO, VENDIDO;
+        AVAILABLE, RESERVED, SOLD;
     }
 
     public enum Type {
-        PISO, CASA;
+        HOUSE, FLAT, CABIN, CASTLE, VILLA;
     }
 
     @PostLoad

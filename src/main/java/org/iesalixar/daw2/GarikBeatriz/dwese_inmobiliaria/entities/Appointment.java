@@ -28,7 +28,7 @@ public class Appointment {
     private String code;
 
     @NotNull(message = "{msg.appointment.timestamp.notNull}")
-    @Column(name = "timestamp", nullable = false)
+    @Column(name = "appointment_timestamp", nullable = false)
     private long appointmentTimestamp;
 
     @NotEmpty(message = "{msg.appointment.location.notEmpty}")

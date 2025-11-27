@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/office")
+@RequestMapping("/offices")
 public class OfficeController {
     private static final Logger logger = LoggerFactory.getLogger(OfficeController.class);
 

@@ -1,10 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head ('Inmobiliaria - Lista de Agentes')}">
+    <title>Inmobiliaria - Lista de Agentes</title>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{fragments/header :: header}"></header>
+
+<main class="flex-grow-1 container mt-5">
+    <h1 class="mt-3">Lista de Agentes</h1>
+
+    <!-- Error Message -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Success Message -->
+    <div th:if="${successMessage}" class="alert alert-success">
+        <p th:text="${successMessage}"></p>
+    </div>
+
+    <div class="mb-3">
+        <a th:href="@{/agents/new}" class="btn btn-success">+ Nuevo Agente</a>
+    </div>
+
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th>Código</th>
+            <th>DNI</th>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Oficina</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="agent : ${listAgents}">
+            <td th:text="${agent.code}"></td>
+            <td th:text="${agent.dni}"></td>
+            <td th:text="${agent.name}"></td>
+            <td th:text="${agent.phone}"></td>
+            <td th:text="${agent.email}"></td>
+            <td th:text="${agent.office.name}"></td>
+            <td>
+                <a th:href="@{/agents/edit(id=${agent.id})}" class="btn btn-primary btn-sm">Editar</a>
+                <form th:action="@{/agents/delete}" method="post" class="d-inline">
+                    <input type="hidden" name="id" th:value="${agent.id}">
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            th:onclick="|return confirm('¿Seguro que deseas eliminar este agente?')|">Eliminar
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3">Volver al inicio</a>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 
 </body>
 </html>
