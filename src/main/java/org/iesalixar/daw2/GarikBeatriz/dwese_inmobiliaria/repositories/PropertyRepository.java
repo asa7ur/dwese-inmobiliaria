@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PropertyRepository extends JpaRepository<Property, Long> {
 
-    @Query("SELECT COUNT(p) > 0 FROM properties p WHERE p.code =? :code")
+    @Query("SELECT COUNT(p) > 0 FROM Property p WHERE p.code =? :code")
     boolean existsPropertyByCode(String code);
 }
