@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('Inmobiliaria - Insertar/Actualizar Propiedad')"></head>
+<head th:replace="~{fragments/head :: head ('Inmobiliaria - Insertar/Actualizar Propiedad')}"></head>
 <body>
 
 <!-- Incluir el fragmento del header -->
-<header th:replace="fragments/header :: header"></header>
+<header th:replace="~{fragments/header :: header}"></header>
 <main class="container mt-5">
     <h1 th:text="${property.id == null ? 'Add New Property' : 'Edit Property'}"></h1>
 
@@ -86,6 +86,6 @@
 </main>
 
 <!-- Incluir el fragmento del footer -->
-<footer th:replace="fragments/footer :: footer"></footer>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

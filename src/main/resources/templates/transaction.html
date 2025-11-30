@@ -27,7 +27,7 @@
         <thead>
         <tr>
             <th>Code</th>
-            <th>Time</th>
+            <th>Date</th>
             <th>Status</th>
             <th>Price</th>
             <th>Property</th>
@@ -39,7 +39,7 @@
         <tbody>
         <tr th:each="transaction : ${listTransactions}">
             <td th:text="${transaction.code}"></td>
-            <td th:text="${transaction.transactionTimestamp}"></td>
+            <td th:text="${#temporals.format(transaction.transactionDate, 'dd/MM/yyyy')}"></td>
             <td th:text="${transaction.status}"></td>
             <td th:text="${transaction.price}"></td>
             <td th:text="${transaction.property.code}"></td>

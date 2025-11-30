@@ -1,6 +1,7 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
 
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,9 @@ public class PropertyController {
     @Autowired
     private PropertyRepository propertyRepository;
 
+    @Autowired
+    private AgentRepository agentRepository;
+
     @GetMapping
     public String listProperties(Model model) {
         logger.info("Solicitando la lista de todas las propiedades...");
@@ -35,17 +39,27 @@ public class PropertyController {
     public String showNewForm(Model model) {
         logger.info("Mostrando formulario para nueva propiedad.");
         model.addAttribute("property", new Property());
+        model.addAttribute("agents", agentRepository.findAll());
         return "property-form";
     }
 
     @GetMapping("/edit")
-    public String showEditForm(@RequestParam("id") Long id, Model model) {
+    public String showEditForm(
+            @RequestParam("id") Long id,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
         logger.info("Mostrando formulario de edición para la propiedad con ID {}", id);
         Optional<Property> propertyOpt = propertyRepository.findById(id);
+
         if (propertyOpt.isEmpty()) {
             logger.warn("No se encontró la propiedad con ID {}", id);
+            redirectAttributes.addFlashAttribute("message", "Propiedad no encontrada");
+            return "redirect:/properties";
         }
-        model.addAttribute("property", propertyOpt);
+
+        model.addAttribute("property", propertyOpt.get());
+        model.addAttribute("agents", agentRepository.findAll());
         return "property-form";
     }
 

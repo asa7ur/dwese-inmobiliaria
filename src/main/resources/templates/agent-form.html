@@ -1,10 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/head :: head ('Real Estate Agency - Insert/Update Agent')}">
+    <title>Real Estate Agency</title>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{fragments/header :: header}"></header>
 
+<main class="flex-grow-1 container mt-5">
+    <h1 th:text="${agent.id == null ? 'Add New Agent' : 'Edit Agent'}"></h1>
+
+    <!-- Error Message -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="${agent.id == null} ? '/agents/insert' : '/agents/update'"
+          th:object="${agent}" method="post" class="mt-4">
+
+        <input type="hidden" th:field="*{id}"/>
+
+        <!-- DNI -->
+        <div class="mb-3">
+            <label for="dni" class="form-label">DNI:</label>
+            <input type="text" th:field="*{dni}" id="dni"
+                   class="form-control" required/>
+            <div th:if="${#fields.hasErrors('dni')}"
+                 class="text-danger"
+                 th:errors="*{dni}"></div>
+        </div>
+
+        <!-- NAME -->
+        <div class="mb-3">
+            <label for="name" class="form-label">Name:</label>
+            <input type="text" th:field="*{name}" id="name"
+                   class="form-control" required/>
+            <div th:if="${#fields.hasErrors('name')}"
+                 class="text-danger"
+                 th:errors="*{name}"></div>
+        </div>
+
+        <!-- PHONE -->
+        <div class="mb-3">
+            <label for="phone" class="form-label">Phone:</label>
+            <input type="text" th:field="*{phone}" id="phone"
+                   class="form-control" required/>
+            <div th:if="${#fields.hasErrors('phone')}"
+                 class="text-danger"
+                 th:errors="*{phone}"></div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" th:field="*{email}" id="email"
+                   class="form-control" required/>
+            <div th:if="${#fields.hasErrors('email')}"
+                 class="text-danger"
+                 th:errors="*{email}"></div>
+        </div>
+
+        <!-- OFFICE -->
+        <div class="mb-3">
+            <label for="office_id" class="form-label">Office:</label>
+            <select th:field="*{office.id}" id="office_id"
+                    class="form-select" required>
+                <option value="">-- Select Office --</option>
+                <option th:each="office : ${offices}"
+                        th:value="${office.id}"
+                        th:text="${office.name}"></option>
+            </select>
+            <div th:if="${#fields.hasErrors('office.id')}"
+                 class="text-danger"
+                 th:errors="*{office.id}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary"
+                th:text="${agent.id == null ? 'Create' : 'Update'}"></button>
+    </form>
+
+    <a th:href="@{/agents}" class="btn btn-secondary mt-3">Back to List</a>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <header th:fragment="header" xmlns:th="http://www.thymeleaf.org">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top border-bottom border-secondary shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">TL - GARIK ASATRYAN</a>
+            <a class="navbar-brand" href="#">REAL ESTATE AGENCY</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
                     aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -11,37 +11,37 @@
                     <li class="nav-item">
                         <a class="nav-link"
                            th:classappend="${activePage == 'home'} ? 'active'"
-                           th:href="@{/}">Inicio</a>
+                           th:href="@{/}">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
                            th:classappend="${activePage == 'agents'} ? 'active'"
-                           th:href="@{/agents}">Agentes</a>
+                           th:href="@{/agents}">Agents</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
                            th:classappend="${activePage == 'appointments'} ? 'active'"
-                           th:href="@{/appointments}">Citas</a>
+                           th:href="@{/appointments}">Appointments</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
                            th:classappend="${activePage == 'clients'} ? 'active'"
-                           th:href="@{/clients}">Clientes</a>
+                           th:href="@{/clients}">Clients</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
                            th:classappend="${activePage == 'offices'} ? 'active'"
-                           th:href="@{/offices}">Oficinas</a>
+                           th:href="@{/offices}">Offices</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
                            th:classappend="${activePage == 'properties'} ? 'active'"
-                           th:href="@{/properties}">Propiedades</a>
+                           th:href="@{/properties}">Properties</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
                            th:classappend="${activePage == 'transactions'} ? 'active'"
-                           th:href="@{/transactions}">Transacciones</a>
+                           th:href="@{/transactions}">Transactions</a>
                     </li>
                 </ul>
             </div>

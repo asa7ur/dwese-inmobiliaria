@@ -31,13 +31,13 @@ public class EntityCodeGenerator {
 
     /**
      * Sobrecarga para generar código a partir del ID de la entidad
-     * útil para Appointment donde quieres letras + 5 dígitos del ID
+     * útil para Appointment donde quieres letras + 4 dígitos del ID
      */
     public static String generateCode(Class<?> entityClass, Long id) {
         if (entityClass == null || id == null) return null;
 
         String letters = entityClass.getSimpleName().substring(0, 2).toUpperCase();
-        String numbers = String.format("%05d", id);
+        String numbers = String.format("%04d", id);
         return letters + numbers;
     }
 }

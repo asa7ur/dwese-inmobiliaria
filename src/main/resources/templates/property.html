@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('Inmobiliaria - Listado de Propiedades')"></head>
+<head th:replace="~{fragments/head :: head ('Inmobiliaria - Listado de Propiedades')}"></head>
 <body>
 
 <!-- Incluir el fragmento del header -->
-<header th:replace="fragments/header :: header"></header>
+<header th:replace="~{fragments/header :: header}"></header>
 <main class="container mt-5">
     <h1>Properties</h1>
 
@@ -17,7 +17,6 @@
     <table class="table table-bordered mt-3">
         <thead>
         <tr>
-            <th>ID</th>
             <th>Code</th>
             <th>Description</th>
             <th>Location</th>
@@ -33,7 +32,6 @@
         </thead>
         <tbody>
         <tr th:each="property : ${listProperties}">
-            <td th:text="${property.id}"></td>
             <td th:text="${property.code}"></td>
             <td th:text="${property.description}"></td>
             <td th:text="${property.location}"></td>
@@ -69,6 +67,6 @@
 </main>
 
 <!-- Incluir el fragmento del footer -->
-<footer th:replace="fragments/footer :: footer"></footer>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

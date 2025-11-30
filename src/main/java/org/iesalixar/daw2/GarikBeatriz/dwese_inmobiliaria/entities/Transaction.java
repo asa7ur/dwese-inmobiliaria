@@ -7,10 +7,12 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "transactions")
@@ -25,7 +27,11 @@ public class Transaction {
     @Transient
     private String code;
 
+    @Transient
     @NotNull(message = "{msg.transaction.timestamp.notNull}")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate transactionDate;
+
     @Column(name = "transaction_timestamp", nullable = false)
     private long transactionTimestamp;
 
@@ -37,21 +43,28 @@ public class Transaction {
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+
     public LocalDate getTransactionDate() {
-        return Instant.ofEpochSecond(transactionTimestamp)
-                .atZone(java.time.ZoneId.systemDefault())
-                .toLocalDate();
+        if (transactionDate == null) {
+            return Instant.ofEpochSecond(transactionTimestamp)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        }
+        return transactionDate;
     }
 
     public void setTransactionDate(LocalDate transactionDate) {
-        this.transactionTimestamp = transactionDate.atStartOfDay()
-                .toEpochSecond(java.time.ZoneOffset.UTC);
+        this.transactionDate = transactionDate;
+        this.transactionTimestamp = transactionDate
+                .atStartOfDay(ZoneId.systemDefault())
+                .toEpochSecond();
     }
 
     public enum Status {
         PENDING, COMPLETED, CANCELLED
     }
 
+    @NotNull(message = "{msg.transaction.property.notNull}")
     @OneToOne
     @JoinColumn(name ="property_id")
     private Property property;

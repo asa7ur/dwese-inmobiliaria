@@ -1,10 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/head :: head ('Real Estate Agency - Insert/Update Client')}">
+    <title>Real Estate Agency</title>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{fragments/header :: header}"></header>
 
+<main class="flex-grow-1 container mt-5">
+    <h1 th:text="${transaction.id == null ? 'Add New Transaction' : 'Transaction'}"></h1>
+
+    <!-- Error Message -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="${transaction.id == null} ? '/transactions/insert' : '/transactions/update'"
+          th:object="${transaction}" method="post" class="mt-4">
+
+        <input type="hidden" th:field="*{id}"/>
+
+        <!-- Date -->
+        <div class="mb-3">
+            <label for="transaction_date" class="form-label">Date:</label>
+            <input type="date" th:field="*{transactionDate}" id="transaction_date"
+                   class="form-control" required/>
+            <div th:if="${#fields.hasErrors('transactionDate')}"
+                 class="text-danger"
+                 th:errors="*{transactionDate}"></div>
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3">
+            <label for="status" class="form-label">Status:</label>
+            <select th:field="*{status}" id="status" class="form-select" required>
+                <option value="">-- Select Status --</option>
+                <option th:each="status : ${T(org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Transaction.Status).values()}"
+                        th:value="${status}"
+                        th:text="${status}">
+                </option>
+            </select>
+        </div>
+
+
+        <!-- PRICE -->
+        <div class="mb-3">
+            <label for="price" class="form-label">Price:</label>
+            <input type="text" th:field="*{price}" id="price"
+                   class="form-control" required/>
+            <div th:if="${#fields.hasErrors('price')}"
+                 class="text-danger"
+                 th:errors="*{price}"></div>
+        </div>
+
+        <!-- Property -->
+        <div class="mb-3">
+            <label for="property_id" class="form-label">Property:</label>
+            <select th:field="*{property.id}" id="property_id"
+                    class="form-select" required>
+                <option value="">-- Select Property --</option>
+                <option th:each="property : ${properties}"
+                        th:value="${property.id}"
+                        th:text="${property.code}"></option>
+            </select>
+            <div th:if="${#fields.hasErrors('property.id')}"
+                 class="text-danger"
+                 th:errors="*{property.id}"></div>
+        </div>
+
+        <!-- Client -->
+        <div class="mb-3">
+            <label for="client_id" class="form-label">Client:</label>
+            <select th:field="*{client.id}" id="client_id"
+                    class="form-select" required>
+                <option value="">-- Select Client --</option>
+                <option th:each="client : ${clients}"
+                        th:value="${client.id}"
+                        th:text="${client.name}"></option>
+            </select>
+            <div th:if="${#fields.hasErrors('client.id')}"
+                 class="text-danger"
+                 th:errors="*{client.id}"></div>
+        </div>
+
+        <!-- Agent -->
+        <div class="mb-3">
+            <label for="agent_id" class="form-label">Agent:</label>
+            <select th:field="*{agent.id}" id="agent_id"
+                    class="form-select" required>
+                <option value="">-- Select Agent --</option>
+                <option th:each="agent : ${agents}"
+                        th:value="${agent.id}"
+                        th:text="${agent.name}"></option>
+            </select>
+            <div th:if="${#fields.hasErrors('agent.id')}"
+                 class="text-danger"
+                 th:errors="*{agent.id}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary"
+                th:text="${transaction.id == null ? 'Create' : 'Update'}"></button>
+    </form>
+
+    <a th:href="@{/transactions}" class="btn btn-secondary mt-3">Back to List</a>
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

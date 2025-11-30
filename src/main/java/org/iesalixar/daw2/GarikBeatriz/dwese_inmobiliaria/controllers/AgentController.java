@@ -112,7 +112,7 @@ public class AgentController {
             return "agent-form";
         }
 
-        if(agentRepository.existsAgentByDni(agent.getDni())){
+        if(agentRepository.existsAgentByDniAndIdNot(agent.getDni(), agent.getId())){
             logger.warn("El DNI del agente {} ya existe para otro agente.", agent.getDni());
             model.addAttribute("errorMessage", "El DNI del agente ya existe para otro agente.");
             model.addAttribute("offices",  officeRepository.findAll());

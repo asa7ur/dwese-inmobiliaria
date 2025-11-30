@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('Inmobiliaria - Listado de Sucursales')"></head>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/head :: head ('Real Estate Agency - Appointment List')"></head>
 <body>
 
 <!-- Incluir el fragmento del header -->
@@ -33,7 +33,6 @@
         </thead>
         <tbody>
         <tr th:each="appointment : ${listAppointments}">
-            <td th:text="${appointment.id}"></td>
             <td th:text="${appointment.code}"></td>
             <td th:text="${appointment.appointmentTimestamp}"></td>
             <td th:text="${appointment.location}"></td>

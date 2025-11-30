@@ -13,9 +13,8 @@
         <p th:text="${errorMessage}"></p>
     </div>
 
-    <!-- Mostrar un mensaje de error si existe -->
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
-    <form th:action="${appointment.id == null} ? @{/appointments/insert} :@{/appointments/update}" th:object="${appointment}" method="post" enctype="multipart/form-data" class="mt-4">
+    <form th:action="${appointment.id == null} ? '/appointments/insert' : '/appointments/update'"
+          th:object="${appointment}" method="post" enctype="multipart/form-data" class="mt-4">
 
         <input type="hidden" th:field="*{id}" />
 
