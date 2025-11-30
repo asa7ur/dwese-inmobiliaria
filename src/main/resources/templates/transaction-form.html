@@ -60,7 +60,7 @@
                 <option value="">-- Select Property --</option>
                 <option th:each="property : ${properties}"
                         th:value="${property.id}"
-                        th:text="${property.code}"></option>
+                        th:text="${property.name}"></option>
             </select>
             <div th:if="${#fields.hasErrors('property.id')}"
                  class="text-danger"

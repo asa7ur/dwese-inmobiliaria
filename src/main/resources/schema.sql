@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS clients (
 -- Tabla properties
 CREATE TABLE IF NOT EXISTS properties (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    description VARCHAR(500) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    description VARCHAR(500) NOT NULL,
     location VARCHAR(100) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     type VARCHAR(10) NOT NULL,

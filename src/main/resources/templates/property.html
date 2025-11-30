@@ -18,6 +18,7 @@
         <thead>
         <tr>
             <th>Code</th>
+            <th>Name</th>
             <th>Description</th>
             <th>Location</th>
             <th>Price</th>
@@ -33,6 +34,7 @@
         <tbody>
         <tr th:each="property : ${listProperties}">
             <td th:text="${property.code}"></td>
+            <td th:text="${property.name}"></td>
             <td th:text="${property.description}"></td>
             <td th:text="${property.location}"></td>
             <td th:text="${property.price}"></td>

@@ -21,33 +21,32 @@ INSERT IGNORE INTO agents (dni, name, phone, email, office_id) VALUES
     ('10101010H', 'Jules Winnfield', '+1 310 777 8888', 'jwinnfield@tarantinorealty.com', 4);
 
 -- properties (25 total)
-INSERT IGNORE INTO properties (description, location, price, type, floors, bedrooms, bathrooms, status, image) VALUES
-    ('Cozy home in the desert with a detached garage.', 'Albuquerque, NM', 180000.00, 'HOUSE', 1, 3, 2, 'AVAILABLE', 'prop_1.jpg'),
-    ('Historic flat near a famous wizarding school.', 'Hogsmeade, UK', 850000.00, 'FLAT', 2, 4, 3, 'AVAILABLE', 'prop_2.jpg'),
-    ('Interdimensional shack with portal access.', 'Dimension C-137', 500000.00, 'CABIN', 1, 2, 1, 'AVAILABLE', 'prop_3.jpg'),
-    ('Small cabin within the walls, minimal light.', 'Shiganshina District', 150000.00, 'CABIN', 1, 2, 1, 'RESERVED', 'prop_4.jpg'),
-    ('Run-down house perfect for a project.', 'Wilmington, DE', 95000.00, 'HOUSE', 2, 3, 1, 'AVAILABLE', 'prop_5.jpg'),
-    ('Luxury NYC penthouse with panoramic views.', 'Manhattan, NY', 4500000.00, 'FLAT', 1, 2, 2, 'AVAILABLE', 'prop_6.jpg'),
-    ('Traditional Japanese residence, high cursed energy.', 'Tokyo, Japan', 1200000.00, 'HOUSE', 2, 5, 3, 'AVAILABLE', 'prop_7.jpg'),
-    ('Castle ruins with potential for grand restoration.', 'Winterfell, North', 2500000.00, 'CASTLE', 5, 10, 8, 'AVAILABLE', 'prop_8.jpg'),
-    ('High-security suite, discreet location.', 'New York, NY', 3800000.00, 'FLAT', 1, 1, 1, 'SOLD', 'prop_9.jpg'),
-    ('Oceanfront villa, needs minor repair from cannon fire.', 'Tortuga, Caribbean', 950000.00, 'VILLA', 3, 6, 4, 'AVAILABLE', 'prop_10.jpg'),
-    ('Swamp-side cottage, very private, excellent mud.', 'Duloc, The Swamp', 50000.00, 'HOUSE', 1, 2, 1, 'SOLD', 'prop_11.jpg'),
-    ('Trendy loft in the heart of Los Angeles.', 'Hollywood, CA', 1500000.00, 'FLAT', 2, 3, 2, 'RESERVED', 'prop_12.jpg'),
-    ('Quiet suburban home, great for chemistry experiments.', 'Albuquerque, NM', 220000.00, 'HOUSE', 1, 4, 2, 'AVAILABLE', 'prop_13.jpg'),
-    ('Country estate with large grounds and secret passages.', 'Ottery St Catchpole, UK', 1100000.00, 'HOUSE', 3, 6, 5, 'AVAILABLE', 'prop_14.jpg'),
-    ('Space station apartment, zero gravity option.', 'The Citadel', 7500000.00, 'FLAT', 1, 3, 2, 'AVAILABLE', 'prop_15.jpg'),
-    ('Barracks-style housing, compact and functional.', 'Paradis Island', 80000.00, 'FLAT', 1, 1, 1, 'AVAILABLE', 'prop_16.jpg'),
-    ('Old paper mill, massive potential for conversion.', 'Cleveland, OH', 350000.00, 'HOUSE', 3, 5, 3, 'AVAILABLE', 'prop_17.jpg'),
-    ('Minimalist concrete apartment, high-tech security.', 'New Jersey, NJ', 1800000.00, 'FLAT', 1, 2, 1, 'AVAILABLE', 'prop_18.jpg'),
-    ('Charming flat near a major magic school.', 'Kyoto, Japan', 900000.00, 'FLAT', 2, 3, 2, 'SOLD', 'prop_19.jpg'),
-    ('Small holdfast with excellent defensive position.', 'Casterly Rock, West', 800000.00, 'HOUSE', 2, 4, 3, 'AVAILABLE', 'prop_20.jpg'),
-    ('Modernist bunker, deep underground.', 'Continental Base', 5500000.00, 'FLAT', 1, 1, 1, 'AVAILABLE', 'prop_21.jpg'),
-    ('Beachfront shack, excellent for hiding treasure.', 'Isla de Muerta', 300000.00, 'CABIN', 1, 2, 1, 'AVAILABLE', 'prop_22.jpg'),
-    ('Rural retreat with excellent views of the swamp.', 'Far Far Away', 450000.00, 'HOUSE', 2, 4, 2, 'AVAILABLE', 'prop_23.jpg'),
-    ('1950s style diner conversion, unique living space.', 'Tennessee, USA', 600000.00, 'HOUSE', 1, 3, 2, 'AVAILABLE', 'prop_24.jpg'),
-    ('Small cozy hobbit hole, excellent insulation.', 'The Shire', 250000.00, 'HOUSE', 1, 2, 1, 'AVAILABLE', 'prop_25.jpg');
-
+INSERT IGNORE INTO properties (name, description, location, price, type, floors, bedrooms, bathrooms, status, image) VALUES
+    ('The Desert Bungalow', 'Cozy home in the desert with a detached garage.', 'Albuquerque, NM', 180000.00, 'HOUSE', 1, 3, 2, 'AVAILABLE', 'prop_1.jpg'),
+    ('The Hogsmeade Flat', 'Historic flat near a famous wizarding school.', 'Hogsmeade, UK', 850000.00, 'FLAT', 2, 4, 3, 'AVAILABLE', 'prop_2.jpg'),
+    ('Sanchez Shack', 'Interdimensional shack with portal access.', 'Dimension C-137', 500000.00, 'CABIN', 1, 2, 1, 'AVAILABLE', 'prop_3.jpg'),
+    ('Wall Maria Cabin', 'Small cabin within the walls, minimal light.', 'Shiganshina District', 150000.00, 'CABIN', 1, 2, 1, 'RESERVED', 'prop_4.jpg'),
+    ('The Wilmington Fixer', 'Run-down house perfect for a project.', 'Wilmington, DE', 95000.00, 'HOUSE', 2, 3, 1, 'AVAILABLE', 'prop_5.jpg'),
+    ('Skyline Penthouse', 'Luxury NYC penthouse with panoramic views.', 'Manhattan, NY', 4500000.00, 'FLAT', 1, 2, 2, 'AVAILABLE', 'prop_6.jpg'),
+    ('The Cursed Estate', 'Traditional Japanese residence, high cursed energy.', 'Tokyo, Japan', 1200000.00, 'HOUSE', 2, 5, 3, 'AVAILABLE', 'prop_7.jpg'),
+    ('Winterfell Ruins', 'Castle ruins with potential for grand restoration.', 'Winterfell, North', 2500000.00, 'CASTLE', 5, 10, 8, 'AVAILABLE', 'prop_8.jpg'),
+    ('The Wick Suite', 'High-security suite, discreet location.', 'New York, NY', 3800000.00, 'FLAT', 1, 1, 1, 'SOLD', 'prop_9.jpg'),
+    ('Pirate’s Cove Villa', 'Oceanfront villa, needs minor repair from cannon fire.', 'Tortuga, Caribbean', 950000.00, 'VILLA', 3, 6, 4, 'AVAILABLE', 'prop_10.jpg'),
+    ('The Ogre’s Swamp', 'Swamp-side cottage, very private, excellent mud.', 'Duloc, The Swamp', 50000.00, 'HOUSE', 1, 2, 1, 'SOLD', 'prop_11.jpg'),
+    ('Hollywood Loft', 'Trendy loft in the heart of Los Angeles.', 'Hollywood, CA', 1500000.00, 'FLAT', 2, 3, 2, 'RESERVED', 'prop_12.jpg'),
+    ('Heisenberg’s House', 'Quiet suburban home, great for chemistry experiments.', 'Albuquerque, NM', 220000.00, 'HOUSE', 1, 4, 2, 'AVAILABLE', 'prop_13.jpg'),
+    ('The Burrow', 'Country estate with large grounds and secret passages.', 'Ottery St Catchpole, UK', 1100000.00, 'HOUSE', 3, 6, 5, 'AVAILABLE', 'prop_14.jpg'),
+    ('Citadel Station', 'Space station apartment, zero gravity option.', 'The Citadel', 7500000.00, 'FLAT', 1, 3, 2, 'AVAILABLE', 'prop_15.jpg'),
+    ('Survey Corps Barracks', 'Barracks-style housing, compact and functional.', 'Paradis Island', 80000.00, 'FLAT', 1, 1, 1, 'AVAILABLE', 'prop_16.jpg'),
+    ('The Iron Mill', 'Old paper mill, massive potential for conversion.', 'Cleveland, OH', 350000.00, 'HOUSE', 3, 5, 3, 'AVAILABLE', 'prop_17.jpg'),
+    ('Wayne Manor Flat', 'Minimalist concrete apartment, high-tech security.', 'New Jersey, NJ', 1800000.00, 'FLAT', 1, 2, 1, 'AVAILABLE', 'prop_18.jpg'),
+    ('Kyoto Sorcery Flat', 'Charming flat near a major magic school.', 'Kyoto, Japan', 900000.00, 'FLAT', 2, 3, 2, 'SOLD', 'prop_19.jpg'),
+    ('Lannister Holdfast', 'Small holdfast with excellent defensive position.', 'Casterly Rock, West', 800000.00, 'HOUSE', 2, 4, 3, 'AVAILABLE', 'prop_20.jpg'),
+    ('The Continental Bunker', 'Modernist bunker, deep underground.', 'Continental Base', 5500000.00, 'FLAT', 1, 1, 1, 'AVAILABLE', 'prop_21.jpg'),
+    ('Smuggler’s Shack', 'Beachfront shack, excellent for hiding treasure.', 'Isla de Muerta', 300000.00, 'CABIN', 1, 2, 1, 'AVAILABLE', 'prop_22.jpg'),
+    ('Fiona’s Retreat', 'Rural retreat with excellent views of the swamp.', 'Far Far Away', 450000.00, 'HOUSE', 2, 4, 2, 'AVAILABLE', 'prop_23.jpg'),
+    ('Rabbit Slim’s Conversion', '1950s style diner conversion, unique living space.', 'Tennessee, USA', 600000.00, 'HOUSE', 1, 3, 2, 'AVAILABLE', 'prop_24.jpg'),
+    ('Bag End', 'Small cozy hobbit hole, excellent insulation.', 'The Shire', 250000.00, 'HOUSE', 1, 2, 1, 'AVAILABLE', 'prop_25.jpg');
 
 -- clients (20 total)
 INSERT IGNORE INTO clients (dni, name, phone, email) VALUES

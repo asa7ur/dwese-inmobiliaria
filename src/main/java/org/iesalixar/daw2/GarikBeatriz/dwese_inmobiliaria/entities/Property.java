@@ -13,8 +13,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "properties")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Property {
@@ -25,6 +24,11 @@ public class Property {
 
     @Transient
     private String code;
+
+    @NotEmpty(message = "{msg.property.name.notEmpty}")
+    @Size(max = 100, message = "{msg.property.name.size}")
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @NotEmpty(message = "{msg.property.description.notEmpty}")
     @Size(max = 500, message = "{msg.property.description.size}")

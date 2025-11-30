@@ -42,7 +42,7 @@
             <td th:text="${#temporals.format(transaction.transactionDate, 'dd/MM/yyyy')}"></td>
             <td th:text="${transaction.status}"></td>
             <td th:text="${transaction.price}"></td>
-            <td th:text="${transaction.property.code}"></td>
+            <td th:text="${transaction.property.name}"></td>
             <td th:text="${transaction.client.name}"></td>
             <td th:text="${transaction.agent.name}"></td>
             <td>
