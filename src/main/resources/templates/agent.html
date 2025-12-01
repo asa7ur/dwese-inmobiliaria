@@ -73,9 +73,9 @@
             <td th:text="${agent.code}"></td>
             <td th:text="${agent.dni}"></td>
             <td th:text="${agent.name}"></td>
+            <td th:text="${agent.office != null} ? ${agent.office.name} : 'No Office'"></td>
             <td th:text="${agent.phone}"></td>
             <td th:text="${agent.email}"></td>
-            <td th:text="${agent.office != null} ? ${agent.office.name} : 'No Office'"></td>
             <td>
                 <a th:href="@{/agents/edit(id=${agent.id})}" class="btn btn-primary btn-sm">Edit</a>
                 <form th:action="@{/agents/delete}" method="post" class="d-inline">
