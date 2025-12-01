@@ -3,11 +3,16 @@ package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Agent;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Office;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.AgentDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.OfficeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,11 +34,40 @@ public class AgentController {
     private OfficeRepository officeRepository;
 
     @GetMapping
-    public String listAgents(Model model) {
-        logger.info("Solicitando la lista de todos los agentes...");
-        List<Agent> listAgents = agentRepository.findAll();
-        logger.info("Se han cargado {} agentes.", listAgents.size());
-        model.addAttribute("listAgents", listAgents);
+    public String listAgents(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction,
+            Model model) {
+        logger.info("Listing agents. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
+
+        int pageSize = 5;
+
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
+
+        Page<Agent> agentPage;
+        if (keyword == null || keyword.isEmpty()) {
+            agentPage = agentRepository.findAll(pageable);
+        } else {
+            agentPage = agentRepository.searchAgents(keyword, pageable);
+        }
+
+        AgentDTO agentDTO = new AgentDTO(
+                agentPage.getContent(),
+                agentPage.getTotalPages(),
+                page
+        );
+
+        logger.info("Se han cargado {} agentes.", agentDTO.getAgents().size());
+        model.addAttribute("listAgents", agentDTO);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("direction", direction);
+        model.addAttribute("reverseSortDir", direction.equals("asc") ? "desc" : "asc");
         model.addAttribute("activePage", "agents");
         return "agent";
     }
@@ -113,7 +147,7 @@ public class AgentController {
         }
 
         if(agentRepository.existsAgentByDniAndIdNot(agent.getDni(), agent.getId())){
-            logger.warn("El DNI del agente {} ya existe para otro agente.", agent.getDni());
+            logger.warn("El DNI del agente {} ya existe.", agent.getDni());
             model.addAttribute("errorMessage", "El DNI del agente ya existe para otro agente.");
             model.addAttribute("offices",  officeRepository.findAll());
             return "agent-form";

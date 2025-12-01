@@ -2,6 +2,7 @@ package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.*;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.TransactionDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.ClientRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
@@ -9,6 +10,10 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.Transacti
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,11 +41,40 @@ public class TransactionController {
     private AgentRepository agentRepository;
 
     @GetMapping
-    public String listTransactions(Model model) {
-        logger.info("Solicitando la lista de todas las transacciones...");
-        List<Transaction> listTransactions = transactionRepository.findAll();
-        logger.info("Se han cargado {} transaciiones.", listTransactions.size());
-        model.addAttribute("listTransactions", listTransactions);
+    public String listTransactions(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "transactionTimestamp") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction,
+            Model model) {
+        logger.info("Listing transactions. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
+
+        int pageSize = 5;
+
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
+
+        Page<Transaction> transactionPage;
+        if (keyword ==null || keyword.isEmpty()) {
+            transactionPage = transactionRepository.findAll(pageable);
+        } else {
+            transactionPage = transactionRepository.searchTransactions(keyword, pageable);
+        }
+
+        TransactionDTO transactionDTO = new TransactionDTO(
+                transactionPage.getContent(),
+                transactionPage.getTotalPages(),
+                page
+        );
+
+        logger.info("Se han cargado {} transaciiones.", transactionDTO.getTransactions().size());
+        model.addAttribute("listTransactions", transactionDTO);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("direction", direction);
+        model.addAttribute("reverseSortDir", direction.equals("asc") ? "desc" : "asc");
         model.addAttribute("activePage", "transactions");
         return "transaction";
     }
