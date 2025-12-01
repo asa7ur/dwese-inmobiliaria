@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS agents (
     name VARCHAR(100) NOT NULL,
     phone VARCHAR(25) NOT NULL,
     email VARCHAR(100) NOT NULL,
+    image VARCHAR(255) NULL,
     office_id BIGINT NOT NULL,
     CONSTRAINT fk_agent_office FOREIGN KEY (office_id) REFERENCES offices(id)
 );

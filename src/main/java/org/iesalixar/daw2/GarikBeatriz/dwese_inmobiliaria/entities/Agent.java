@@ -50,6 +50,9 @@ public class Agent {
     @EqualsAndHashCode.Exclude
     private Office office;
 
+    @Column(name = "image", length = 255)
+    private String image;
+
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

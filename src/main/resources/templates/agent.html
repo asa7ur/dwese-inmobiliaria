@@ -65,6 +65,8 @@
 
             <th>Email</th>
 
+            <th>Image</th>
+
             <th>Actions</th>
         </tr>
         </thead>
@@ -76,6 +78,12 @@
             <td th:text="${agent.office != null} ? ${agent.office.name} : 'No Office'"></td>
             <td th:text="${agent.phone}"></td>
             <td th:text="${agent.email}"></td>
+            <td> <img th:if="${agent.image != null}"
+                      th:src="@{'/uploads/' + ${agent.image}}"
+                      alt="Agent Image"
+                      style="width: 150px; height: 100px; object-fit: cover;"/>
+                <span th:if="${agent.image == null}"
+                      th:text="'No Image'"></span></td>
             <td>
                 <a th:href="@{/agents/edit(id=${agent.id})}" class="btn btn-primary btn-sm">Edit</a>
                 <form th:action="@{/agents/delete}" method="post" class="d-inline">

@@ -6,6 +6,7 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Office;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.AgentDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.OfficeRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.FileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -32,6 +34,9 @@ public class AgentController {
 
     @Autowired
     private OfficeRepository officeRepository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @GetMapping
     public String listAgents(
@@ -107,6 +112,7 @@ public class AgentController {
     public String insertAgent(
             @Valid @ModelAttribute("agent") Agent agent,
             BindingResult result,
+            @RequestParam("imageFile") MultipartFile imageFile,
             Model model,
             RedirectAttributes redirectAttributes
     ){
@@ -125,6 +131,13 @@ public class AgentController {
             return "agent-form";
         }
 
+        if(imageFile != null && !imageFile.isEmpty()){
+            String fileName = fileStorageService.saveFile(imageFile);
+            if(fileName != null){
+                agent.setImage(fileName);
+            }
+        }
+
         agentRepository.save(agent);
         logger.info("Agente con DNI {} insertado con éxito", agent.getDni());
         redirectAttributes.addFlashAttribute("successMessage", "Agente insertado correctamente.");
@@ -135,6 +148,7 @@ public class AgentController {
     public String updateAgent(
             @Valid @ModelAttribute("agent") Agent agent,
             BindingResult result,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             Model model,
             RedirectAttributes redirectAttributes
     ){
@@ -151,6 +165,13 @@ public class AgentController {
             model.addAttribute("errorMessage", "El DNI del agente ya existe para otro agente.");
             model.addAttribute("offices",  officeRepository.findAll());
             return "agent-form";
+        }
+
+        if(imageFile != null && !imageFile.isEmpty()){
+            String fileName = fileStorageService.saveFile(imageFile);
+            if(fileName != null){
+                agent.setImage(fileName);
+            }
         }
 
         agentRepository.save(agent);
@@ -170,6 +191,22 @@ public class AgentController {
         logger.info("Agente con ID {} eliminado correctamente", id);
         redirectAttributes.addFlashAttribute("successMessage", "Agente eliminado correctamente.");
         return "redirect:/agents";
+    }
+
+    @PostMapping("/deleteImage")
+    public String deleteAgentImage(
+            @RequestParam("id") Long id,
+            RedirectAttributes redirectAttributes){
+        Optional<Agent> agentOpt = agentRepository.findById(id);
+        if (agentOpt.isPresent() && agentOpt.get().getImage() != null) {
+            fileStorageService.deleteFile(agentOpt.get().getImage());
+            agentOpt.get().setImage(null);
+            agentRepository.save(agentOpt.get());
+            redirectAttributes.addFlashAttribute("successMessage", "Imagen del agente eliminada correctamente.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "No se encontró imagen para eliminar.");
+        }
+        return "redirect:/agents/edit?id=" + id;
     }
 
 }
