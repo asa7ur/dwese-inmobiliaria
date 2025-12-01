@@ -1,10 +1,17 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Appointment;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Office;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.AppointmentDTO;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.OfficeDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.OfficeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +28,40 @@ public class OfficeController {
     private OfficeRepository officeRepository;
 
     @GetMapping
-    public String listOffices(Model model) {
-        logger.info("Solicitando la lista de todas las sucursales...");
-        List<Office> listOffices = officeRepository.findAll();
-        logger.info("Se han cargado {} sucursales.", listOffices.size());
-        model.addAttribute("listOffices", listOffices);
+    public String listOffices(@RequestParam(defaultValue = "1") int page,
+                              @RequestParam(defaultValue = "") String keyword,
+                              @RequestParam(defaultValue = "id") String sortBy,
+                              @RequestParam(defaultValue = "asc") String direction,
+                              Model model) {
+        logger.info("Listing offices. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
+
+        int pageSize = 5;
+
+        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
+
+        Page<Office> officePage;
+        if (keyword == null || keyword.isEmpty()) {
+            officePage = officeRepository.findAll(pageable);
+        } else {
+            officePage = officeRepository.searchOffices(keyword, pageable);
+        }
+
+        OfficeDTO officeDTO = new OfficeDTO(
+                officePage.getContent(),
+                officePage.getTotalPages(),
+                page
+        );
+
+        logger.info("Se han cargado {} sucursales.", officeDTO.getOffices().size());
+        model.addAttribute("listOffices", officeDTO);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("direction", direction);
+        model.addAttribute("reverseSortDir", direction.equals("asc") ? "desc" : "asc");
+        model.addAttribute("activePage", "offices");
         return "office";
     }
 
