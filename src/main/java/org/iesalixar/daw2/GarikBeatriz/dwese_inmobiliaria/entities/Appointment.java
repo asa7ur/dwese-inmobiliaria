@@ -51,7 +51,7 @@ public class Appointment {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    public LocalDate getDate() {
+    public LocalDate getAppointmentDate() {
         if (appointmentDate == null) {
             return Instant.ofEpochSecond(appointmentTimestamp)
                     .atZone(ZoneId.systemDefault())
@@ -60,7 +60,7 @@ public class Appointment {
         return appointmentDate;
     }
 
-    public void setDateTime(LocalDate appointmentDate) {
+    public void setAppointmentDate(LocalDate appointmentDate) {
         this.appointmentDate = appointmentDate;
         this.appointmentTimestamp = appointmentDate
                 .atStartOfDay(ZoneId.systemDefault())
