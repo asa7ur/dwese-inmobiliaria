@@ -29,29 +29,6 @@
                  th:errors="*{transactionDate}"></div>
         </div>
 
-        <!-- Status -->
-        <div class="mb-3">
-            <label for="status" class="form-label">Status:</label>
-            <select th:field="*{status}" id="status" class="form-select" required>
-                <option value="">-- Select Status --</option>
-                <option th:each="status : ${T(org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Transaction.Status).values()}"
-                        th:value="${status}"
-                        th:text="${status}">
-                </option>
-            </select>
-        </div>
-
-
-        <!-- PRICE -->
-        <div class="mb-3">
-            <label for="price" class="form-label">Price:</label>
-            <input type="text" th:field="*{price}" id="price"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('price')}"
-                 class="text-danger"
-                 th:errors="*{price}"></div>
-        </div>
-
         <!-- Property -->
         <div class="mb-3">
             <label for="property_id" class="form-label">Property:</label>
@@ -95,6 +72,28 @@
             <div th:if="${#fields.hasErrors('agent.id')}"
                  class="text-danger"
                  th:errors="*{agent.id}"></div>
+        </div>
+
+        <!-- PRICE -->
+        <div class="mb-3">
+            <label for="price" class="form-label">Price:</label>
+            <input type="text" th:field="*{price}" id="price"
+                   class="form-control" required/>
+            <div th:if="${#fields.hasErrors('price')}"
+                 class="text-danger"
+                 th:errors="*{price}"></div>
+        </div>
+
+        <!-- Status -->
+        <div class="mb-3">
+            <label for="status" class="form-label">Status:</label>
+            <select th:field="*{status}" id="status" class="form-select" required>
+                <option value="">-- Select Status --</option>
+                <option th:each="status : ${T(org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Transaction.Status).values()}"
+                        th:value="${status}"
+                        th:text="${status}">
+                </option>
+            </select>
         </div>
 
         <button type="submit" class="btn btn-primary"

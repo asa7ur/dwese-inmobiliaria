@@ -84,6 +84,15 @@ public class Transaction {
     private Agent agent;
 
     @PostLoad
+    public void onLoad() {
+        this.generateCode();
+
+        if (this.transactionDate == null && this.transactionTimestamp > 0) {
+            this.transactionDate = Instant.ofEpochSecond(this.transactionTimestamp)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        }
+    }
     @PostPersist
     @PostUpdate
     private void generateCode() {

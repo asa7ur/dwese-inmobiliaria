@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,7 +83,11 @@ public class TransactionController {
     @GetMapping("/new")
     public String showNewForm(Model model) {
         logger.info("Solicitando formulario para nueva transacción...");
-        model.addAttribute("transaction", new Transaction());
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionDate(LocalDate.now());
+
+        model.addAttribute("transaction", transaction);
 
         List<Property> properties = propertyRepository.findAll();
         model.addAttribute("properties", properties);
@@ -125,7 +130,11 @@ public class TransactionController {
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        logger.info("Insertando nuevo transaccion con ID {}", transaction.getId());
+        logger.info("Insertando nuevo transaccion");
+
+        if (transaction.getProperty() != null && transactionRepository.existsByPropertyId(transaction.getProperty().getId())) {
+            result.rejectValue("property.id", "error.transaction", "Esta propiedad ya tiene una transacción asociada activa.");
+        }
 
         if(result.hasErrors()){
             logger.warn("Errores de validación en el formulario de nueva transaccion.");
@@ -142,7 +151,7 @@ public class TransactionController {
     }
 
     @PostMapping("/update")
-    public String updateAgent(
+    public String updateTransaction(
             @Valid @ModelAttribute("transaction") Transaction transaction,
             BindingResult result,
             Model model,
@@ -166,7 +175,7 @@ public class TransactionController {
     }
 
     @PostMapping("/delete")
-    public String deleteAgent(
+    public String deleteTransaction(
             @RequestParam("id") Long id,
             RedirectAttributes redirectAttributes
     ){

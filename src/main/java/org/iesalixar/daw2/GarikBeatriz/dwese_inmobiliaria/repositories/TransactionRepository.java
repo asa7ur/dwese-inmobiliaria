@@ -14,4 +14,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "LOWER(t.agent.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(t.status) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Transaction> searchTransactions(@Param("keyword") String keyword, Pageable pageable);
+
+    boolean existsByPropertyId(Long propertyId);
 }
