@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.*;
 
@@ -23,7 +24,11 @@ public class Appointment {
     @Transient
     private String code;
 
+    @Transient
     @NotNull(message = "{msg.appointment.timestamp.notNull}")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate appointmentDate;
+
     @Column(name = "appointment_timestamp", nullable = false)
     private long appointmentTimestamp;
 
@@ -46,14 +51,19 @@ public class Appointment {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    public LocalDateTime getDateTime() {
-        return Instant.ofEpochSecond(appointmentTimestamp)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+    public LocalDate getDate() {
+        if (appointmentDate == null) {
+            return Instant.ofEpochSecond(appointmentTimestamp)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        }
+        return appointmentDate;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.appointmentTimestamp = dateTime.atZone(ZoneId.systemDefault())
+    public void setDateTime(LocalDate appointmentDate) {
+        this.appointmentDate = appointmentDate;
+        this.appointmentTimestamp = appointmentDate
+                .atStartOfDay(ZoneId.systemDefault())
                 .toEpochSecond();
     }
 

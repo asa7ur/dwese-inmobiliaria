@@ -14,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -80,11 +82,14 @@ public class AppointmentController {
     }
 
     @GetMapping("/edit")
-    public String showEditForm(@RequestParam("id") Long id, Model model) {
+    public String showEditForm(@RequestParam("id") Long id, Model model, RedirectAttributes redirectAttributes) {
         logger.info("Mostrando formulario de edición para la cita con ID {}", id);
         Optional<Appointment> appointmentOpt = appointmentRepository.findById(id);
+
         if (appointmentOpt.isEmpty()) {
             logger.warn("No se encontró la cita con ID {}", id);
+            redirectAttributes.addFlashAttribute("message", "Cita no encontrada");
+            return "redirect:/appointments";
         }
 
         model.addAttribute("appointment", appointmentOpt.get());
@@ -95,35 +100,50 @@ public class AppointmentController {
 
     @PostMapping("/insert")
     public String insertAppointment(@ModelAttribute("appointment") Appointment appointment,
-                                    @RequestParam("agent") Long agentId,
-                                    @RequestParam("client") Long clientId) {
+                                    BindingResult result,
+                                    Model model,
+                                    RedirectAttributes redirectAttributes) {
         logger.info("Insertando nueva cita con código {}", appointment.getCode());
 
-        appointment.setAgent(agentRepository.findById(agentId).orElse(null));
-        appointment.setClient(clientRepository.findById(clientId).orElse(null));
+        if(result.hasErrors()){
+            logger.warn("Errores de validación en el formulario de nueva cita.");
+            model.addAttribute("agents", agentRepository.findAll());
+            model.addAttribute("clients", clientRepository.findAll());
+            return "appointment-form";
+        }
 
         appointmentRepository.save(appointment);
         logger.info("Cita {} insertada con éxito.", appointment.getCode());
+        redirectAttributes.addFlashAttribute("successMessage", "Cita insertada correctamente.");
         return "redirect:/appointments";
     }
 
     @PostMapping("/update")
-    public String updateAppointment(@ModelAttribute("appointment") Appointment appointment, @RequestParam("agent") Long agentId, @RequestParam("client") Long clientId) {
+    public String updateAppointment(@ModelAttribute("appointment") Appointment appointment,
+                                    BindingResult result,
+                                    Model model,
+                                    RedirectAttributes redirectAttributes) {
         logger.info("Actualizando cita con ID {}", appointment.getId());
 
-        appointment.setAgent(agentRepository.findById(agentId).orElse(null));
-        appointment.setClient(clientRepository.findById(clientId).orElse(null));
+        if(result.hasErrors()){
+            logger.warn("Errores de validación al actualizar la cita.");
+            model.addAttribute("agents", agentRepository.findAll());
+            model.addAttribute("clients", clientRepository.findAll());
+            return "transaction-form";
+        }
 
         appointmentRepository.save(appointment);
         logger.info("Cita con ID {} actualizada con éxito.", appointment.getId());
+        redirectAttributes.addFlashAttribute("successMessage", "Cita actualizada correctamente.");
         return "redirect:/appointments";
     }
 
     @PostMapping("/delete")
-    public String deleteAppointment(@RequestParam("id") Long id) {
+    public String deleteAppointment(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
         logger.info("Eliminando cita con ID {}", id);
         appointmentRepository.deleteById(id);
         logger.info("Cita con ID {} eliminada con éxito.", id);
+        redirectAttributes.addFlashAttribute("successMessage", "Cita eliminada correctamente.");
         return "redirect:/appointments";
     }
 }

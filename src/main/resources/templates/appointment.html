@@ -39,7 +39,13 @@
         <thead class="table-dark">
         <tr>
             <th>Code</th>
-            <th>Date/Time</th>
+
+            <th>
+                <a th:href="@{/appointments(page=${listAppointments.currentPage}, keyword=${keyword}, sortBy='appointmentTimestamp', direction=${sortBy == 'appointmentTimestamp' ? reverseSortDir : 'asc'})}"
+                   class="text-white text-decoration-none">
+                    Date <span th:if="${sortBy == 'appointmentTimestamp'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
+                </a>
+            </th>
 
             <th>
                 <a th:href="@{/appointments(page=${listAppointments.currentPage}, keyword=${keyword}, sortBy='location', direction=${sortBy == 'location' ? reverseSortDir : 'asc'})}"
@@ -70,7 +76,7 @@
         <tbody>
         <tr th:each="appointment : ${listAppointments.appointments}">
             <td th:text="${appointment.code}"></td>
-            <td th:text="${appointment.appointmentTimestamp}"></td>
+            <td th:text="${appointment.appointmentDate}"></td>
             <td th:text="${appointment.location}"></td>
             <td th:text="${appointment.notes}"></td>
             <td th:text="${appointment.agent != null} ? ${appointment.agent.name} : 'No Agent'"></td>

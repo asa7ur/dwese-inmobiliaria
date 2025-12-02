@@ -15,17 +15,18 @@
         <p th:text="${errorMessage}"></p>
     </div>
 
-    <!-- Mostrar un mensaje de error si existe -->
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
     <form th:action="${appointment.id == null} ? '/appointments/insert' : '/appointments/update'"
           th:object="${appointment}" method="post" enctype="multipart/form-data" class="mt-4">
 
         <input type="hidden" th:field="*{id}" />
 
         <div class="mb-3">
-            <label for="appointmentTimestamp" class="form-label">Date/Time:</label>
-            <input type="datetime-local" th:field="*{dateTime}" id="appointmentTimestamp" class="form-control" />
-            <div th:if="${#fields.hasErrors('appointmentTimestamp')}" class="text-danger" th:errors="*{appointmentTimestamp}"></div>
+            <label for="appointment_date" class="form-label">Date:</label>
+            <input type="date" th:field="*{appointmentDate}" id="appointment_date"
+                   class="form-control" required/>
+            <div th:if="${#fields.hasErrors('appointmentDate')}"
+                 class="text-danger"
+                 th:errors="*{appointmentDate}"></div>
         </div>
 
         <div class="mb-3">
