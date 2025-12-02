@@ -64,13 +64,13 @@
                 </a>
             </th>
 
-            <th>Phone</th>
+            <th th:text="#{msg.agent.phone}">Phone</th>
 
-            <th>Email</th>
+            <th th:text="#{msg.agent.email}">Email</th>
 
-            <th>Image</th>
+            <th th:text="#{msg.agent.image}">Image</th>
 
-            <th>Actions</th>
+            <th th:text="#{msg.agent.actions}">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -78,7 +78,7 @@
             <td th:text="${agent.code}"></td>
             <td th:text="${agent.dni}"></td>
             <td th:text="${agent.name}"></td>
-            <td th:text="${agent.office != null} ? ${agent.office.name} : 'No Office'"></td>
+            <td th:text="${agent.office != null} ? ${agent.office.name} : #{msg.agent.no-office}"></td>
             <td th:text="${agent.phone}"></td>
             <td th:text="${agent.email}"></td>
             <td> <img th:if="${agent.image != null}"
@@ -86,13 +86,16 @@
                       alt="Agent Image"
                       style="width: 150px; height: 100px; object-fit: cover;"/>
                 <span th:if="${agent.image == null}"
-                      th:text="'No Image'"></span></td>
+                      th:text="#{msg.agent.no-image}">No Image</span>
+            </td>
             <td>
-                <a th:href="@{/agents/edit(id=${agent.id})}" class="btn btn-primary btn-sm">Edit</a>
+                <a th:href="@{/agents/edit(id=${agent.id})}" class="btn btn-primary btn-sm" th:text="#{msg.agent.edit}">Edit</a>
                 <form th:action="@{/agents/delete}" method="post" class="d-inline">
                     <input type="hidden" name="id" th:value="${agent.id}">
                     <button type="submit" class="btn btn-danger btn-sm"
-                            th:onclick="|return confirm('Are you sure?')|">Delete
+                            th:onclick="|return confirm('#{msg.agent.confirm}')|"
+                            th:text="#{msg.agent.delete}">
+                        Delete
                     </button>
                 </form>
             </td>
@@ -105,7 +108,7 @@
 
             <li class="page-item" th:classappend="${listAgents.currentPage == 1} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/agents(page=${listAgents.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
+                   th:href="@{/agents(page=${listAgents.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}" th:text="#{msg.common.previous}">
                     Previous
                 </a>
             </li>
@@ -119,7 +122,7 @@
 
             <li class="page-item" th:classappend="${listAgents.currentPage == listAgents.pages} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/agents(page=${listAgents.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
+                   th:href="@{/agents(page=${listAgents.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}" th:text="#{msg.common.next}">
                     Next
                 </a>
             </li>
@@ -127,7 +130,7 @@
         </ul>
     </nav>
 
-    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3">Back to Home</a>
+    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.agent.return-back}">Back to Home</a>
 
 </main>
 
