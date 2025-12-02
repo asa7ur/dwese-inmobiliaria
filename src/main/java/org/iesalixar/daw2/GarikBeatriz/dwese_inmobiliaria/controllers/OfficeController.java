@@ -1,8 +1,6 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Appointment;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Office;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.AppointmentDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.OfficeDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.OfficeRepository;
 import org.slf4j.Logger;
@@ -15,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -73,13 +72,19 @@ public class OfficeController {
     }
 
     @GetMapping("/edit")
-    public String showEditForm(@RequestParam("id") Long id, Model model) {
+    public String showEditForm(@RequestParam("id") Long id,
+                               RedirectAttributes redirectAttributes,
+                               Model model) {
         logger.info("Mostrando formulario de edición para la sucursal con ID {}", id);
         Optional<Office> officeOpt = officeRepository.findById(id);
+
         if (officeOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Sucursal no encontrado");
             logger.warn("No se encontró la sucursal con ID {}", id);
+            return "redirect:/offices";
         }
-        model.addAttribute("office", officeOpt);
+
+        model.addAttribute("office", officeOpt.get());
         return "office-form";
     }
 

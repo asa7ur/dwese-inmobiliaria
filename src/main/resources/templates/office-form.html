@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Insertar/Actualizar Sucursal')}">
+<head th:replace="~{fragments/head :: head ('Real Estate Agency - Insert/Update Office')}">
     <title>Real Estate Agency</title>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -15,9 +15,8 @@
         <p th:text="${errorMessage}"></p>
     </div>
 
-    <!-- Mostrar un mensaje de error si existe -->
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
-    <form th:action="${office.id == null} ? @{/offices/insert} :@{/offices/update}" th:object="${office}" method="post" enctype="multipart/form-data" class="mt-4">
+    <form th:action="${office.id == null} ? '/offices/insert' : '/offices/update'"
+          th:object="${office}" method="post" enctype="multipart/form-data" class="mt-4">
 
         <input type="hidden" th:field="*{id}" />
 
