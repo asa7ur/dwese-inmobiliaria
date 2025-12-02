@@ -98,6 +98,24 @@
                  th:errors="*{status}"></div>
         </div>
 
+        <div th:if="${allAgents != null}" class="mb-4">
+            <label class="form-label text-light">Agents managing this property:</label>
+            <div class="border p-3 rounded" style="max-height: 250px; overflow-y: auto;">
+                <div th:each="stage : ${allAgents}" class="form-check bg-dark text-light border-light">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="agentIds"
+                           th:value="${agent.id}"
+                           th:checked="${#lists.contains(assignedAgents, agent)}"
+                           id="agent-checkbox-[[${agent.id}]]">
+                    <label class="form-check-label" th:for="'agent-checkbox-' + ${agent.id}">
+                        <span th:text="${agent.name}"></span>
+                    </label>
+                </div>
+            </div>
+            <small class="text-muted">Select one or more agents managing this property.</small>
+        </div>
+
         <div class="mb-3">
             <label for="files" class="form-label">Upload New Images:</label>
             <input type="file" name="files" id="files" class="form-control" multiple accept="image/*"/>

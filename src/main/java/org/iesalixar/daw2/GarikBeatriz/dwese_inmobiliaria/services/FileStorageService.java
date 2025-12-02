@@ -1,5 +1,6 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services;
 
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,9 +21,21 @@ public class FileStorageService {
     private static final Logger logger = LoggerFactory.getLogger(FileStorageService.class);
     private final Path rootLocation;
 
-    // Inyectamos el valor en el constructor e inicializamos el Path base
     public FileStorageService(@Value("${UPLOAD_PATH}") String uploadPath) {
         this.rootLocation = Paths.get(uploadPath);
+    }
+
+    public void processImages(Property property, MultipartFile[] files) {
+        if (files != null) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    String fileName = saveFile(file);
+                    if (fileName != null) {
+                        property.addImage(fileName);
+                    }
+                }
+            }
+        }
     }
 
     public String saveFile(MultipartFile file) {
@@ -33,20 +46,14 @@ public class FileStorageService {
 
         try {
             String fileExtension = getFileExtension(file.getOriginalFilename());
-            // Generar nombre único
             String uniqueFileName = UUID.randomUUID().toString() + "." + fileExtension;
+            Path destinationFile = this.rootLocation.resolve(uniqueFileName).normalize().toAbsolutePath();
 
-            // Resolvemos la ruta destino final
-            Path destinationFile = this.rootLocation.resolve(uniqueFileName)
-                    .normalize().toAbsolutePath();
-
-            // Verificar que la carpeta padre existe, si no, crearla
             if (!Files.exists(this.rootLocation)) {
                 Files.createDirectories(this.rootLocation);
                 logger.info("Directorio creado en: {}", this.rootLocation.toAbsolutePath());
             }
 
-            // Copiamos el archivo usando Streams (más robusto)
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }

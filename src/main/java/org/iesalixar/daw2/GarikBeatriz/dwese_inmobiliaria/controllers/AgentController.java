@@ -2,10 +2,11 @@ package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Agent;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Office;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.AgentDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.OfficeRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.FileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,9 @@ public class AgentController {
     private OfficeRepository officeRepository;
 
     @Autowired
+    PropertyRepository propertyRepository;
+
+    @Autowired
     private FileStorageService fileStorageService;
 
     @GetMapping
@@ -47,7 +52,7 @@ public class AgentController {
             Model model) {
         logger.info("Listing agents. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
 
-        int pageSize = 5;
+        int pageSize = 8;
 
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -81,9 +86,8 @@ public class AgentController {
     public String showNewForm(Model model) {
         logger.info("Solicitando formulario para nuevo agente...");
         model.addAttribute("agent", new Agent());
-
-        List<Office> offices = officeRepository.findAll();
-        model.addAttribute("offices", offices);
+        model.addAttribute("offices", officeRepository.findAll());
+        model.addAttribute("allProperties", propertyRepository.findAll());
 
         return "agent-form";
     }
@@ -98,13 +102,15 @@ public class AgentController {
         Optional<Agent> agentOpt = agentRepository.findById(id);
 
         if(agentOpt.isEmpty()){
-            logger.warn("No se encontró el agente con ID {}", id);
             redirectAttributes.addFlashAttribute("message", "Agente no encontrado");
             return "redirect:/agents";
         }
 
         model.addAttribute("agent", agentOpt.get());
         model.addAttribute("offices",  officeRepository.findAll());
+
+        model.addAttribute("allProperties", propertyRepository.findAll());
+
         return "agent-form";
     }
 
@@ -113,22 +119,28 @@ public class AgentController {
             @Valid @ModelAttribute("agent") Agent agent,
             BindingResult result,
             @RequestParam("imageFile") MultipartFile imageFile,
+            @RequestParam(value = "propertyIds", required = false) List<Long> propertyIds, // AGREGADO
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        logger.info("Insertando nuevo agente con ID {}", agent.getId());
-
         if(result.hasErrors()){
-            logger.warn("Errores de validación en el formulario de nuevo agente.");
             model.addAttribute("offices",  officeRepository.findAll());
+            model.addAttribute("allProperties", propertyRepository.findAll()); // Recargar lista si hay error
             return "agent-form";
         }
 
         if(agentRepository.existsAgentByDni(agent.getDni())){
-            logger.warn("Agente con DNI {} ya existe",  agent.getDni());
             redirectAttributes.addFlashAttribute("errorMessage", "El Dni del agente ya existe");
             model.addAttribute("offices",  officeRepository.findAll());
+            model.addAttribute("allProperties", propertyRepository.findAll());
             return "agent-form";
+        }
+
+        if (propertyIds != null) {
+            List<Property> selectedProperties = propertyRepository.findAllById(propertyIds);
+            agent.setProperties(selectedProperties);
+        } else {
+            agent.setProperties(new ArrayList<>());
         }
 
         if(imageFile != null && !imageFile.isEmpty()){
@@ -139,7 +151,6 @@ public class AgentController {
         }
 
         agentRepository.save(agent);
-        logger.info("Agente con DNI {} insertado con éxito", agent.getDni());
         redirectAttributes.addFlashAttribute("successMessage", "Agente insertado correctamente.");
         return "redirect:/agents";
     }
@@ -149,22 +160,28 @@ public class AgentController {
             @Valid @ModelAttribute("agent") Agent agent,
             BindingResult result,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestParam(value = "propertyIds", required = false) List<Long> propertyIds, // AGREGADO
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        logger.info("Actualizando agente con ID {}", agent.getId());
-
         if(result.hasErrors()){
-            logger.warn("Errores de validación al actualizar el agente.");
             model.addAttribute("offices",  officeRepository.findAll());
+            model.addAttribute("allProperties", propertyRepository.findAll());
             return "agent-form";
         }
 
         if(agentRepository.existsAgentByDniAndIdNot(agent.getDni(), agent.getId())){
-            logger.warn("El DNI del agente {} ya existe.", agent.getDni());
-            model.addAttribute("errorMessage", "El DNI del agente ya existe para otro agente.");
+            model.addAttribute("errorMessage", "El DNI ya existe.");
             model.addAttribute("offices",  officeRepository.findAll());
+            model.addAttribute("allProperties", propertyRepository.findAll());
             return "agent-form";
+        }
+
+        if (propertyIds != null) {
+            List<Property> selectedProperties = propertyRepository.findAllById(propertyIds);
+            agent.setProperties(selectedProperties);
+        } else {
+            agent.setProperties(new ArrayList<>());
         }
 
         if(imageFile != null && !imageFile.isEmpty()){
@@ -175,9 +192,8 @@ public class AgentController {
         }
 
         agentRepository.save(agent);
-        logger.info("Agente con ID {} actualizado correctamente", agent.getId());
-        redirectAttributes.addFlashAttribute("successMessage", "Agente actualizado correctamente.");
 
+        redirectAttributes.addFlashAttribute("successMessage", "Agente actualizado correctamente.");
         return "redirect:/agents";
     }
 

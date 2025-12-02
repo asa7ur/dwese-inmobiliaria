@@ -20,7 +20,7 @@ public class PropertyImage {
 
     @ManyToOne
     @JoinColumn(name = "property_id")
-    @ToString.Exclude // CRUCIAL: Evita StackOverflowError al imprimir Property -> Image -> Property
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Property property;
 

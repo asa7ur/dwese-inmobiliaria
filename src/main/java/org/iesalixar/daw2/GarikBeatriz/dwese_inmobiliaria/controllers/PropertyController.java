@@ -2,10 +2,8 @@ package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.PropertyImage;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.PropertyDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyImageRepository; // Necesitarás este repo
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
 
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.FileStorageService;
@@ -37,9 +35,6 @@ public class PropertyController {
     private AgentRepository agentRepository;
 
     @Autowired
-    private PropertyImageRepository propertyImageRepository; // Asumiendo que existe, sino, usa cascada en Property
-
-    @Autowired
     private FileStorageService fileStorageService;
 
     @GetMapping
@@ -48,9 +43,13 @@ public class PropertyController {
                                  @RequestParam(defaultValue = "id") String sortBy,
                                  @RequestParam(defaultValue = "asc") String direction,
                                  Model model) {
-        int pageSize = 5;
+        logger.info("Listing propertiess. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
+
+        int pageSize = 6;
+
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
 
         Page<Property> propertyPage;
@@ -85,7 +84,12 @@ public class PropertyController {
     }
 
     @GetMapping("/edit")
-    public String showEditForm(@RequestParam("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+    public String showEditForm(
+            @RequestParam("id") Long id,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        logger.info("Solicitando formulario para editar propiedad con ID {}", id);
         Optional<Property> propertyOpt = propertyRepository.findById(id);
 
         if (propertyOpt.isEmpty()) {
@@ -97,6 +101,8 @@ public class PropertyController {
         model.addAttribute("agents", agentRepository.findAll());
         model.addAttribute("types", Property.Type.values());
         model.addAttribute("statuses", Property.Status.values());
+
+        model.addAttribute("allAgents", agentRepository.findAll());
         return "property-form";
     }
 
@@ -114,7 +120,7 @@ public class PropertyController {
             return "property-form";
         }
 
-        processImages(property, files);
+        fileStorageService.processImages(property, files);
 
         propertyRepository.save(property);
         redirectAttributes.addFlashAttribute("successMessage", "Propiedad insertada correctamente.");
@@ -140,7 +146,6 @@ public class PropertyController {
         if (existingOpt.isPresent()) {
             Property existingProperty = existingOpt.get();
 
-            // Actualizar campos escalares
             existingProperty.setName(property.getName());
             existingProperty.setDescription(property.getDescription());
             existingProperty.setLocation(property.getLocation());
@@ -152,7 +157,7 @@ public class PropertyController {
             existingProperty.setStatus(property.getStatus());
 
             // Procesar y añadir NUEVAS imágenes a la lista existente
-            processImages(existingProperty, files);
+            fileStorageService.processImages(existingProperty, files);
 
             propertyRepository.save(existingProperty);
         } else {
@@ -189,18 +194,5 @@ public class PropertyController {
         }
 
         return "redirect:/properties/edit?id=" + propertyId;
-    }
-
-    private void processImages(Property property, MultipartFile[] files) {
-        if (files != null) {
-            for (MultipartFile file : files) {
-                if (!file.isEmpty()) {
-                    String fileName = fileStorageService.saveFile(file);
-                    if (fileName != null) {
-                        property.addImage(fileName);
-                    }
-                }
-            }
-        }
     }
 }

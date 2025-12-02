@@ -77,6 +77,24 @@
                  th:errors="*{office.id}"></div>
         </div>
 
+        <div th:if="${allProperties != null}" class="mb-4">
+            <label class="form-label text-light">Properties managed by this agent:</label>
+            <div class="border p-3 rounded" style="max-height: 250px; overflow-y: auto;">
+                <div th:each="stage : ${allProperties}" class="form-check bg-dark text-light border-light">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="propertyIds"
+                           th:value="${property.id}"
+                           th:checked="${#lists.contains(assignedProperties, property)}"
+                           id="property-checkbox-[[${property.id}]]">
+                    <label class="form-check-label" th:for="'property-checkbox-' + ${property.id}">
+                        <span th:text="${property.name}"></span>
+                    </label>
+                </div>
+            </div>
+            <small class="text-muted">Select one or more properties managed by this agent.</small>
+        </div>
+
         <div class="mb-3">
             <label for="imageFile" class="form-label">Image:</label>
             <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*"/>
