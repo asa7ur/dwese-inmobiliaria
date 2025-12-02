@@ -92,7 +92,20 @@
             <td th:text="${property.bedrooms}"></td>
             <td th:text="${property.bathrooms}"></td>
             <td th:text="${property.status}"></td>
-            <td th:text="${property.image}"></td>
+            <td>
+                <div th:if="${property.images != null and !property.images.isEmpty()}">
+                    <img th:src="@{'/uploads/' + ${property.images[0].fileName}}"
+                         alt="Imagen propiedad"
+                         style="max-width: 100px; max-height: 75px;"
+                         class="img-thumbnail"/>
+
+                    <span th:if="${property.images.size() > 1}"
+                          class="badge bg-secondary"
+                          th:text="'+' + (${property.images.size() - 1})"></span>
+                </div>
+
+                <span th:if="${property.images == null or property.images.isEmpty()}" class="text-muted">No Image</span>
+            </td>
             <td>
 
                 <!-- Botón para editar -->

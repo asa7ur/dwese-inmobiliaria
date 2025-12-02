@@ -12,7 +12,7 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
     @Query("SELECT p FROM Property p WHERE " +
             "LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(p.location) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.type) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.status) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+            "LOWER(CAST(p.type AS string)) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(CAST(p.status AS string)) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Property> searchProperties(@Param("keyword") String keyword, Pageable pageable);
 }

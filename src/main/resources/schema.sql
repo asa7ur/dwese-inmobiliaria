@@ -39,8 +39,16 @@ CREATE TABLE IF NOT EXISTS properties (
     floors INT NOT NULL,
     bedrooms INT NOT NULL,
     bathrooms INT NOT NULL,
-    status VARCHAR(20) NOT NULL,
-    image VARCHAR(255)
+    status VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS property_images (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    file_name VARCHAR(255) NOT NULL,
+    property_id BIGINT NOT NULL,
+    CONSTRAINT fk_property_images_property
+        FOREIGN KEY (property_id) REFERENCES properties(id)
+        ON DELETE CASCADE
 );
 
 -- Tabla intermedia property_agent (ManyToMany)

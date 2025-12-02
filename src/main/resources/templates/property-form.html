@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{fragments/head :: head ('Real Estate Agency - Insertar/Actualizar Propiedad')}">
     <title>Real Estate Agency</title>
 </head>
 <body>
 
-<!-- Incluir el fragmento del header -->
 <header th:replace="~{fragments/header :: header}"></header>
 <main class="flex-grow-1 container mt-5">
     <h1 th:text="${property.id == null ? 'Add New Property' : 'Edit Property'}"></h1>
@@ -15,86 +14,130 @@
         <p th:text="${errorMessage}"></p>
     </div>
 
-    <!-- Mostrar un mensaje de error si existe -->
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
-    <form th:action="${property.id == null} ? @{/properties/insert} :@{/properties/update}" th:object="${property}" method="post" enctype="multipart/form-data" class="mt-4">
+    <form th:action="${property.id == null} ? '/properties/insert' : '/properties/update'"
+          th:object="${property}" method="post" enctype="multipart/form-data" class="mt-4">
 
         <input type="hidden" th:field="*{id}" />
-
-        <div class="mb-3">
-            <label for="code" class="form-label">Code:</label>
-            <input type="text" th:field="*{code}" id="code" class="form-control" />
-            <div th:if="${#fields.hasErrors('code')}" class="text-danger" th:errors="*{code}"></div>
-        </div>
 
         <div class="mb-3">
             <label for="name" class="form-label">Name:</label>
             <input type="text" th:field="*{name}" id="name" class="form-control"
                    th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"/>
-            <div class="invalid-feedback" th:errors="*{name}"></div>
+            <div th:if="${#fields.hasErrors('name')}"
+                 class="text-danger"
+                 th:errors="*{name}"></div>
         </div>
 
         <div class="mb-3">
             <label for="description" class="form-label">Description:</label>
-            <input type="text" th:field="*{description}" id="description" class="form-control" />
-            <div th:if="${#fields.hasErrors('description')}" class="text-danger" th:errors="*{description}"></div>
+            <textarea th:field="*{description}" id="description" class="form-control" rows="3"></textarea>
+            <div th:if="${#fields.hasErrors('description')}"
+                 class="text-danger"
+                 th:errors="*{description}"></div>
         </div>
 
         <div class="mb-3">
             <label for="location" class="form-label">Location:</label>
             <input type="text" th:field="*{location}" id="location" class="form-control" />
-            <div th:if="${#fields.hasErrors('location')}" class="text-danger" th:errors="*{location}"></div>
+            <div th:if="${#fields.hasErrors('location')}"
+                 class="text-danger"
+                 th:errors="*{location}"></div>
         </div>
 
         <div class="mb-3">
             <label for="price" class="form-label">Price:</label>
-            <input type="number" th:field="*{price}" id="price" class="form-control" />
-            <div th:if="${#fields.hasErrors('price')}" class="text-danger" th:errors="*{price}"></div>
+            <input type="number" step="0.01" th:field="*{price}" id="price" class="form-control" />
+            <div th:if="${#fields.hasErrors('price')}"
+                 class="text-danger"
+                 th:errors="*{price}"></div>
         </div>
 
         <div class="mb-3">
             <label for="type" class="form-label">Type:</label>
-            <input type="text" th:field="*{type}" id="type" class="form-control" />
-            <div th:if="${#fields.hasErrors('type')}" class="text-danger" th:errors="*{type}"></div>
+            <select th:field="*{type}" id="type" class="form-select">
+                <option value="" disabled selected>Select Type</option>
+                <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
+            </select>
+            <div th:if="${#fields.hasErrors('type')}"
+                 class="text-danger"
+                 th:errors="*{type}"></div>
         </div>
 
-        <div class="mb-3">
-            <label for="floors" class="form-label">Floors:</label>
-            <input type="number" th:field="*{floors}" id="floors" class="form-control" />
-            <div th:if="${#fields.hasErrors('floors')}" class="text-danger" th:errors="*{floors}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="bedrooms" class="form-label">Bedrooms:</label>
-            <input type="number" th:field="*{bedrooms}" id="bedrooms" class="form-control" />
-            <div th:if="${#fields.hasErrors('bedrooms')}" class="text-danger" th:errors="*{bedrooms}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="bathrooms" class="form-label">Bathrooms:</label>
-            <input type="number" th:field="*{bathrooms}" id="bathrooms" class="form-control" />
-            <div th:if="${#fields.hasErrors('bathrooms')}" class="text-danger" th:errors="*{bathrooms}"></div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="floors" class="form-label">Floors:</label>
+                <input type="number" th:field="*{floors}" id="floors" class="form-control" />
+                <div th:if="${#fields.hasErrors('floors')}"
+                     class="text-danger"
+                     th:errors="*{floors}"></div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="bedrooms" class="form-label">Bedrooms:</label>
+                <input type="number" th:field="*{bedrooms}" id="bedrooms" class="form-control" />
+                <div th:if="${#fields.hasErrors('bedrooms')}"
+                     class="text-danger"
+                     th:errors="*{bedrooms}"></div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="bathrooms" class="form-label">Bathrooms:</label>
+                <input type="number" th:field="*{bathrooms}" id="bathrooms" class="form-control" />
+                <div th:if="${#fields.hasErrors('bathrooms')}"
+                     class="text-danger"
+                     th:errors="*{bathrooms}"></div>
+            </div>
         </div>
 
         <div class="mb-3">
             <label for="status" class="form-label">Status:</label>
-            <input type="text" th:field="*{status}" id="status" class="form-control" />
-            <div th:if="${#fields.hasErrors('status')}" class="text-danger" th:errors="*{status}"></div>
+            <select th:field="*{status}" id="status" class="form-select">
+                <option value="" disabled selected>Select Status</option>
+                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+            </select>
+            <div th:if="${#fields.hasErrors('status')}"
+                 class="text-danger"
+                 th:errors="*{status}"></div>
         </div>
 
         <div class="mb-3">
-            <label for="imageFile" class="form-label" th:text="#{msg.property-form.image}"></label>
-            <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*"/>
+            <label for="files" class="form-label">Upload New Images:</label>
+            <input type="file" name="files" id="files" class="form-control" multiple accept="image/*"/>
+        </div>
+
+        <div class="mb-3" th:if="${property.id != null}">
+            <label class="form-label">Current Images:</label>
+
+            <div th:if="${#lists.isEmpty(property.images)}" class="text-muted">
+                <small>No images assigned.</small>
+            </div>
+
+            <div class="d-flex flex-wrap gap-3">
+                <div th:each="img : ${property.images}" class="card position-relative" style="width: 120px;">
+                    <img th:src="@{'/uploads/' + ${img.fileName}}" class="card-img-top"
+                         style="height: 80px; object-fit: cover; border-bottom: 1px solid #ddd;">
+
+                    <div class="card-body p-1 text-center">
+                        <button type="submit"
+                                formaction="/properties/delete-image"
+                                formmethod="post"
+                                name="imageId"
+                                th:value="${img.id}"
+                                class="btn btn-danger btn-sm w-100"
+                                style="font-size: 0.7rem;"
+                                onclick="return confirm('Delete this image permanently?')">
+                            <input type="hidden" name="propertyId" th:value="${property.id}" />
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-primary" th:text="${property.id == null ? 'Create' : 'Update'}"></button>
     </form>
 
-    <!-- Volver a la lista de propiedades -->
     <a href="#" th:href="@{/properties}" class="btn btn-secondary mt-3">Back to List</a>
 </main>
 
-<!-- Incluir el fragmento del footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

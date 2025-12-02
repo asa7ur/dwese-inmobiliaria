@@ -9,6 +9,7 @@ import lombok.*;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,6 +23,8 @@ public class Property {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Si usas @Transient, este campo no se guarda en BD.
+    // Si quieres guardarlo, quita @Transient.
     @Transient
     private String code;
 
@@ -66,10 +69,9 @@ public class Property {
     private Status status;
 
     @OneToOne(mappedBy = "property")
+    @ToString.Exclude // Evita bucles infinitos
+    @EqualsAndHashCode.Exclude
     private Transaction transaction;
-
-    @Column(name = "image")
-    private String image;
 
     @ManyToMany
     @JoinTable(
@@ -77,6 +79,8 @@ public class Property {
             joinColumns = @JoinColumn(name = "property_id"),
             inverseJoinColumns = @JoinColumn(name = "agent_id")
     )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Agent> agents;
 
     public enum Status {
@@ -87,22 +91,28 @@ public class Property {
         HOUSE, FLAT, CABIN, CASTLE, VILLA;
     }
 
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude // CRUCIAL: Evita StackOverflowError
+    @EqualsAndHashCode.Exclude
+    private List<PropertyImage> images = new ArrayList<>();
+
+    public void addImage(String filename) {
+        PropertyImage image = new PropertyImage(filename, this);
+        this.images.add(image);
+    }
+
+    // Metodo helper para eliminar imágenes de la lista
+    public void removeImage(PropertyImage image) {
+        this.images.remove(image);
+        image.setProperty(null);
+    }
+
     @PostLoad
     @PostPersist
     @PostUpdate
     private void generateCode() {
-        this.code = EntityCodeGenerator.generateCode(this.getClass(), this.id);
-    }
-
-    public Property (String code, String description, String location, BigDecimal price, Type type, int floors, int bedrooms, int bathrooms, Status status) {
-        this.code = code;
-        this.description = description;
-        this.location = location;
-        this.price = price;
-        this.type = type;
-        this.floors = floors;
-        this.bedrooms = bedrooms;
-        this.bathrooms = bathrooms;
-        this.status = status;
+        if (this.id != null) {
+            this.code = EntityCodeGenerator.generateCode(this.getClass(), this.id);
+        }
     }
 }

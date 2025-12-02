@@ -2,10 +2,13 @@ package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.PropertyImage;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.PropertyDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyImageRepository; // Necesitarás este repo
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
 
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.FileStorageService;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
@@ -32,19 +36,22 @@ public class PropertyController {
     @Autowired
     private AgentRepository agentRepository;
 
+    @Autowired
+    private PropertyImageRepository propertyImageRepository; // Asumiendo que existe, sino, usa cascada en Property
+
+    @Autowired
+    private FileStorageService fileStorageService;
+
+    // ... (El método listProperties está bien, lo dejo igual) ...
     @GetMapping
     public String listProperties(@RequestParam(defaultValue = "1") int page,
                                  @RequestParam(defaultValue = "") String keyword,
                                  @RequestParam(defaultValue = "id") String sortBy,
                                  @RequestParam(defaultValue = "asc") String direction,
                                  Model model) {
-        logger.info("Listing properties. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
-
         int pageSize = 5;
-
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
 
         Page<Property> propertyPage;
@@ -60,7 +67,6 @@ public class PropertyController {
                 page
         );
 
-        logger.info("Se han cargado {} propiedades.", propertyDTO.getProperties().size());
         model.addAttribute("listProperties", propertyDTO);
         model.addAttribute("keyword", keyword);
         model.addAttribute("sortBy", sortBy);
@@ -72,7 +78,6 @@ public class PropertyController {
 
     @GetMapping("/new")
     public String showNewForm(Model model) {
-        logger.info("Mostrando formulario para nueva propiedad.");
         model.addAttribute("property", new Property());
         model.addAttribute("agents", agentRepository.findAll());
         model.addAttribute("types", Property.Type.values());
@@ -81,17 +86,11 @@ public class PropertyController {
     }
 
     @GetMapping("/edit")
-    public String showEditForm(
-            @RequestParam("id") Long id,
-            Model model,
-            RedirectAttributes redirectAttributes
-    ) {
-        logger.info("Mostrando formulario de edición para la propiedad con ID {}", id);
+    public String showEditForm(@RequestParam("id") Long id, Model model, RedirectAttributes redirectAttributes) {
         Optional<Property> propertyOpt = propertyRepository.findById(id);
 
         if (propertyOpt.isEmpty()) {
-            logger.warn("No se encontró la propiedad con ID {}", id);
-            redirectAttributes.addFlashAttribute("message", "Propiedad no encontrada");
+            redirectAttributes.addFlashAttribute("errorMessage", "Propiedad no encontrada");
             return "redirect:/properties";
         }
 
@@ -106,19 +105,19 @@ public class PropertyController {
     public String insertProperty(
             @Valid @ModelAttribute("property") Property property,
             BindingResult result,
+            @RequestParam("files") MultipartFile[] files,
             Model model,
             RedirectAttributes redirectAttributes) {
-        logger.info("Insertando nueva propiedad con ID {}", property.getId());
+
         if(result.hasErrors()){
-            logger.warn("Errores de validación en el formulario de nueva propiedad.");
-            model.addAttribute("properties",  propertyRepository.findAll());
             model.addAttribute("types", Property.Type.values());
             model.addAttribute("statuses", Property.Status.values());
             return "property-form";
         }
 
+        processImages(property, files);
+
         propertyRepository.save(property);
-        logger.info("Propiedad {} insertada con éxito.", property.getCode());
         redirectAttributes.addFlashAttribute("successMessage", "Propiedad insertada correctamente.");
         return "redirect:/properties";
     }
@@ -127,32 +126,86 @@ public class PropertyController {
     public String updateProperty(
             @Valid @ModelAttribute("property") Property property,
             BindingResult result,
+            @RequestParam("files") MultipartFile[] files,
             Model model,
             RedirectAttributes redirectAttributes) {
-        logger.info("Actualizando propiedad con ID {}", property.getId());
 
         if(result.hasErrors()){
-            logger.warn("Errores de validación al actualizar la propiedad.");
-            model.addAttribute("properties",  propertyRepository.findAll());
             model.addAttribute("types", Property.Type.values());
             model.addAttribute("statuses", Property.Status.values());
             return "property-form";
         }
 
-        propertyRepository.save(property);
-        logger.info("Propiedad con ID {} actualizada con éxito.", property.getId());
+        // CORRECCIÓN IMPORTANTE:
+        // No guardar directamente "property" porque viene del formulario sin las imágenes antiguas.
+        // Si lo guardas tal cual, orphanRemoval=true borrará las imágenes existentes.
+
+        Optional<Property> existingOpt = propertyRepository.findById(property.getId());
+        if (existingOpt.isPresent()) {
+            Property existingProperty = existingOpt.get();
+
+            // Actualizar campos escalares
+            existingProperty.setName(property.getName());
+            existingProperty.setDescription(property.getDescription());
+            existingProperty.setLocation(property.getLocation());
+            existingProperty.setPrice(property.getPrice());
+            existingProperty.setType(property.getType());
+            existingProperty.setFloors(property.getFloors());
+            existingProperty.setBedrooms(property.getBedrooms());
+            existingProperty.setBathrooms(property.getBathrooms());
+            existingProperty.setStatus(property.getStatus());
+
+            // Procesar y añadir NUEVAS imágenes a la lista existente
+            processImages(existingProperty, files);
+
+            propertyRepository.save(existingProperty);
+        } else {
+            // Fallback por si no existe
+            propertyRepository.save(property);
+        }
+
         redirectAttributes.addFlashAttribute("successMessage", "Propiedad actualizada correctamente.");
         return "redirect:/properties";
     }
 
     @PostMapping("/delete")
-    public String deleteProperty(
-            @RequestParam("id") Long id,
-            RedirectAttributes redirectAttributes) {
-        logger.info("Eliminando propiedad con ID {}", id);
+    public String deleteProperty(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
         propertyRepository.deleteById(id);
-        logger.info("Propiedad con ID {} eliminada con éxito.", id);
         redirectAttributes.addFlashAttribute("successMessage", "Propiedad eliminada correctamente.");
         return "redirect:/properties";
+    }
+
+    // CORRECCIÓN: Implementar el método delete-image que faltaba
+    @PostMapping("/delete-image")
+    public String deleteImage(
+            @RequestParam("imageId") Long imageId,
+            @RequestParam("propertyId") Long propertyId,
+            RedirectAttributes redirectAttributes) {
+
+        Optional<Property> propertyOpt = propertyRepository.findById(propertyId);
+        if (propertyOpt.isPresent()) {
+            Property property = propertyOpt.get();
+
+            // Buscar la imagen en la lista y eliminarla (orphanRemoval se encargará del resto al guardar)
+            property.getImages().removeIf(img -> img.getId().equals(imageId));
+            propertyRepository.save(property);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Imagen eliminada.");
+        }
+
+        return "redirect:/properties/edit?id=" + propertyId;
+    }
+
+    private void processImages(Property property, MultipartFile[] files) {
+        if (files != null) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    String fileName = fileStorageService.saveFile(file);
+                    if (fileName != null) {
+                        property.addImage(fileName);
+                    }
+                }
+            }
+        }
     }
 }
