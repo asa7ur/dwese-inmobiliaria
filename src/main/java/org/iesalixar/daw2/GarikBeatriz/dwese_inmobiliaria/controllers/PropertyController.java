@@ -42,7 +42,6 @@ public class PropertyController {
     @Autowired
     private FileStorageService fileStorageService;
 
-    // ... (El método listProperties está bien, lo dejo igual) ...
     @GetMapping
     public String listProperties(@RequestParam(defaultValue = "1") int page,
                                  @RequestParam(defaultValue = "") String keyword,
@@ -136,9 +135,6 @@ public class PropertyController {
             return "property-form";
         }
 
-        // CORRECCIÓN IMPORTANTE:
-        // No guardar directamente "property" porque viene del formulario sin las imágenes antiguas.
-        // Si lo guardas tal cual, orphanRemoval=true borrará las imágenes existentes.
 
         Optional<Property> existingOpt = propertyRepository.findById(property.getId());
         if (existingOpt.isPresent()) {
@@ -175,7 +171,6 @@ public class PropertyController {
         return "redirect:/properties";
     }
 
-    // CORRECCIÓN: Implementar el método delete-image que faltaba
     @PostMapping("/delete-image")
     public String deleteImage(
             @RequestParam("imageId") Long imageId,
