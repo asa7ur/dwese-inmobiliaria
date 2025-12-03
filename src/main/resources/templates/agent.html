@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/head :: head ('Real Estate Agency - Agent List')}">
-    <title>Real Estate Agency - Agent List</title>
+    <title th:text="#{msg.agent.title}">Agent List</title>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <header th:replace="~{fragments/header :: header}"></header>
 
 <main class="flex-grow-1 container mt-5">
-    <h1 class="mt-3">Agent List</h1>
+    <h1 class="mt-3" th:text="#{msg.agent.title}">Agent List</h1>
 
     <!-- Error Message -->
     <div th:if="${errorMessage}" class="alert alert-danger">
@@ -21,16 +21,16 @@
 
     <div class="row mb-3 align-items-center">
         <div class="col-md-6">
-            <a th:href="@{/agents/new}" class="btn btn-success">+ New Agent</a>
+            <a th:href="@{/agents/new}" class="btn btn-success" th:text="#{msg.agent.add}">+ New Agent</a>
         </div>
         <div class="col-md-6">
             <form th:action="@{/agents}" method="get" class="d-flex">
                 <input type="text" name="keyword" class="form-control me-2"
-                       placeholder="Search by Name, DNI, Email..."
+                       th:placeholder="#{msg.agent.search-placeholder}"
                        th:value="${keyword}">
-                <button type="submit" class="btn btn-outline-primary">Search</button>
+                <button type="submit" class="btn btn-outline-primary" th:text="#{msg.common.search}">Search</button>
                 <a th:if="${keyword != null && keyword != ''}"
-                   th:href="@{/agents}" class="btn btn-outline-secondary ms-2">Clear</a>
+                   th:href="@{/agents}" class="btn btn-outline-secondary ms-2" th:text="#{msg.common.clear}">Clear</a>
             </form>
         </div>
     </div>
@@ -38,36 +38,39 @@
     <table class="table table-bordered mt-3 table-striped">
         <thead class="table-dark">
         <tr>
-            <th>Code</th>
+            <th th:text="#{msg.agent.code}">Code</th>
 
             <th>
                 <a th:href="@{/agents(page=${listAgents.currentPage}, keyword=${keyword}, sortBy='dni', direction=${sortBy == 'dni' ? reverseSortDir : 'asc'})}"
                    class="text-white text-decoration-none">
-                    DNI <span th:if="${sortBy == 'dni'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
+                    <span th:text="#{msg.agent.dni}">DNI</span>
+                    <span th:if="${sortBy == 'dni'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
                 </a>
             </th>
 
             <th>
                 <a th:href="@{/agents(page=${listAgents.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
                    class="text-white text-decoration-none">
-                    Name <span th:if="${sortBy == 'name'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
+                    <span th:text="#{msg.agent.name}">Name</span>
+                    <span th:if="${sortBy == 'name'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
                 </a>
             </th>
 
             <th>
                 <a th:href="@{/agents(page=${listAgents.currentPage}, keyword=${keyword}, sortBy='office', direction=${sortBy == 'office' ? reverseSortDir : 'asc'})}"
                    class="text-white text-decoration-none">
-                    Office <span th:if="${sortBy == 'office'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
+                    <span th:text="#{msg.agent.office}">Office</span>
+                    <span th:if="${sortBy == 'office'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
                 </a>
             </th>
 
-            <th>Phone</th>
+            <th th:text="#{msg.agent.phone}">Phone</th>
 
-            <th>Email</th>
+            <th th:text="#{msg.agent.email}">Email</th>
 
-            <th>Image</th>
+            <th th:text="#{msg.agent.image}">Image</th>
 
-            <th>Actions</th>
+            <th th:text="#{msg.agent.actions}">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -75,7 +78,7 @@
             <td th:text="${agent.code}"></td>
             <td th:text="${agent.dni}"></td>
             <td th:text="${agent.name}"></td>
-            <td th:text="${agent.office != null} ? ${agent.office.name} : 'No Office'"></td>
+            <td th:text="${agent.office != null} ? ${agent.office.name} : #{msg.agent.no-office}"></td>
             <td th:text="${agent.phone}"></td>
             <td th:text="${agent.email}"></td>
             <td> <img th:if="${agent.image != null}"
@@ -83,13 +86,16 @@
                       alt="Agent Image"
                       style="width: 150px; height: 100px; object-fit: cover;"/>
                 <span th:if="${agent.image == null}"
-                      th:text="'No Image'"></span></td>
+                      th:text="#{msg.agent.no-image}">No Image</span>
+            </td>
             <td>
-                <a th:href="@{/agents/edit(id=${agent.id})}" class="btn btn-primary btn-sm">Edit</a>
+                <a th:href="@{/agents/edit(id=${agent.id})}" class="btn btn-primary btn-sm" th:text="#{msg.agent.edit}">Edit</a>
                 <form th:action="@{/agents/delete}" method="post" class="d-inline">
                     <input type="hidden" name="id" th:value="${agent.id}">
                     <button type="submit" class="btn btn-danger btn-sm"
-                            th:onclick="|return confirm('Are you sure?')|">Delete
+                            th:onclick="|return confirm('#{msg.agent.confirm}')|"
+                            th:text="#{msg.agent.delete}">
+                        Delete
                     </button>
                 </form>
             </td>
@@ -102,7 +108,7 @@
 
             <li class="page-item" th:classappend="${listAgents.currentPage == 1} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/agents(page=${listAgents.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
+                   th:href="@{/agents(page=${listAgents.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}" th:text="#{msg.common.previous}">
                     Previous
                 </a>
             </li>
@@ -116,7 +122,7 @@
 
             <li class="page-item" th:classappend="${listAgents.currentPage == listAgents.pages} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/agents(page=${listAgents.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
+                   th:href="@{/agents(page=${listAgents.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}" th:text="#{msg.common.next}">
                     Next
                 </a>
             </li>
@@ -124,7 +130,7 @@
         </ul>
     </nav>
 
-    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3">Back to Home</a>
+    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.agent.return-back}">Back to Home</a>
 
 </main>
 

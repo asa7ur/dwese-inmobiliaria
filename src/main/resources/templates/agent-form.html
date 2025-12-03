@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{fragments/head :: head ('Real Estate Agency - Insert/Update Agent')}">
-    <title>Real Estate Agency</title>
+    <title th:text="#{msg.title}">Real Estate Agency</title>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <header th:replace="~{fragments/header :: header}"></header>
 
 <main class="flex-grow-1 container mt-5">
-    <h1 th:text="${agent.id == null ? 'Add New Agent' : 'Edit Agent'}"></h1>
+    <h1 th:text="${agent.id == null ? #{msg.agent-form.add} : #{msg.agent-form.edit}"></h1>
 
     <!-- Error Message -->
     <div th:if="${errorMessage}" class="alert alert-danger">
@@ -24,7 +24,7 @@
 
         <!-- DNI -->
         <div class="mb-3">
-            <label for="dni" class="form-label">DNI:</label>
+            <label for="dni" class="form-label" th:text="#{msg.agent-form.dni}">DNI:</label>
             <input type="text" th:field="*{dni}" id="dni"
                    class="form-control" required/>
             <div th:if="${#fields.hasErrors('dni')}"
@@ -34,7 +34,7 @@
 
         <!-- NAME -->
         <div class="mb-3">
-            <label for="name" class="form-label">Name:</label>
+            <label for="name" class="form-label" th:text="#{msg.agent-form.name}">Name:</label>
             <input type="text" th:field="*{name}" id="name"
                    class="form-control" required/>
             <div th:if="${#fields.hasErrors('name')}"
@@ -44,7 +44,7 @@
 
         <!-- PHONE -->
         <div class="mb-3">
-            <label for="phone" class="form-label">Phone:</label>
+            <label for="phone" class="form-label" th:text="#{msg.agent-form.phone}">Phone:</label>
             <input type="text" th:field="*{phone}" id="phone"
                    class="form-control" required/>
             <div th:if="${#fields.hasErrors('phone')}"
@@ -54,7 +54,7 @@
 
         <!-- EMAIL -->
         <div class="mb-3">
-            <label for="email" class="form-label">Email:</label>
+            <label for="email" class="form-label" th:text="#{msg.agent-form.email}">Email:</label>
             <input type="email" th:field="*{email}" id="email"
                    class="form-control" required/>
             <div th:if="${#fields.hasErrors('email')}"
@@ -64,10 +64,10 @@
 
         <!-- OFFICE -->
         <div class="mb-3">
-            <label for="office_id" class="form-label">Office:</label>
+            <label for="office_id" class="form-label" th:text="#{msg.agent-form.office}">Office:</label>
             <select th:field="*{office.id}" id="office_id"
                     class="form-select" required>
-                <option value="">-- Select Office --</option>
+                <option value="" th:text="#{msg.common.select-option}">-- Select Office --</option>
                 <option th:each="office : ${offices}"
                         th:value="${office.id}"
                         th:text="${office.name}"></option>
@@ -96,27 +96,27 @@
         </div>
 
         <div class="mb-3">
-            <label for="imageFile" class="form-label">Image:</label>
+            <label for="imageFile" class="form-label" th:text="#{msg.agent-form.image}">Image:</label>
             <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*"/>
         </div>
 
         <button type="submit" class="btn btn-primary"
-                th:text="${agent.id == null ? 'Create' : 'Update'}"></button>
+                th:text="${agent.id == null ? #{msg.agent-form.create} : #{msg.agent-form.update}"></button>
     </form>
 
     <div th:if="${agent.image != null}" class="mt-3">
-        <p>Current Image:</p>
+        <p th:text="#{msg.agent.current-image}>Current Image:</p>
         <img th:src="@{'/uploads/' + ${agent.image}}"
              alt="Current Image"
              style="width: 150px; height: 100px; object-fit: cover; display:block; margin-bottom: 10px;"/>
 
         <form th:action="@{/agents/deleteImage}" method="post">
             <input type="hidden" name="id" th:value="${agent.id}"/>
-            <button type="submit" class="btn btn-danger">Delete Image</button>
+            <button type="submit" class="btn btn-danger" th:text="#{msg.agent.delete-image}">Delete Image</button>
         </form>
     </div>
 
-    <a th:href="@{/agents}" class="btn btn-secondary mt-3">Back to List</a>
+    <a th:href="@{/agents}" class="btn btn-secondary mt-3" th:text="#{msg.agent-form.return-back}">Back to List</a>
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
