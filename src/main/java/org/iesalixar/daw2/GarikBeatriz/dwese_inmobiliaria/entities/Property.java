@@ -14,17 +14,19 @@ import java.util.List;
 
 @Entity
 @Table(name = "properties")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Property {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
-    // Si usas @Transient, este campo no se guarda en BD.
-    // Si quieres guardarlo, quita @Transient.
     @Transient
     private String code;
 
@@ -69,14 +71,16 @@ public class Property {
     private Status status;
 
     @OneToOne(mappedBy = "property")
-    @ToString.Exclude // Evita bucles infinitos
-    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Transaction transaction;
 
     @ManyToMany(mappedBy = "properties", fetch = FetchType.LAZY)
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private List<Agent> agents;
+    private List<Agent> agents = new ArrayList<>();
+
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<PropertyImage> images = new ArrayList<>();
 
     public enum Status {
         AVAILABLE, RESERVED, SOLD;
@@ -86,17 +90,11 @@ public class Property {
         HOUSE, FLAT, CABIN, CASTLE, VILLA;
     }
 
-    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude // CRUCIAL: Evita StackOverflowError
-    @EqualsAndHashCode.Exclude
-    private List<PropertyImage> images = new ArrayList<>();
-
     public void addImage(String filename) {
         PropertyImage image = new PropertyImage(filename, this);
         this.images.add(image);
     }
 
-    // Metodo helper para eliminar imágenes de la lista
     public void removeImage(PropertyImage image) {
         this.images.remove(image);
         image.setProperty(null);
