@@ -34,7 +34,7 @@ public class OfficeController {
                               Model model) {
         logger.info("Listing offices. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
 
-        int pageSize = 5;
+        int pageSize = 6;
 
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
