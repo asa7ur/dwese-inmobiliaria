@@ -97,25 +97,32 @@
         </div>
 
         <div class="mb-3">
-            <label for="file" class="form-label" th:text="#{msg.agent-form.image}">Upload Profile Image:</label>
-            <input type="file" name="file" id="file" class="form-control" accept="image/*"/>
+            <label for="imageFile" class="form-label" th:text="#{msg.agent-form.image}">Upload Profile Image:</label>
+            <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*"/>
         </div>
 
         <div class="mb-3" th:if="${agent.id != null and agent.image != null and !#strings.isEmpty(agent.image)}">
             <label class="form-label" th:text="#{msg.agent-form.current-image}">Current Image:</label>
 
-            <div class="card" style="width: 200px;">
-                <img th:src="@{'/uploads/' + ${agent.image}}"
-                     class="card-img-top"
-                     style="height: 200px; object-fit: cover;"
-                     alt="Agent Photo">
+            <div class="d-flex flex-wrap gap-3">
+                <div class="card position-relative" style="width: 150px;">
+                    <img th:src="@{'/uploads/' + ${agent.image}}"
+                         class="card-img-top"
+                         style="height: 150px; object-fit: cover; border-bottom: 1px solid #ddd;"
+                         alt="Agent Photo">
 
-                <div class="card-body text-center">
-                    <div class="form-check d-inline-block">
-                        <input class="form-check-input" type="checkbox" name="deleteImage" id="deleteImage">
-                        <label class="form-check-label text-danger" for="deleteImage" th:text="#{msg.agent-form.delete-image}">
-                            Delete Photo
-                        </label>
+                    <div class="card-body p-1 text-center">
+                        <button type="submit"
+                                formaction="/agents/deleteImage"
+                                formmethod="post"
+                                name="id"
+                                th:value="${agent.id}"
+                                class="btn btn-danger btn-sm w-100"
+                                style="font-size: 0.8rem;"
+                                th:text="#{msg.agent-form.delete-image}"
+                                onclick="return confirm('Delete this image permanently?')">
+                            Delete
+                        </button>
                     </div>
                 </div>
             </div>
