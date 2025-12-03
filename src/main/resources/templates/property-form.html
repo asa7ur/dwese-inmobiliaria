@@ -1,134 +1,170 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Propiedad')}">
-    <title>Real Estate Agency</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head ('Gestión de Propiedad')}"></head>
+<body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
 
 <header th:replace="~{fragments/header :: header}"></header>
-<main class="flex-grow-1 container mt-5">
-    <h1 th:text="${property.id == null ? 'Add New Property' : 'Edit Property'}"></h1>
 
-    <div th:if="${errorMessage}" class="alert alert-danger">
-        <p th:text="${errorMessage}"></p>
-    </div>
+<main class="flex-grow container mx-auto px-4 mt-24 mb-12">
 
-    <form th:action="${property.id == null} ? '/properties/insert' : '/properties/update'"
-          th:object="${property}" method="post" enctype="multipart/form-data" class="mt-4">
-
-        <input type="hidden" th:field="*{id}" />
-
-        <div class="mb-3">
-            <label for="name" class="form-label">Name:</label>
-            <input type="text" th:field="*{name}" id="name" class="form-control"
-                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"/>
-            <div th:if="${#fields.hasErrors('name')}" class="text-danger" th:errors="*{name}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="description" class="form-label">Description:</label>
-            <textarea th:field="*{description}" id="description" class="form-control" rows="3"></textarea>
-            <div th:if="${#fields.hasErrors('description')}" class="text-danger" th:errors="*{description}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="location" class="form-label">Location:</label>
-            <input type="text" th:field="*{location}" id="location" class="form-control" />
-            <div th:if="${#fields.hasErrors('location')}" class="text-danger" th:errors="*{location}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="price" class="form-label">Price:</label>
-            <input type="number" step="0.01" th:field="*{price}" id="price" class="form-control" />
-            <div th:if="${#fields.hasErrors('price')}" class="text-danger" th:errors="*{price}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="type" class="form-label">Type:</label>
-            <select th:field="*{type}" id="type" class="form-select">
-                <option value="" disabled selected>Select Type</option>
-                <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
-            </select>
-            <div th:if="${#fields.hasErrors('type')}" class="text-danger" th:errors="*{type}"></div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label for="floors" class="form-label">Floors:</label>
-                <input type="number" th:field="*{floors}" id="floors" class="form-control" />
-                <div th:if="${#fields.hasErrors('floors')}" class="text-danger" th:errors="*{floors}"></div>
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-heading font-bold text-brand-900"
+                    th:text="${property.id == null ? 'Nueva Propiedad' : 'Editar Propiedad'}"></h1>
+                <p class="text-gray-500 mt-1">Rellena los detalles para publicar el inmueble.</p>
             </div>
-            <div class="col-md-4 mb-3">
-                <label for="bedrooms" class="form-label">Bedrooms:</label>
-                <input type="number" th:field="*{bedrooms}" id="bedrooms" class="form-control" />
-                <div th:if="${#fields.hasErrors('bedrooms')}" class="text-danger" th:errors="*{bedrooms}"></div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <label for="bathrooms" class="form-label">Bathrooms:</label>
-                <input type="number" th:field="*{bathrooms}" id="bathrooms" class="form-control" />
-                <div th:if="${#fields.hasErrors('bathrooms')}" class="text-danger" th:errors="*{bathrooms}"></div>
-            </div>
+            <a th:href="@{/properties}" class="text-sm text-gray-500 hover:text-brand-800 transition-colors">
+                <i class="fa-solid fa-times mr-1"></i> Cancelar
+            </a>
         </div>
 
-        <div class="mb-3">
-            <label for="status" class="form-label">Status:</label>
-            <select th:field="*{status}" id="status" class="form-select">
-                <option value="" disabled selected>Select Status</option>
-                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
-            </select>
-            <div th:if="${#fields.hasErrors('status')}" class="text-danger" th:errors="*{status}"></div>
+        <div th:if="${errorMessage}" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <p th:text="${errorMessage}"></p>
         </div>
 
-        <div class="mb-4" th:if="${property.id != null}">
-            <label class="form-label fw-bold">Agentes encargados:</label>
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="p-8">
+                <form th:action="${property.id == null} ? '/properties/insert' : '/properties/update'"
+                      th:object="${property}" method="post" enctype="multipart/form-data" class="space-y-6">
 
-            <div class="card p-3 bg-light">
-                <div th:if="${#lists.isEmpty(property.agents)}" class="text-muted fst-italic">
-                    <i class="bi bi-info-circle"></i> No hay agentes asignados a esta propiedad actualmente.
-                </div>
+                    <input type="hidden" th:field="*{id}" />
 
-                <ul th:if="${not #lists.isEmpty(property.agents)}" class="list-group list-group-flush">
-                    <li th:each="agent : ${property.agents}" class="list-group-item bg-transparent">
-                        <i class="bi bi-person-badge me-2"></i>
-                        <span class="fw-bold" th:text="${agent.name}">Nombre</span>
-                        <span class="text-muted ms-2" th:text="'(' + ${agent.email} + ')'">Email</span>
-                    </li>
-                </ul>
-            </div>
-            <div class="form-text mt-1 text-primary">
-                <i class="bi bi-exclamation-circle"></i>
-                La asignación de propiedades se realiza desde el perfil del Agente.
-            </div>
-        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Título / Nombre</label>
+                            <input type="text" th:field="*{name}" id="name"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                                   th:classappend="${#fields.hasErrors('name')} ? 'border-red-500 focus:border-red-500' : ''" />
+                            <p th:if="${#fields.hasErrors('name')}" class="mt-1 text-sm text-red-600" th:errors="*{name}"></p>
+                        </div>
 
-        <div class="mb-3">
-            <label for="files" class="form-label">Upload New Images:</label>
-            <input type="file" name="files" id="files" class="form-control" multiple accept="image/*"/>
-        </div>
+                        <div class="md:col-span-2">
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                            <textarea th:field="*{description}" id="description" rows="4"
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"></textarea>
+                            <p th:if="${#fields.hasErrors('description')}" class="mt-1 text-sm text-red-600" th:errors="*{description}"></p>
+                        </div>
 
-        <div class="mb-3" th:if="${property.id != null}">
-            <label class="form-label">Current Images:</label>
-            <div th:if="${#lists.isEmpty(property.images)}" class="text-muted">
-                <small>No images assigned.</small>
-            </div>
-            <div class="d-flex flex-wrap gap-3">
-                <div th:each="img : ${property.images}" class="card position-relative" style="width: 120px;">
-                    <img th:src="@{'/uploads/' + ${img.fileName}}" class="card-img-top" style="height: 80px; object-fit: cover;">
-                    <div class="card-body p-1 text-center">
-                        <button type="submit" formaction="/properties/delete-image" formmethod="post" name="imageId" th:value="${img.id}"
-                                class="btn btn-danger btn-sm w-100" onclick="return confirm('Delete this image permanently?')">
-                            <input type="hidden" name="propertyId" th:value="${property.id}" />
-                            Delete
+                        <div>
+                            <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                    <i class="fa-solid fa-map-pin"></i>
+                                </span>
+                                <input type="text" th:field="*{location}" id="location"
+                                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"/>
+                            </div>
+                            <p th:if="${#fields.hasErrors('location')}" class="mt-1 text-sm text-red-600" th:errors="*{location}"></p>
+                        </div>
+
+                        <div>
+                            <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Precio (€)</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                    <i class="fa-solid fa-euro-sign"></i>
+                                </span>
+                                <input type="number" step="0.01" th:field="*{price}" id="price"
+                                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"/>
+                            </div>
+                            <p th:if="${#fields.hasErrors('price')}" class="mt-1 text-sm text-red-600" th:errors="*{price}"></p>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 my-6"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="type" class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                            <select th:field="*{type}" id="type"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white">
+                                <option value="" disabled selected>Seleccionar...</option>
+                                <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
+                            </select>
+                            <p th:if="${#fields.hasErrors('type')}" class="mt-1 text-sm text-red-600" th:errors="*{type}"></p>
+                        </div>
+
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                            <select th:field="*{status}" id="status"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white">
+                                <option value="" disabled selected>Seleccionar...</option>
+                                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+                            </select>
+                            <p th:if="${#fields.hasErrors('status')}" class="mt-1 text-sm text-red-600" th:errors="*{status}"></p>
+                        </div>
+
+                        <div class="md:col-start-1">
+                            <label for="floors" class="block text-sm font-medium text-gray-700 mb-1">Plantas</label>
+                            <input type="number" th:field="*{floors}" id="floors" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500" />
+                        </div>
+                        <div>
+                            <label for="bedrooms" class="block text-sm font-medium text-gray-700 mb-1">Habitaciones</label>
+                            <input type="number" th:field="*{bedrooms}" id="bedrooms" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500" />
+                        </div>
+                        <div>
+                            <label for="bathrooms" class="block text-sm font-medium text-gray-700 mb-1">Baños</label>
+                            <input type="number" th:field="*{bathrooms}" id="bathrooms" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500" />
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-100 my-6"></div>
+
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Galería de Imágenes</h3>
+
+                        <div class="flex items-center justify-center w-full mb-6">
+                            <label for="files" class="flex flex-col items-center justify-center w-full h-32 border-2 border-brand-300 border-dashed rounded-lg cursor-pointer bg-brand-50 hover:bg-brand-100 transition-colors">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-brand-500 mb-2"></i>
+                                    <p class="text-sm text-gray-500"><span class="font-semibold">Click para subir</span> o arrastra imágenes</p>
+                                    <p class="text-xs text-gray-500">JPG, PNG</p>
+                                </div>
+                                <input type="file" name="files" id="files" class="hidden" multiple accept="image/*"/>
+                            </label>
+                        </div>
+
+                        <div class="mb-3" th:if="${property.id != null}">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Imágenes Actuales:</label>
+
+                            <div th:if="${#lists.isEmpty(property.images)}" class="text-gray-400 italic text-sm bg-gray-50 p-3 rounded">
+                                No hay imágenes asignadas.
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                <div th:each="img : ${property.images}" class="relative group rounded-lg overflow-hidden shadow-sm border border-gray-200 aspect-square">
+                                    <img th:src="@{'/uploads/' + ${img.fileName}}" class="w-full h-full object-cover">
+
+                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
+                                        <button type="submit"
+                                                formaction="/properties/delete-image"
+                                                formmethod="post"
+                                                name="imageId"
+                                                th:value="${img.id}"
+                                                class="opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-all transform scale-75 group-hover:scale-100"
+                                                onclick="return confirm('¿Eliminar esta imagen permanentemente?')"
+                                                title="Eliminar imagen">
+                                            <input type="hidden" name="propertyId" th:value="${property.id}" />
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
+                        <a th:href="@{/properties}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</a>
+                        <button type="submit" class="px-5 py-2.5 rounded-lg bg-brand-800 text-white font-bold hover:bg-brand-900 shadow-md hover:shadow-lg transition-all transform active:scale-95"
+                                th:text="${property.id == null ? 'Crear Propiedad' : 'Guardar Cambios'}">
                         </button>
                     </div>
-                </div>
+
+                </form>
             </div>
         </div>
-
-        <button type="submit" class="btn btn-primary" th:text="${property.id == null ? 'Create' : 'Update'}"></button>
-    </form>
-
-    <a href="#" th:href="@{/properties}" class="btn btn-secondary mt-3">Back to List</a>
+    </div>
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>

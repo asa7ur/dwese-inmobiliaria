@@ -1,143 +1,172 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Transactions List')}">
-    <title>Real Estate Agency - Transactions List</title>
-</head>
-<body class="d-flex flex-column min-vh-100">
+<head th:replace="~{fragments/head :: head ('Transacciones - Real Estate Agency')}"></head>
+
+<body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
+
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-grow-1 container mt-5">
-    <h1 class="mt-3">Transactions List</h1>
+<main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 mt-24 mb-12">
 
-    <!-- Error Message -->
-    <div th:if="${errorMessage}" class="alert alert-danger">
-        <p th:text="${errorMessage}"></p>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-heading font-bold text-gray-900">Historial de Transacciones</h1>
+            <p class="text-gray-500 mt-1">Registro de ventas y alquileres realizados.</p>
+        </div>
+        <a th:href="@{/transactions/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
+            <i class="fa-solid fa-file-contract"></i> Nueva Transacción
+        </a>
     </div>
 
-    <!-- Success Message -->
-    <div th:if="${successMessage}" class="alert alert-success">
+    <div th:if="${errorMessage}" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm flex items-center gap-2">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <p th:text="${errorMessage}"></p>
+    </div>
+    <div th:if="${successMessage}" class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm flex items-center gap-2">
+        <i class="fa-solid fa-circle-check"></i>
         <p th:text="${successMessage}"></p>
     </div>
 
-    <div class="row mb-3 align-items-center">
-        <div class="col-md-6">
-            <a th:href="@{/transactions/new}" class="btn btn-success">+ New Transaction</a>
-        </div>
-        <div class="col-md-6">
-            <form th:action="@{/transactions}" method="get" class="d-flex">
-                <input type="text" name="keyword" class="form-control me-2"
-                       placeholder="Search by Property, Client, Agent..."
-                       th:value="${keyword}">
-                <button type="submit" class="btn btn-outline-primary">Search</button>
-                <a th:if="${keyword != null && keyword != ''}"
-                   th:href="@{/transactions}" class="btn btn-outline-secondary ms-2">Clear</a>
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8">
+        <div class="flex flex-col lg:flex-row gap-4 justify-between items-center">
+
+            <form th:action="@{/transactions}" method="get" class="w-full lg:w-1/2 flex gap-2">
+                <div class="relative w-full">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                        </span>
+                    <input type="text" name="keyword" th:value="${keyword}"
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
+                           placeholder="Buscar por Propiedad, Cliente, Agente...">
+                </div>
+                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors">Buscar</button>
+                <a th:if="${keyword != null && keyword != ''}" th:href="@{/transactions}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
             </form>
+
+            <div class="flex flex-wrap gap-2 items-center text-sm">
+                <span class="text-gray-500 font-medium mr-1">Ordenar por:</span>
+
+                <a th:href="@{/transactions(page=${listTransactions.currentPage}, keyword=${keyword}, sortBy='price', direction=${sortBy == 'price' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'price'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    Precio <i th:if="${sortBy == 'price'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+
+                <a th:href="@{/transactions(page=${listTransactions.currentPage}, keyword=${keyword}, sortBy='transactionTimestamp', direction=${sortBy == 'transactionTimestamp' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'transactionTimestamp'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    Fecha <i th:if="${sortBy == 'transactionTimestamp'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+            </div>
         </div>
     </div>
 
-    <table class="table table-bordered mt-3 table-striped">
-        <thead class="table-dark">
-        <tr>
-            <th>Code</th>
+    <div class="space-y-4">
 
-            <th>
-                <a th:href="@{/transactions(page=${listTransactions.currentPage}, keyword=${keyword}, sortBy='property.name', direction=${sortBy == 'property.name' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    Property <span th:if="${sortBy == 'property.name'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
+        <div th:each="transaction : ${listTransactions.transactions}" class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100 overflow-hidden flex flex-col md:flex-row items-center p-4 gap-4">
+
+            <div class="flex items-center gap-4 md:w-1/6">
+                <div class="w-12 h-12 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center text-xl shadow-sm">
+                    <i class="fa-solid fa-handshake"></i>
+                </div>
+                <div>
+                    <span class="block text-xs text-gray-400 font-mono" th:text="'Ref: ' + ${transaction.code}"></span>
+                    <div class="text-xs font-bold px-2 py-1 rounded-full inline-block mt-1"
+                         th:classappend="${#strings.toString(transaction.status) == 'COMPLETED'} ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
+                         th:text="${transaction.status}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:w-2/6 border-l border-gray-100 pl-4">
+                <h3 class="text-lg font-bold text-gray-900 leading-tight mb-1">
+                    <i class="fa-solid fa-house text-gray-400 mr-1 text-sm"></i>
+                    <span th:text="${transaction.property != null} ? ${transaction.property.name} : 'Propiedad no disponible'"></span>
+                </h3>
+                <div class="text-2xl font-bold text-brand-800">
+                    <span th:text="${transaction.price}"></span> €
+                </div>
+                <div class="text-sm text-gray-500">
+                    <i class="fa-regular fa-calendar mr-1"></i>
+                    <span th:if="${transaction.transactionDate != null}" th:text="${#temporals.format(transaction.transactionDate, 'dd-MM-yyyy')}"></span>
+                    <span th:unless="${transaction.transactionDate != null}">Fecha pendiente</span>
+                </div>
+            </div>
+
+            <div class="md:w-2/6 flex flex-col gap-2 text-sm border-l border-gray-100 pl-4">
+                <div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+                    <span class="text-gray-500"><i class="fa-solid fa-user-tie mr-2 w-4"></i> Agente:</span>
+                    <span class="font-medium text-gray-900 truncate max-w-[150px]" th:text="${transaction.agent != null} ? ${transaction.agent.name} : '-'"></span>
+                </div>
+                <div class="flex items-center justify-between bg-gray-50 p-2 rounded">
+                    <span class="text-gray-500"><i class="fa-solid fa-user mr-2 w-4"></i> Cliente:</span>
+                    <span class="font-medium text-gray-900 truncate max-w-[150px]" th:text="${transaction.client != null} ? ${transaction.client.name} : '-'"></span>
+                </div>
+            </div>
+
+            <div class="md:w-1/6 flex justify-end gap-2 md:border-l md:border-gray-100 md:pl-4">
+                <a th:href="@{/transactions/edit(id=${transaction.id})}" class="text-gray-400 hover:text-brand-600 hover:bg-brand-50 p-2 rounded-lg transition-colors" title="Editar">
+                    <i class="fa-solid fa-pen-to-square text-lg"></i>
                 </a>
-            </th>
 
-            <th>
-                <a th:href="@{/transactions(page=${listTransactions.currentPage}, keyword=${keyword}, sortBy='client.name', direction=${sortBy == 'client.name' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    Client <span th:if="${sortBy == 'client.name'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
-
-            <th>
-                <a th:href="@{/transactions(page=${listTransactions.currentPage}, keyword=${keyword}, sortBy='agent.name', direction=${sortBy == 'agent.name' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    Agent <span th:if="${sortBy == 'agent.name'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
-
-            <th>
-                <a th:href="@{/transactions(page=${listTransactions.currentPage}, keyword=${keyword}, sortBy='price', direction=${sortBy == 'price' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    Price <span th:if="${sortBy == 'price'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
-
-            <th>
-                <a th:href="@{/transactions(page=${listTransactions.currentPage}, keyword=${keyword}, sortBy='transactionTimestamp', direction=${sortBy == 'transactionTimestamp' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    Date <span th:if="${sortBy == 'transactionTimestamp'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
-
-            <th>
-                <a th:href="@{/transactions(page=${listTransactions.currentPage}, keyword=${keyword}, sortBy='status', direction=${sortBy == 'status' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    Status <span th:if="${sortBy == 'status'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
-
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="transaction : ${listTransactions.transactions}">
-            <td th:text="${transaction.code}"></td>
-            <td th:text="${transaction.property != null} ? ${transaction.property.name} : 'No Property Name'"></td>
-            <td th:text="${transaction.client != null} ? ${transaction.client.name} : 'No Client Name'"></td>
-            <td th:text="${transaction.agent != null} ? ${transaction.agent.name} : 'No Agent Name'"></td>
-            <td th:text="${transaction.price}"></td>
-            <td th:text="${transaction.transactionDate}"></td>
-            <td th:text="${transaction.status}"></td>
-            <td>
-                <a th:href="@{/transactions/edit(id=${transaction.id})}" class="btn btn-primary btn-sm">Edit</a>
-                <form th:action="@{/transactions/delete}" method="post" class="d-inline">
-                    <input type="hidden" name="id" th:value="${transaction.id}">
-                    <button type="submit" class="btn btn-danger btn-sm"
-                            th:onclick="|return confirm('Are you sure?')|">Delete
+                <form th:action="@{/transactions/delete}" method="post">
+                    <input type="hidden" name="id" th:value="${transaction.id}"/>
+                    <button type="submit"
+                            class="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                            th:data-code="${transaction.code}"
+                            onclick="return confirm('¿Eliminar transacción ' + this.getAttribute('data-code') + '?')"
+                            title="Eliminar">
+                        <i class="fa-solid fa-trash-can text-lg"></i>
                     </button>
                 </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </div>
+        </div>
 
-    <nav th:if="${listTransactions.pages > 0}" aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
+        <div th:if="${#lists.isEmpty(listTransactions.transactions)}" class="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
+            <div class="bg-gray-50 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-folder-open text-2xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">No hay transacciones</h3>
+            <p class="text-gray-500 mt-1">Registra la primera venta o alquiler.</p>
+        </div>
 
-            <li class="page-item" th:classappend="${listTransactions.currentPage == 1} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/transactions(page=${listTransactions.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
-                    Previous
+    </div>
+
+    <nav th:if="${listTransactions.pages > 0}" aria-label="Page navigation" class="mt-12 flex justify-center">
+        <ul class="flex items-center space-x-2">
+            <li>
+                <a th:href="@{/transactions(page=${listTransactions.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:classappend="${listTransactions.currentPage == 1} ? 'pointer-events-none opacity-50' : 'hover:bg-gray-100 hover:text-gray-900'"
+                   class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-500 transition-colors">
+                    <i class="fa-solid fa-chevron-left"></i>
                 </a>
             </li>
-
-            <li class="page-item" th:each="i : ${#numbers.sequence(1, listTransactions.pages)}"
-                th:classappend="${i == listTransactions.currentPage} ? 'active'">
-                <a class="page-link"
-                   th:href="@{/transactions(page=${i}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
-                   th:text="${i}">1</a>
+            <li th:each="i : ${#numbers.sequence(1, listTransactions.pages)}">
+                <a th:href="@{/transactions(page=${i}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:text="${i}"
+                   th:classappend="${i == listTransactions.currentPage} ? 'bg-brand-800 text-white border-brand-800' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                   class="px-4 py-2 rounded-lg border font-medium transition-colors">1</a>
             </li>
-
-            <li class="page-item" th:classappend="${listTransactions.currentPage == listTransactions.pages} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/transactions(page=${listTransactions.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
-                    Next
+            <li>
+                <a th:href="@{/transactions(page=${listTransactions.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:classappend="${listTransactions.currentPage == listTransactions.pages} ? 'pointer-events-none opacity-50' : 'hover:bg-gray-100 hover:text-gray-900'"
+                   class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-500 transition-colors">
+                    <i class="fa-solid fa-chevron-right"></i>
                 </a>
             </li>
-
         </ul>
     </nav>
 
-    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3">Back to Home</a>
+    <div class="text-center mt-8">
+        <a th:href="@{/}" class="text-gray-500 hover:text-brand-800 text-sm font-medium transition-colors">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Inicio
+        </a>
+    </div>
+
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
-
 </body>
 </html>

@@ -1,137 +1,169 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Agent List')}">
-    <title th:text="#{msg.agent.title}">Agent List</title>
-</head>
-<body class="d-flex flex-column min-vh-100">
+<head th:replace="~{fragments/head :: head ('Nuestros Agentes - Real Estate Agency')}"></head>
+
+<body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
+
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-grow-1 container mt-5">
-    <h1 class="mt-3" th:text="#{msg.agent.title}">Agent List</h1>
+<main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 mt-24 mb-12">
 
-    <!-- Error Message -->
-    <div th:if="${errorMessage}" class="alert alert-danger">
-        <p th:text="${errorMessage}"></p>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-heading font-bold text-gray-900">Equipo de Agentes</h1>
+            <p class="text-gray-500 mt-1">Profesionales a tu servicio.</p>
+        </div>
+        <a th:href="@{/agents/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
+            <i class="fa-solid fa-user-plus"></i> Nuevo Agente
+        </a>
     </div>
 
-    <!-- Success Message -->
-    <div th:if="${successMessage}" class="alert alert-success">
+    <div th:if="${errorMessage}" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm">
+        <p th:text="${errorMessage}"></p>
+    </div>
+    <div th:if="${successMessage}" class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm">
         <p th:text="${successMessage}"></p>
     </div>
 
-    <div class="row mb-3 align-items-center">
-        <div class="col-md-6">
-            <a th:href="@{/agents/new}" class="btn btn-success" th:text="#{msg.agent.add}">+ New Agent</a>
-        </div>
-        <div class="col-md-6">
-            <form th:action="@{/agents}" method="get" class="d-flex">
-                <input type="text" name="keyword" class="form-control me-2"
-                       th:placeholder="#{msg.agent.search-placeholder}"
-                       th:value="${keyword}">
-                <button type="submit" class="btn btn-outline-primary" th:text="#{msg.common.search}">Search</button>
-                <a th:if="${keyword != null && keyword != ''}"
-                   th:href="@{/agents}" class="btn btn-outline-secondary ms-2" th:text="#{msg.common.clear}">Clear</a>
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8">
+        <div class="flex flex-col lg:flex-row gap-4 justify-between items-center">
+
+            <form th:action="@{/agents}" method="get" class="w-full lg:w-1/2 flex gap-2">
+                <div class="relative w-full">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                        </span>
+                    <input type="text" name="keyword" th:value="${keyword}"
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
+                           placeholder="Buscar por Nombre, DNI, Email...">
+                </div>
+                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors">Buscar</button>
+                <a th:if="${keyword != null && keyword != ''}" th:href="@{/agents}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
             </form>
+
+            <div class="flex flex-wrap gap-2 items-center text-sm">
+                <span class="text-gray-500 font-medium mr-1">Ordenar por:</span>
+
+                <a th:href="@{/agents(page=${listAgents.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'name'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    Nombre <i th:if="${sortBy == 'name'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+
+                <a th:href="@{/agents(page=${listAgents.currentPage}, keyword=${keyword}, sortBy='office', direction=${sortBy == 'office' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'office'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    Oficina <i th:if="${sortBy == 'office'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+
+                <a th:href="@{/agents(page=${listAgents.currentPage}, keyword=${keyword}, sortBy='dni', direction=${sortBy == 'dni' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'dni'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    DNI <i th:if="${sortBy == 'dni'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+            </div>
         </div>
     </div>
 
-    <table class="table table-bordered mt-3 table-striped">
-        <thead class="table-dark">
-        <tr>
-            <th th:text="#{msg.agent.code}">Code</th>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
-            <th>
-                <a th:href="@{/agents(page=${listAgents.currentPage}, keyword=${keyword}, sortBy='dni', direction=${sortBy == 'dni' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    <span th:text="#{msg.agent.dni}">DNI</span>
-                    <span th:if="${sortBy == 'dni'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
+        <div th:each="agent : ${listAgents.agents}" class="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col border border-gray-100">
 
-            <th>
-                <a th:href="@{/agents(page=${listAgents.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    <span th:text="#{msg.agent.name}">Name</span>
-                    <span th:if="${sortBy == 'name'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
+            <div class="h-24 bg-gradient-to-r from-brand-800 to-brand-500 relative">
+                     <span class="absolute top-2 right-2 text-xs text-white bg-white/20 px-2 py-1 rounded backdrop-blur-sm"
+                           th:text="'#' + ${agent.code}"></span>
+            </div>
 
-            <th>
-                <a th:href="@{/agents(page=${listAgents.currentPage}, keyword=${keyword}, sortBy='office', direction=${sortBy == 'office' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    <span th:text="#{msg.agent.office}">Office</span>
-                    <span th:if="${sortBy == 'office'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
+            <div class="px-6 flex-grow flex flex-col items-center -mt-12 text-center">
 
-            <th th:text="#{msg.agent.phone}">Phone</th>
+                <div class="relative w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100">
+                    <img th:if="${agent.image != null}"
+                         th:src="@{'/uploads/' + ${agent.image}}"
+                         class="w-full h-full object-cover"
+                         alt="Foto Agente"/>
+                    <div th:unless="${agent.image != null}" class="w-full h-full flex items-center justify-center text-gray-400">
+                        <i class="fa-solid fa-user text-4xl"></i>
+                    </div>
+                </div>
 
-            <th th:text="#{msg.agent.email}">Email</th>
+                <h3 class="mt-3 text-lg font-heading font-bold text-gray-900" th:text="${agent.name}"></h3>
 
-            <th th:text="#{msg.agent.image}">Image</th>
+                <span class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-brand-700 border border-brand-100">
+                        <i class="fa-solid fa-building mr-1.5"></i>
+                        <span th:text="${agent.office != null} ? ${agent.office.name} : 'Sin Asignar'"></span>
+                    </span>
 
-            <th th:text="#{msg.agent.actions}">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="agent : ${listAgents.agents}">
-            <td th:text="${agent.code}"></td>
-            <td th:text="${agent.dni}"></td>
-            <td th:text="${agent.name}"></td>
-            <td th:text="${agent.office != null} ? ${agent.office.name} : #{msg.agent.no-office}"></td>
-            <td th:text="${agent.phone}"></td>
-            <td th:text="${agent.email}"></td>
-            <td> <img th:if="${agent.image != null}"
-                      th:src="@{'/uploads/' + ${agent.image}}"
-                      alt="Agent Image"
-                      style="width: 150px; height: 100px; object-fit: cover;"/>
-                <span th:if="${agent.image == null}"
-                      th:text="#{msg.agent.no-image}">No Image</span>
-            </td>
-            <td>
-                <a th:href="@{/agents/edit(id=${agent.id})}" class="btn btn-primary btn-sm" th:text="#{msg.agent.edit}">Edit</a>
-                <form th:action="@{/agents/delete}" method="post" class="d-inline">
-                    <input type="hidden" name="id" th:value="${agent.id}">
-                    <button type="submit" class="btn btn-danger btn-sm"
-                            th:data-confirm-message="#{msg.agent.confirm}"
-                            onclick="return confirm(this.getAttribute('data-confirm-message'))"
-                            th:text="#{msg.agent.delete}">
-                        Delete
-                    </button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <p class="text-xs text-gray-400 mt-2 font-mono" th:text="${agent.dni}"></p>
 
-    <nav th:if="${listAgents.pages > 0}" aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
+                <div class="w-full mt-6 space-y-2">
+                    <a th:href="'tel:' + ${agent.phone}" class="flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-brand-600 transition-colors p-2 rounded hover:bg-gray-50 w-full">
+                        <i class="fa-solid fa-phone"></i>
+                        <span th:text="${agent.phone}"></span>
+                    </a>
+                    <a th:href="'mailto:' + ${agent.email}" class="flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-brand-600 transition-colors p-2 rounded hover:bg-gray-50 w-full">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span th:text="${agent.email}" class="truncate max-w-[200px]"></span>
+                    </a>
+                </div>
 
-            <li class="page-item" th:classappend="${listAgents.currentPage == 1} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/agents(page=${listAgents.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}" th:text="#{msg.common.previous}">
-                    Previous
+                <div class="w-full mt-6 mb-6 flex gap-2 justify-center pt-4 border-t border-gray-100">
+                    <a th:href="@{/agents/edit(id=${agent.id})}" class="text-brand-600 hover:text-brand-800 p-2 hover:bg-brand-50 rounded-full transition-colors" title="Editar">
+                        <i class="fa-solid fa-pen-to-square text-lg"></i>
+                    </a>
+
+                    <form th:action="@{/agents/delete}" method="post" class="d-inline">
+                        <input type="hidden" name="id" th:value="${agent.id}">
+                        <button type="submit" class="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-full transition-colors"
+                                th:onclick="|return confirm('¿Estás seguro de que quieres eliminar a este agente?')|" title="Eliminar">
+                            <i class="fa-solid fa-trash text-lg"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(listAgents.agents)}" class="col-span-full text-center py-12">
+            <div class="bg-gray-100 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-users-slash text-3xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">No se encontraron agentes</h3>
+            <p class="text-gray-500 mt-1">Prueba con otra búsqueda.</p>
+        </div>
+
+    </div>
+
+    <nav th:if="${listAgents.pages > 0}" aria-label="Page navigation" class="mt-12 flex justify-center">
+        <ul class="flex items-center space-x-2">
+            <li>
+                <a th:href="@{/agents(page=${listAgents.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:classappend="${listAgents.currentPage == 1} ? 'pointer-events-none opacity-50' : 'hover:bg-gray-100 hover:text-gray-900'"
+                   class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-500 transition-colors">
+                    <i class="fa-solid fa-chevron-left"></i>
                 </a>
             </li>
-
-            <li class="page-item" th:each="i : ${#numbers.sequence(1, listAgents.pages)}"
-                th:classappend="${i == listAgents.currentPage} ? 'active'">
-                <a class="page-link"
-                   th:href="@{/agents(page=${i}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
-                   th:text="${i}">1</a>
+            <li th:each="i : ${#numbers.sequence(1, listAgents.pages)}">
+                <a th:href="@{/agents(page=${i}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:text="${i}"
+                   th:classappend="${i == listAgents.currentPage} ? 'bg-brand-800 text-white border-brand-800' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                   class="px-4 py-2 rounded-lg border font-medium transition-colors">1</a>
             </li>
-
-            <li class="page-item" th:classappend="${listAgents.currentPage == listAgents.pages} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/agents(page=${listAgents.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}" th:text="#{msg.common.next}">
-                    Next
+            <li>
+                <a th:href="@{/agents(page=${listAgents.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:classappend="${listAgents.currentPage == listAgents.pages} ? 'pointer-events-none opacity-50' : 'hover:bg-gray-100 hover:text-gray-900'"
+                   class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-500 transition-colors">
+                    <i class="fa-solid fa-chevron-right"></i>
                 </a>
             </li>
-
         </ul>
     </nav>
 
-    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.agent.return-back}">Back to Home</a>
+    <div class="text-center mt-8">
+        <a th:href="@{/}" class="text-gray-500 hover:text-brand-800 text-sm font-medium transition-colors">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Inicio
+        </a>
+    </div>
 
 </main>
 

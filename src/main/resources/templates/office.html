@@ -1,120 +1,162 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Office List')}"></head>
-<body class="d-flex flex-column min-vh-100">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head ('Nuestras Oficinas - Real Estate Agency')}"></head>
 
-<!-- Incluir el fragmento del header -->
+<body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
+
 <header th:replace="~{fragments/header :: header}"></header>
-<main class="flex-grow-1 container mt-5">
-    <h1 class="mt-3">Office List</h1>
 
-    <!-- Muestra un mensaje de error si hay algún problema -->
-    <div th:if="${errorMessage}" class="alert alert-danger">
-        <p th:text="${errorMessage}"></p>
-    </div>
+<main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 mt-24 mb-12">
 
-    <!-- Success Message -->
-    <div th:if="${successMessage}" class="alert alert-success">
-        <p th:text="${successMessage}"></p>
-    </div>
-
-    <div class="row mb-3 align-items-center">
-        <div class="col-md-6">
-            <a th:href="@{/offices/new}" class="btn btn-success">+ New Office</a>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-heading font-bold text-gray-900">Nuestras Oficinas</h1>
+            <p class="text-gray-500 mt-1">Encuentra la sucursal más cercana a ti.</p>
         </div>
-        <div class="col-md-6">
-            <form th:action="@{/offices}" method="get" class="d-flex">
-                <input type="text" name="keyword" class="form-control me-2"
-                       placeholder="Search by dni, name,..."
-                       th:value="${keyword}">
-                <button type="submit" class="btn btn-outline-primary">Search</button>
-                <a th:if="${keyword != null && keyword != ''}"
-                   th:href="@{/offices}" class="btn btn-outline-secondary ms-2">Clear</a>
+        <a th:href="@{/offices/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
+            <i class="fa-solid fa-building-circle-check"></i> Nueva Oficina
+        </a>
+    </div>
+
+    <div th:if="${errorMessage}" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <p th:text="${errorMessage}"></p>
+        </div>
+    </div>
+    <div th:if="${successMessage}" class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-circle-check"></i>
+            <p th:text="${successMessage}"></p>
+        </div>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8">
+        <div class="flex flex-col lg:flex-row gap-4 justify-between items-center">
+
+            <form th:action="@{/offices}" method="get" class="w-full lg:w-1/2 flex gap-2">
+                <div class="relative w-full">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                        </span>
+                    <input type="text" name="keyword" th:value="${keyword}"
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
+                           placeholder="Buscar por nombre, código...">
+                </div>
+                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors">Buscar</button>
+                <a th:if="${keyword != null && keyword != ''}" th:href="@{/offices}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
             </form>
+
+            <div class="flex flex-wrap gap-2 items-center text-sm">
+                <span class="text-gray-500 font-medium mr-1">Ordenar por:</span>
+
+                <a th:href="@{/offices(page=${listOffices.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'name'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    Nombre <i th:if="${sortBy == 'name'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+
+                <a th:href="@{/offices(page=${listOffices.currentPage}, keyword=${keyword}, sortBy='address', direction=${sortBy == 'address' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'address'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    Dirección <i th:if="${sortBy == 'address'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- Muestra la lista de sucursales en una tabla -->
-    <table class="table table-bordered mt-3 table-striped">
-        <thead class="table-dark">
-        <tr>
-            <th>Code</th>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-            <th>
-                <a th:href="@{/offices(page=${listOffices.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    Name <span th:if="${sortBy == 'name'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
+        <div th:each="office : ${listOffices.offices}" class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col group">
 
-            <th>
-                <a th:href="@{/offices(page=${listOffices.currentPage}, keyword=${keyword}, sortBy='address', direction=${sortBy == 'address' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    Address <span th:if="${sortBy == 'address'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
+            <div class="h-32 bg-gray-100 flex items-center justify-center border-b border-gray-100 relative group-hover:bg-brand-50 transition-colors">
+                <i class="fa-solid fa-map-location-dot text-5xl text-gray-300 group-hover:text-brand-300 transition-colors"></i>
 
-            <th>Phone</th>
-            <th>Email</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="office : ${listOffices.offices}">
-            <td th:text="${office.code}"></td>
-            <td th:text="${office.name}"></td>
-            <td th:text="${office.address}"></td>
-            <td th:text="${office.phone}"></td>
-            <td th:text="${office.email}"></td>
-            <td>
+                <span class="absolute top-3 right-3 bg-white px-2 py-1 rounded text-xs font-mono text-gray-500 border border-gray-200 shadow-sm"
+                      th:text="'#' + ${office.code}"></span>
+            </div>
 
-                <!-- Botón para editar -->
-                <a th:href="@{/offices/edit(id=${office.id})}" class="btn btn-primary btn-sm">Edit</a>
+            <div class="p-6 flex-grow flex flex-col">
+                <h3 class="text-xl font-heading font-bold text-gray-900 mb-2" th:text="${office.name}"></h3>
 
-                <!-- Botón para eliminar -->
-                <form th:action="@{/offices/delete}" method="post" class="d-inline">
-                    <input type="hidden" name="id" th:value="${office.id}"/>
-                    <button type="submit" class="btn btn-danger btn-sm" th:onclick="|return confirm('Are you sure?')|">
-                        Delete
-                    </button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <div class="mb-4">
+                    <div class="flex items-start text-gray-600 mb-2">
+                        <i class="fa-solid fa-location-dot mt-1 mr-2 text-brand-500"></i>
+                        <span class="text-sm" th:text="${office.address}"></span>
+                    </div>
+                </div>
 
-    <nav th:if="${listOffices.pages > 0}" aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
+                <div class="bg-gray-50 rounded-lg p-4 mb-4 space-y-2 mt-auto">
+                    <div class="flex items-center text-sm text-gray-600">
+                        <i class="fa-solid fa-phone mr-2 text-gray-400 w-4"></i>
+                        <span th:text="${office.phone}"></span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-600">
+                        <i class="fa-solid fa-envelope mr-2 text-gray-400 w-4"></i>
+                        <span th:text="${office.email}" class="truncate"></span>
+                    </div>
+                </div>
 
-            <li class="page-item" th:classappend="${listOffices.currentPage == 1} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/offices(page=${listOffices.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
-                    Previous
-                </a>
-            </li>
+                <div class="flex gap-3 pt-2">
+                    <a th:href="@{/offices/edit(id=${office.id})}" class="flex-1 text-center bg-white border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 hover:text-brand-600 hover:border-brand-300 transition-colors text-sm font-medium">
+                        Editar
+                    </a>
+                    <form th:action="@{/offices/delete}" method="post" class="flex-1">
+                        <input type="hidden" name="id" th:value="${office.id}"/>
+                        <button type="submit" class="w-full bg-white border border-red-200 text-red-500 py-2 rounded-lg hover:bg-red-50 hover:border-red-300 transition-colors text-sm font-medium"
+                                th:onclick="|return confirm('¿Seguro que deseas eliminar esta oficina?')|">
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-            <li class="page-item" th:each="i : ${#numbers.sequence(1, listOffices.pages)}"
-                th:classappend="${i == listOffices.currentPage} ? 'active'">
-                <a class="page-link"
-                   th:href="@{/offices(page=${i}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
-                   th:text="${i}">1</a>
-            </li>
+        <div th:if="${#lists.isEmpty(listOffices.offices)}" class="col-span-full text-center py-16">
+            <div class="bg-gray-50 rounded-full h-24 w-24 flex items-center justify-center mx-auto mb-4 border-2 border-dashed border-gray-200">
+                <i class="fa-solid fa-building text-4xl text-gray-300"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">No hay oficinas registradas</h3>
+            <p class="text-gray-500 mt-1">Comienza añadiendo una nueva sucursal.</p>
+        </div>
 
-            <li class="page-item" th:classappend="${listOffices.currentPage == listOffices.pages} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/offices(page=${listOffices.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
-                    Next
+    </div>
+
+    <nav th:if="${listOffices.pages > 0}" aria-label="Page navigation" class="mt-12 flex justify-center">
+        <ul class="flex items-center space-x-2">
+            <li>
+                <a th:href="@{/offices(page=${listOffices.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:classappend="${listOffices.currentPage == 1} ? 'pointer-events-none opacity-50' : 'hover:bg-gray-100 hover:text-gray-900'"
+                   class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-500 transition-colors">
+                    <i class="fa-solid fa-chevron-left"></i>
                 </a>
             </li>
-
+            <li th:each="i : ${#numbers.sequence(1, listOffices.pages)}">
+                <a th:href="@{/offices(page=${i}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:text="${i}"
+                   th:classappend="${i == listOffices.currentPage} ? 'bg-brand-800 text-white border-brand-800' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                   class="px-4 py-2 rounded-lg border font-medium transition-colors">1</a>
+            </li>
+            <li>
+                <a th:href="@{/offices(page=${listOffices.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:classappend="${listOffices.currentPage == listOffices.pages} ? 'pointer-events-none opacity-50' : 'hover:bg-gray-100 hover:text-gray-900'"
+                   class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-500 transition-colors">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </li>
         </ul>
     </nav>
 
-    <!-- Volver a la página principal -->
-    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3">Back to Home</a>
+    <div class="text-center mt-8">
+        <a th:href="@{/}" class="text-gray-500 hover:text-brand-800 text-sm font-medium transition-colors">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Inicio
+        </a>
+    </div>
+
 </main>
 
-<!-- Incluir el fragmento del footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

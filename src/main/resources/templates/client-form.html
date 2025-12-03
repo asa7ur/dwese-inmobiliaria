@@ -1,69 +1,98 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Insert/Update Client')}">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head ('Gestión de Cliente - Real Estate Agency')}">
     <title>Real Estate Agency</title>
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
+
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-grow-1 container mt-5">
-    <h1 th:text="${client.id == null ? 'Add New Client' : 'Edit Client'}"></h1>
+<main class="flex-grow container mx-auto px-4 mt-24 mb-12">
 
-    <!-- Error Message -->
-    <div th:if="${errorMessage}" class="alert alert-danger">
-        <p th:text="${errorMessage}"></p>
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-6 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-heading font-bold text-brand-900"
+                    th:text="${client.id == null ? 'Nuevo Cliente' : 'Editar Cliente'}"></h1>
+                <p class="text-gray-500 mt-1">Información de contacto y datos personales.</p>
+            </div>
+            <a th:href="@{/clients}" class="text-sm text-gray-500 hover:text-brand-800 transition-colors">
+                <i class="fa-solid fa-times mr-1"></i> Cancelar
+            </a>
+        </div>
+
+        <div th:if="${errorMessage}" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <p th:text="${errorMessage}"></p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden p-8">
+
+            <form th:action="${client.id == null} ? '/clients/insert' : '/clients/update'"
+                  th:object="${client}" method="post" class="space-y-6">
+
+                <input type="hidden" th:field="*{id}"/>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="dni" class="block text-sm font-medium text-gray-700 mb-1">DNI / NIE</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                <i class="fa-regular fa-id-card"></i>
+                            </span>
+                            <input type="text" th:field="*{dni}" id="dni"
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
+                        </div>
+                        <p th:if="${#fields.hasErrors('dni')}" class="mt-1 text-sm text-red-600" th:errors="*{dni}"></p>
+                    </div>
+
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                        <input type="text" th:field="*{name}" id="name"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
+                        <p th:if="${#fields.hasErrors('name')}" class="mt-1 text-sm text-red-600" th:errors="*{name}"></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                <i class="fa-solid fa-phone"></i>
+                            </span>
+                            <input type="text" th:field="*{phone}" id="phone"
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
+                        </div>
+                        <p th:if="${#fields.hasErrors('phone')}" class="mt-1 text-sm text-red-600" th:errors="*{phone}"></p>
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                <i class="fa-regular fa-envelope"></i>
+                            </span>
+                            <input type="email" th:field="*{email}" id="email"
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
+                        </div>
+                        <p th:if="${#fields.hasErrors('email')}" class="mt-1 text-sm text-red-600" th:errors="*{email}"></p>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-gray-100 flex justify-end gap-3">
+                    <a th:href="@{/clients}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</a>
+                    <button type="submit" class="bg-brand-800 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-brand-900 shadow-md hover:shadow-lg transition-all transform active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-check"></i>
+                        <span th:text="${client.id == null ? 'Registrar Cliente' : 'Guardar Cambios'}"></span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
-
-    <form th:action="${client.id == null} ? '/clients/insert' : '/clients/update'"
-          th:object="${client}" method="post" class="mt-4">
-
-        <input type="hidden" th:field="*{id}"/>
-
-        <!-- DNI -->
-        <div class="mb-3">
-            <label for="dni" class="form-label">DNI:</label>
-            <input type="text" th:field="*{dni}" id="dni"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('dni')}"
-                 class="text-danger"
-                 th:errors="*{dni}"></div>
-        </div>
-
-        <!-- NAME -->
-        <div class="mb-3">
-            <label for="name" class="form-label">Name:</label>
-            <input type="text" th:field="*{name}" id="name"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('name')}"
-                 class="text-danger"
-                 th:errors="*{name}"></div>
-        </div>
-
-        <!-- PHONE -->
-        <div class="mb-3">
-            <label for="phone" class="form-label">Phone:</label>
-            <input type="text" th:field="*{phone}" id="phone"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('phone')}"
-                 class="text-danger"
-                 th:errors="*{phone}"></div>
-        </div>
-
-        <!-- EMAIL -->
-        <div class="mb-3">
-            <label for="email" class="form-label">Email:</label>
-            <input type="email" th:field="*{email}" id="email"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('email')}"
-                 class="text-danger"
-                 th:errors="*{email}"></div>
-        </div>
-
-        <button type="submit" class="btn btn-primary"
-                th:text="${client.id == null ? 'Create' : 'Update'}"></button>
-    </form>
-
-    <a th:href="@{/clients}" class="btn btn-secondary mt-3">Back to List</a>
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>

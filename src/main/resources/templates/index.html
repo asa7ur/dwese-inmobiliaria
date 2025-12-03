@@ -1,20 +1,163 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Home')}"></head>
+<head th:replace="~{fragments/head :: head ('Inicio - Real Estate Agency')}"></head>
 
-<body class="d-flex flex-column min-vh-100 bg-dark text-light">
+<body class="flex flex-col min-h-screen bg-gray-50 text-gray-800 font-sans">
 
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-grow-1 mt-5">
-    <div class="container">
-        <h1 class="mt-5">Real Estate Agency</h1>
-        <p class="lead">GARIK ASATRYAN BEATRIZ BARRACHINA - Web Application for a Real Estate Agency</p>
+<main class="flex-grow">
+
+    <div class="relative pt-20 pb-16 md:pt-32 md:pb-24 flex content-center items-center justify-center min-h-[600px]">
+
+        <div class="absolute top-0 w-full h-full bg-center bg-cover"
+             style="background-image: url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+            <span id="blackOverlay" class="w-full h-full absolute opacity-50 bg-black"></span>
+        </div>
+
+        <div class="container relative mx-auto px-4">
+            <div class="items-center flex flex-wrap">
+                <div class="w-full lg:w-8/12 px-4 ml-auto mr-auto text-center">
+
+                    <h1 class="text-white font-heading font-bold text-4xl sm:text-5xl md:text-6xl mb-4 drop-shadow-lg">
+                        Encuentra tu lugar <br/> en el mundo
+                    </h1>
+
+                    <p class="mt-4 text-lg text-gray-200 mb-10 drop-shadow-md max-w-2xl mx-auto">
+                        Garik Asatryan & Beatriz Barrachina presentan la mejor selección de propiedades exclusivas. Tu futuro hogar está a un solo clic.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up">
+
+                        <a th:href="@{/properties}"
+                           class="bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-brand-500/50 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
+                            <i class="fa-solid fa-house-chimney"></i>
+                            Explorar Propiedades
+                        </a>
+
+                        <a th:href="@{/agents}"
+                           class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold py-4 px-8 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center gap-2 text-lg">
+                            <i class="fa-solid fa-users"></i>
+                            Contactar Agente
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center text-center mb-16">
+                <div class="w-full lg:w-6/12 px-4">
+                    <h2 class="text-3xl font-heading font-bold text-gray-900 mb-4">¿Por qué elegirnos?</h2>
+                    <p class="text-lg leading-relaxed text-gray-500">
+                        No solo vendemos casas, creamos hogares. Nuestro equipo se dedica a brindarte la mejor experiencia.
+                    </p>
+                </div>
+            </div>
+            <div class="flex flex-wrap">
+                <div class="w-full md:w-4/12 px-4 text-center">
+                    <div class="relative flex flex-col min-w-0 break-words bg-white w-full mb-8 rounded-lg">
+                        <div class="px-4 py-5 flex-auto">
+                            <div class="text-white p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 shadow-lg rounded-full bg-brand-500">
+                                <i class="fas fa-award text-xl"></i>
+                            </div>
+                            <h6 class="text-xl font-bold text-gray-800">Mejores Propiedades</h6>
+                            <p class="mt-2 mb-4 text-gray-500">
+                                Seleccionamos cuidadosamente cada inmueble para asegurar calidad y confort.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-4/12 px-4 text-center">
+                    <div class="relative flex flex-col min-w-0 break-words bg-white w-full mb-8 rounded-lg">
+                        <div class="px-4 py-5 flex-auto">
+                            <div class="text-white p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 shadow-lg rounded-full bg-brand-500">
+                                <i class="fas fa-hand-holding-dollar text-xl"></i>
+                            </div>
+                            <h6 class="text-xl font-bold text-gray-800">Precio Justo</h6>
+                            <p class="mt-2 mb-4 text-gray-500">
+                                Valoraciones precisas y negociaciones transparentes para tu beneficio.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-4/12 px-4 text-center">
+                    <div class="relative flex flex-col min-w-0 break-words bg-white w-full mb-8 rounded-lg">
+                        <div class="px-4 py-5 flex-auto">
+                            <div class="text-white p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 shadow-lg rounded-full bg-brand-500">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                            <h6 class="text-xl font-bold text-gray-800">Agentes Expertos</h6>
+                            <p class="mt-2 mb-4 text-gray-500">
+                                Un equipo profesional dispuesto a acompañarte en todo el proceso.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-gray-50 border-t border-gray-200">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-between items-end mb-12">
+                <div class="w-full md:w-8/12">
+                    <h2 class="text-3xl font-heading font-bold text-gray-900">Propiedades Recientes</h2>
+                    <p class="mt-2 text-gray-500">Echa un vistazo a nuestras últimas incorporaciones.</p>
+                </div>
+                <div class="w-full md:w-4/12 text-right mt-4 md:mt-0">
+                    <a th:href="@{/properties}" class="inline-block text-brand-800 font-bold hover:text-brand-600 transition-colors">
+                        Ver todas <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                <div th:each="property : ${featuredProperties}" class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+
+                    <div th:if="${property.images != null and !property.images.isEmpty()}"
+                         class="h-48 bg-gray-300 bg-cover bg-center"
+                         th:style="'background-image: url(' + @{'/uploads/' + ${property.images[0].fileName}} + ');'">
+                    </div>
+                    <div th:unless="${property.images != null and !property.images.isEmpty()}"
+                         class="h-48 bg-gray-200 flex items-center justify-center text-gray-400">
+                        <i class="fa-solid fa-image text-3xl"></i>
+                    </div>
+
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="text-xs font-bold uppercase tracking-wide mb-2"
+                             th:text="${property.status}"
+                             th:classappend="${#strings.toString(property.status) == 'SALE'} ? 'text-green-600' : 'text-brand-500'">
+                        </div>
+
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-1" th:text="${property.name}">Título</h3>
+                        <p class="text-gray-500 text-sm mb-4 line-clamp-1" th:text="${property.location}">Ubicación</p>
+
+                        <div class="mt-auto pt-4 border-t border-gray-100">
+                            <div class="flex justify-between items-center text-gray-500 text-sm">
+                                <span title="Habitaciones"><i class="fa-solid fa-bed mr-1 text-brand-300"></i> <span th:text="${property.bedrooms}"></span></span>
+                                <span title="Baños"><i class="fa-solid fa-bath mr-1 text-brand-300"></i> <span th:text="${property.bathrooms}"></span></span>
+                                <span class="text-brand-900 font-bold text-lg" th:text="${property.price} + ' €'">Precio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${featuredProperties == null or featuredProperties.isEmpty()}" class="col-span-3 text-center py-10 text-gray-400">
+                    <p>No hay propiedades destacadas en este momento.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 </body>
-
 </html>

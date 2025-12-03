@@ -1,114 +1,170 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Client List')}">
-    <title>Real Estate Agency - Client List</title>
-</head>
-<body class="d-flex flex-column min-vh-100">
+<head th:replace="~{fragments/head :: head ('Clientes - Real Estate Agency')}"></head>
+
+<body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
+
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-grow-1 container mt-5">
-    <h1 class="mt-3">Client List</h1>
+<main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 mt-24 mb-12">
 
-    <!-- Error Message -->
-    <div th:if="${errorMessage}" class="alert alert-danger">
-        <p th:text="${errorMessage}"></p>
-    </div>
-
-    <!-- Success Message -->
-    <div th:if="${successMessage}" class="alert alert-success">
-        <p th:text="${successMessage}"></p>
-    </div>
-
-    <div class="row mb-3 align-items-center">
-        <div class="col-md-6">
-            <a th:href="@{/clients/new}" class="btn btn-success">+ New Client</a>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-heading font-bold text-gray-900">Cartera de Clientes</h1>
+            <p class="text-gray-500 mt-1">Gestión de contactos y potenciales compradores.</p>
         </div>
-        <div class="col-md-6">
-            <form th:action="@{/clients}" method="get" class="d-flex">
-                <input type="text" name="keyword" class="form-control me-2"
-                       placeholder="Search by Name, DNI, Email..."
-                       th:value="${keyword}">
-                <button type="submit" class="btn btn-outline-primary">Search</button>
-                <a th:if="${keyword != null && keyword != ''}"
-                   th:href="@{/clients}" class="btn btn-outline-secondary ms-2">Clear</a>
+        <a th:href="@{/clients/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
+            <i class="fa-solid fa-user-plus"></i> Nuevo Cliente
+        </a>
+    </div>
+
+    <div th:if="${errorMessage}" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <p th:text="${errorMessage}"></p>
+        </div>
+    </div>
+    <div th:if="${successMessage}" class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-circle-check"></i>
+            <p th:text="${successMessage}"></p>
+        </div>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8">
+        <div class="flex flex-col lg:flex-row gap-4 justify-between items-center">
+
+            <form th:action="@{/clients}" method="get" class="w-full lg:w-1/2 flex gap-2">
+                <div class="relative w-full">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                        </span>
+                    <input type="text" name="keyword" th:value="${keyword}"
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
+                           placeholder="Buscar por nombre, DNI, email...">
+                </div>
+                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors">Buscar</button>
+                <a th:if="${keyword != null && keyword != ''}" th:href="@{/clients}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
             </form>
+
+            <div class="flex flex-wrap gap-2 items-center text-sm">
+                <span class="text-gray-500 font-medium mr-1">Ordenar por:</span>
+
+                <a th:href="@{/clients(page=${listClients.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'name'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    Nombre <i th:if="${sortBy == 'name'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+
+                <a th:href="@{/clients(page=${listClients.currentPage}, keyword=${keyword}, sortBy='dni', direction=${sortBy == 'dni' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'dni'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    DNI <i th:if="${sortBy == 'dni'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+            </div>
         </div>
     </div>
 
-    <table class="table table-bordered mt-3 table-striped">
-        <thead class="table-dark">
-        <tr>
-            <th>Code</th>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-            <th>
-                <a th:href="@{/clients(page=${listClients.currentPage}, keyword=${keyword}, sortBy='dni', direction=${sortBy == 'dni' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    DNI <span th:if="${sortBy == 'dni'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
+        <div th:each="client : ${listClients.clients}" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 flex flex-col relative overflow-hidden">
 
-            <th>
-                <a th:href="@{/clients(page=${listClients.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
-                   class="text-white text-decoration-none">
-                    Name <span th:if="${sortBy == 'name'}" th:text="${direction == 'asc' ? '▲' : '▼'}"></span>
-                </a>
-            </th>
+            <div class="h-2 bg-brand-500 w-full"></div>
 
-            <th>Phone</th>
+            <div class="p-6 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center text-xl font-bold border border-brand-100">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight" th:text="${client.name}"></h3>
+                            <span class="text-xs text-gray-400 font-mono" th:text="'ID: ' + ${client.code}"></span>
+                        </div>
+                    </div>
+                </div>
 
-            <th>Email</th>
+                <div class="space-y-3 mt-4">
+                    <div class="flex items-center text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                        <i class="fa-regular fa-id-card text-brand-400 w-6 text-center mr-2"></i>
+                        <span class="font-medium" th:text="${client.dni}"></span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                        <i class="fa-solid fa-phone text-brand-400 w-6 text-center mr-2"></i>
+                        <span th:text="${client.phone}"></span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                        <i class="fa-regular fa-envelope text-brand-400 w-6 text-center mr-2"></i>
+                        <a th:href="'mailto:' + ${client.email}" class="hover:text-brand-600 truncate" th:text="${client.email}"></a>
+                    </div>
+                </div>
+            </div>
 
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="client : ${listClients.clients}">
-            <td th:text="${client.code}"></td>
-            <td th:text="${client.dni}"></td>
-            <td th:text="${client.name}"></td>
-            <td th:text="${client.phone}"></td>
-            <td th:text="${client.email}"></td>
-            <td>
-                <a th:href="@{/clients/edit(id=${client.id})}" class="btn btn-primary btn-sm">Edit</a>
-                <form th:action="@{/clients/delete}" method="post" class="d-inline">
-                    <input type="hidden" name="id" th:value="${client.id}">
-                    <button type="submit" class="btn btn-danger btn-sm"
-                            th:onclick="|return confirm('Are you sure?')|">Delete
-                    </button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 flex justify-between items-center">
+                <span class="text-xs text-gray-400 font-medium">Acciones</span>
+                <div class="flex gap-2">
+                    <a th:href="@{/clients/edit(id=${client.id})}" class="text-brand-600 hover:text-brand-800 bg-white border border-gray-200 hover:border-brand-300 p-2 rounded-md transition-colors shadow-sm" title="Editar">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
 
-    <nav th:if="${listClients.pages > 0}" aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
+                    <form th:action="@{/clients/delete}" method="post" class="d-inline">
+                        <input type="hidden" name="id" th:value="${client.id}">
 
-            <li class="page-item" th:classappend="${listClients.currentPage == 1} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/clients(page=${listClients.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
-                    Previous
+                        <button type="submit"
+                                class="text-red-500 hover:text-red-700 bg-white border border-gray-200 hover:border-red-300 p-2 rounded-md transition-colors shadow-sm"
+                                th:data-name="${client.name}"
+                                onclick="return confirm('¿Eliminar cliente: ' + this.getAttribute('data-name') + '?')"
+                                title="Eliminar">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(listClients.clients)}" class="col-span-full text-center py-16">
+            <div class="bg-gray-100 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-users-viewfinder text-3xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">No hay clientes registrados</h3>
+            <p class="text-gray-500 mt-1">Añade uno nuevo o ajusta la búsqueda.</p>
+        </div>
+
+    </div>
+
+    <nav th:if="${listClients.pages > 0}" aria-label="Page navigation" class="mt-12 flex justify-center">
+        <ul class="flex items-center space-x-2">
+            <li>
+                <a th:href="@{/clients(page=${listClients.currentPage - 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:classappend="${listClients.currentPage == 1} ? 'pointer-events-none opacity-50' : 'hover:bg-gray-100 hover:text-gray-900'"
+                   class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-500 transition-colors">
+                    <i class="fa-solid fa-chevron-left"></i>
                 </a>
             </li>
-
-            <li class="page-item" th:each="i : ${#numbers.sequence(1, listClients.pages)}"
-                th:classappend="${i == listClients.currentPage} ? 'active'">
-                <a class="page-link"
-                   th:href="@{/clients(page=${i}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
-                   th:text="${i}">1</a>
+            <li th:each="i : ${#numbers.sequence(1, listClients.pages)}">
+                <a th:href="@{/clients(page=${i}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:text="${i}"
+                   th:classappend="${i == listClients.currentPage} ? 'bg-brand-800 text-white border-brand-800' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
+                   class="px-4 py-2 rounded-lg border font-medium transition-colors">1</a>
             </li>
-
-            <li class="page-item" th:classappend="${listClients.currentPage == listClients.pages} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/clients(page=${listClients.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}">
-                    Next
+            <li>
+                <a th:href="@{/clients(page=${listClients.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
+                   th:classappend="${listClients.currentPage == listClients.pages} ? 'pointer-events-none opacity-50' : 'hover:bg-gray-100 hover:text-gray-900'"
+                   class="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-500 transition-colors">
+                    <i class="fa-solid fa-chevron-right"></i>
                 </a>
             </li>
-
         </ul>
     </nav>
 
-    <a href="#" th:href="@{/}" class="btn btn-secondary mt-3">Back to Home</a>
+    <div class="text-center mt-8">
+        <a th:href="@{/}" class="text-gray-500 hover:text-brand-800 text-sm font-medium transition-colors">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Inicio
+        </a>
+    </div>
+
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>

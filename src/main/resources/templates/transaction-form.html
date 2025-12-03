@@ -1,106 +1,142 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Insert/Update Client')}">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head ('Gestión de Transacción - Real Estate Agency')}">
     <title>Real Estate Agency</title>
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
+
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-grow-1 container mt-5">
-    <h1 th:text="${transaction.id == null ? 'Add New Transaction' : 'Transaction'}"></h1>
+<main class="flex-grow container mx-auto px-4 mt-24 mb-12">
 
-    <!-- Error Message -->
-    <div th:if="${errorMessage}" class="alert alert-danger">
-        <p th:text="${errorMessage}"></p>
+    <div class="max-w-3xl mx-auto">
+        <div class="mb-6 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-heading font-bold text-brand-900"
+                    th:text="${transaction.id == null ? 'Nueva Transacción' : 'Editar Transacción'}"></h1>
+                <p class="text-gray-500 mt-1">Registra los detalles financieros y legales.</p>
+            </div>
+            <a th:href="@{/transactions}" class="text-sm text-gray-500 hover:text-brand-800 transition-colors">
+                <i class="fa-solid fa-times mr-1"></i> Cancelar
+            </a>
+        </div>
+
+        <div th:if="${errorMessage}" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden p-8">
+
+            <form th:action="${transaction.id == null} ? '/transactions/insert' : '/transactions/update'"
+                  th:object="${transaction}" method="post" class="space-y-6">
+
+                <input type="hidden" th:field="*{id}"/>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="transaction_date" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Transacción</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                <i class="fa-regular fa-calendar-check"></i>
+                            </span>
+                            <input type="date" th:field="*{transactionDate}" id="transaction_date"
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
+                        </div>
+                        <p th:if="${#fields.hasErrors('transactionDate')}" class="mt-1 text-sm text-red-600" th:errors="*{transactionDate}"></p>
+                    </div>
+
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Estado Actual</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                <i class="fa-solid fa-tag"></i>
+                            </span>
+                            <select th:field="*{status}" id="status"
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
+                                <option value="" disabled>Seleccionar Estado...</option>
+                                <option th:each="status : ${T(org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Transaction.Status).values()}"
+                                        th:value="${status}"
+                                        th:text="${status}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-2"></div>
+                <h3 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-2">Detalles del Inmueble</h3>
+
+                <div>
+                    <label for="property_id" class="block text-sm font-medium text-gray-700 mb-1">Propiedad</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fa-solid fa-house"></i>
+                        </span>
+                        <select th:field="*{property.id}" id="property_id"
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
+                            <option value="">-- Seleccionar Propiedad --</option>
+                            <option th:each="property : ${properties}"
+                                    th:value="${property.id}"
+                                    th:text="${property.name}"></option>
+                        </select>
+                    </div>
+                    <p th:if="${#fields.hasErrors('property.id')}" class="mt-1 text-sm text-red-600" th:errors="*{property.id}"></p>
+                </div>
+
+                <div class="border-t border-gray-100 pt-2"></div>
+                <h3 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-2">Intervinientes</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg">
+                    <div>
+                        <label for="client_id" class="block text-sm font-bold text-gray-700 mb-1">Cliente (Comprador/Inquilino)</label>
+                        <select th:field="*{client.id}" id="client_id"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
+                            <option value="">-- Seleccionar Cliente --</option>
+                            <option th:each="client : ${clients}"
+                                    th:value="${client.id}"
+                                    th:text="${client.name}"></option>
+                        </select>
+                        <p th:if="${#fields.hasErrors('client.id')}" class="mt-1 text-sm text-red-600" th:errors="*{client.id}"></p>
+                    </div>
+
+                    <div>
+                        <label for="agent_id" class="block text-sm font-bold text-gray-700 mb-1">Agente Responsable</label>
+                        <select th:field="*{agent.id}" id="agent_id"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
+                            <option value="">-- Seleccionar Agente --</option>
+                            <option th:each="agent : ${agents}"
+                                    th:value="${agent.id}"
+                                    th:text="${agent.name}"></option>
+                        </select>
+                        <p th:if="${#fields.hasErrors('agent.id')}" class="mt-1 text-sm text-red-600" th:errors="*{agent.id}"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Precio Final de Operación</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fa-solid fa-euro-sign"></i>
+                        </span>
+                        <input type="text" th:field="*{price}" id="price"
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors text-lg font-bold text-gray-800"
+                               placeholder="0.00" required/>
+                    </div>
+                    <p th:if="${#fields.hasErrors('price')}" class="mt-1 text-sm text-red-600" th:errors="*{price}"></p>
+                </div>
+
+                <div class="pt-6 border-t border-gray-100 flex justify-end gap-3">
+                    <a th:href="@{/transactions}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</a>
+                    <button type="submit" class="bg-brand-800 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-brand-900 shadow-md hover:shadow-lg transition-all transform active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-check"></i>
+                        <span th:text="${transaction.id == null ? 'Registrar Transacción' : 'Guardar Cambios'}"></span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
-
-    <form th:action="${transaction.id == null} ? '/transactions/insert' : '/transactions/update'"
-          th:object="${transaction}" method="post" class="mt-4">
-
-        <input type="hidden" th:field="*{id}"/>
-
-        <!-- Date -->
-        <div class="mb-3">
-            <label for="transaction_date" class="form-label">Date:</label>
-            <input type="date" th:field="*{transactionDate}" id="transaction_date"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('transactionDate')}"
-                 class="text-danger"
-                 th:errors="*{transactionDate}"></div>
-        </div>
-
-        <!-- Property -->
-        <div class="mb-3">
-            <label for="property_id" class="form-label">Property:</label>
-            <select th:field="*{property.id}" id="property_id"
-                    class="form-select" required>
-                <option value="">-- Select Property --</option>
-                <option th:each="property : ${properties}"
-                        th:value="${property.id}"
-                        th:text="${property.name}"></option>
-            </select>
-            <div th:if="${#fields.hasErrors('property.id')}"
-                 class="text-danger"
-                 th:errors="*{property.id}"></div>
-        </div>
-
-        <!-- Client -->
-        <div class="mb-3">
-            <label for="client_id" class="form-label">Client:</label>
-            <select th:field="*{client.id}" id="client_id"
-                    class="form-select" required>
-                <option value="">-- Select Client --</option>
-                <option th:each="client : ${clients}"
-                        th:value="${client.id}"
-                        th:text="${client.name}"></option>
-            </select>
-            <div th:if="${#fields.hasErrors('client.id')}"
-                 class="text-danger"
-                 th:errors="*{client.id}"></div>
-        </div>
-
-        <!-- Agent -->
-        <div class="mb-3">
-            <label for="agent_id" class="form-label">Agent:</label>
-            <select th:field="*{agent.id}" id="agent_id"
-                    class="form-select" required>
-                <option value="">-- Select Agent --</option>
-                <option th:each="agent : ${agents}"
-                        th:value="${agent.id}"
-                        th:text="${agent.name}"></option>
-            </select>
-            <div th:if="${#fields.hasErrors('agent.id')}"
-                 class="text-danger"
-                 th:errors="*{agent.id}"></div>
-        </div>
-
-        <!-- PRICE -->
-        <div class="mb-3">
-            <label for="price" class="form-label">Price:</label>
-            <input type="text" th:field="*{price}" id="price"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('price')}"
-                 class="text-danger"
-                 th:errors="*{price}"></div>
-        </div>
-
-        <!-- Status -->
-        <div class="mb-3">
-            <label for="status" class="form-label">Status:</label>
-            <select th:field="*{status}" id="status" class="form-select" required>
-                <option value="">-- Select Status --</option>
-                <option th:each="status : ${T(org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Transaction.Status).values()}"
-                        th:value="${status}"
-                        th:text="${status}">
-                </option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary"
-                th:text="${transaction.id == null ? 'Create' : 'Update'}"></button>
-    </form>
-
-    <a th:href="@{/transactions}" class="btn btn-secondary mt-3">Back to List</a>
 </main>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>

@@ -1,74 +1,115 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Insertar/Actualizar Cita')}">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head ('Gestión de Cita - Real Estate Agency')}">
     <title>Real Estate Agency</title>
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
 
-<!-- Incluir el fragmento del header -->
 <header th:replace="~{fragments/header :: header}"></header>
-<main class="flex-grow-1 container mt-5">
-    <h1 th:text="${appointment.id == null ? 'Add New Appointment' : 'Edit Appointment'}"></h1>
 
-    <!-- Muestra un mensaje de error si hay algún problema -->
-    <div th:if="${errorMessage}" class="alert alert-danger">
-        <p th:text="${errorMessage}"></p>
+<main class="flex-grow container mx-auto px-4 mt-24 mb-12">
+
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-6 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-heading font-bold text-brand-900"
+                    th:text="${appointment.id == null ? 'Agendar Cita' : 'Reprogramar Cita'}"></h1>
+                <p class="text-gray-500 mt-1">Configura los detalles del encuentro.</p>
+            </div>
+            <a th:href="@{/appointments}" class="text-sm text-gray-500 hover:text-brand-800 transition-colors">
+                <i class="fa-solid fa-times mr-1"></i> Cancelar
+            </a>
+        </div>
+
+        <div th:if="${errorMessage}" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden p-8">
+
+            <form th:action="${appointment.id == null} ? '/appointments/insert' : '/appointments/update'"
+                  th:object="${appointment}" method="post" class="space-y-6">
+
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="appointmentDate" class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                <i class="fa-regular fa-calendar"></i>
+                            </span>
+                            <input type="date" th:field="*{appointmentDate}" id="appointmentDate"
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" />
+                        </div>
+                        <p th:if="${#fields.hasErrors('appointmentDate')}" class="mt-1 text-sm text-red-600" th:errors="*{appointmentDate}"></p>
+                    </div>
+
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                <i class="fa-solid fa-map-pin"></i>
+                            </span>
+                            <input type="text" th:field="*{location}" id="location"
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                                   placeholder="Ej: Calle Principal 12, Piso 1" />
+                        </div>
+                        <p th:if="${#fields.hasErrors('location')}" class="mt-1 text-sm text-red-600" th:errors="*{location}"></p>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-2"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg">
+
+                    <div>
+                        <label for="agent" class="block text-sm font-bold text-brand-800 mb-1">
+                            <i class="fa-solid fa-user-tie mr-1"></i> Agente Responsable
+                        </label>
+                        <select id="agent" name="agent" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white">
+                            <option value="" disabled selected>Seleccionar agente...</option>
+                            <option th:each="ag : ${agents}" th:value="${ag.id}" th:text="${ag.code}"
+                                    th:selected="${appointment.agent != null} ? ${appointment.agent.id == ag.id} : false">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="client" class="block text-sm font-bold text-green-700 mb-1">
+                            <i class="fa-solid fa-user mr-1"></i> Cliente
+                        </label>
+                        <select id="client" name="client" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white">
+                            <option value="" disabled selected>Seleccionar cliente...</option>
+                            <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.code}"
+                                    th:selected="${appointment.client != null} ? ${appointment.client.id == c.id} : false">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notas Adicionales</label>
+                    <textarea th:field="*{notes}" id="notes" rows="3"
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                              placeholder="Detalles importantes, código de puerta, etc..."></textarea>
+                    <p th:if="${#fields.hasErrors('notes')}" class="mt-1 text-sm text-red-600" th:errors="*{notes}"></p>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3">
+                    <a th:href="@{/appointments}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</a>
+                    <button type="submit" class="bg-brand-800 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-brand-900 shadow-md hover:shadow-lg transition-all transform active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span th:text="${appointment.id == null ? 'Confirmar Cita' : 'Guardar Cambios'}"></span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
-
-    <form th:action="${appointment.id == null} ? '/appointments/insert' : '/appointments/update'"
-          th:object="${appointment}" method="post" enctype="multipart/form-data" class="mt-4">
-
-        <input type="hidden" th:field="*{id}" />
-
-        <div class="mb-3">
-            <label for="appointment_date" class="form-label">Date:</label>
-            <input type="date" th:field="*{appointmentDate}" id="appointment_date"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('appointmentDate')}"
-                 class="text-danger"
-                 th:errors="*{appointmentDate}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="location" class="form-label">Location:</label>
-            <input type="text" th:field="*{location}" id="location" class="form-control" />
-            <div th:if="${#fields.hasErrors('location')}" class="text-danger" th:errors="*{location}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="notes" class="form-label">Notes:</label>
-            <input type="text" th:field="*{notes}" id="notes" class="form-control" />
-            <div th:if="${#fields.hasErrors('notes')}" class="text-danger" th:errors="*{notes}"></div>
-        </div>
-
-        <div class="mb-3">
-            <label for="agent" class="form-label">Agent:</label>
-            <select id="agent" name="agent" class="form-select">
-                <option value="" disabled>Select an agent</option>
-                <option th:each="ag : ${agents}" th:value="${ag.id}" th:text="${ag.code}"
-                        th:selected="${appointment.agent != null} ? ${appointment.agent.id == ag.id} : false">
-                </option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="client" class="form-label">Client:</label>
-            <select id="client" name="client" class="form-select">
-                <option value="" disabled>Select a client</option>
-                <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.code}"
-                        th:selected="${appointment.client != null} ? ${appointment.client.id == c.id} : false">
-                </option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary" th:text="${appointment.id == null ? 'Create' : 'Update'}"></button>
-    </form>
-
-    <!-- Volver a la lista de citas -->
-    <a href="#" th:href="@{/appointments}" class="btn btn-secondary mt-3">Back to List</a>
 </main>
 
-<!-- Incluir el fragmento del footer -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

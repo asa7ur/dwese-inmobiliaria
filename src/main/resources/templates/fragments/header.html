@@ -1,50 +1,49 @@
-<header th:fragment="header" xmlns:th="http://www.thymeleaf.org">
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top border-bottom border-secondary shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">REAL ESTATE AGENCY</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           th:classappend="${activePage == 'home'} ? 'active'"
-                           th:href="@{/}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           th:classappend="${activePage == 'agents'} ? 'active'"
-                           th:href="@{/agents}">Agents</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           th:classappend="${activePage == 'appointments'} ? 'active'"
-                           th:href="@{/appointments}">Appointments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           th:classappend="${activePage == 'clients'} ? 'active'"
-                           th:href="@{/clients}">Clients</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           th:classappend="${activePage == 'offices'} ? 'active'"
-                           th:href="@{/offices}">Offices</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           th:classappend="${activePage == 'properties'} ? 'active'"
-                           th:href="@{/properties}">Properties</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           th:classappend="${activePage == 'transactions'} ? 'active'"
-                           th:href="@{/transactions}">Transactions</a>
-                    </li>
-                </ul>
+<header th:fragment="header" xmlns:th="http://www.thymeleaf.org" class="bg-white shadow-sm fixed w-full z-50 transition-all duration-300">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-20">
+            <div class="flex-shrink-0 flex items-center">
+                <a th:href="@{/}" class="flex items-center gap-2 text-2xl font-heading font-bold text-brand-900">
+                    <i class="fa-solid fa-house-chimney text-brand-500"></i>
+                    REAL ESTATE
+                </a>
+            </div>
+
+            <div class="hidden md:flex md:items-center md:space-x-8">
+
+                <a th:href="@{/properties}"
+                   class="text-gray-600 hover:text-brand-800 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                   th:classappend="${activePage == 'properties'} ? 'text-brand-800 font-bold'">Propiedades</a>
+
+                <a th:href="@{/agents}"
+                   class="text-gray-600 hover:text-brand-800 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                   th:classappend="${activePage == 'agents'} ? 'text-brand-800 font-bold'">Agentes</a>
+
+                <div class="relative group">
+                    <button class="text-gray-600 hover:text-brand-800 px-3 py-2 rounded-md text-sm font-medium inline-flex items-center">
+                        Gestión <i class="fa-solid fa-chevron-down ml-1 text-xs"></i>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right z-50">
+                        <a th:href="@{/appointments}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Citas</a>
+                        <a th:href="@{/clients}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Clientes</a>
+                        <a th:href="@{/offices}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Oficinas</a>
+                        <a th:href="@{/transactions}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Transacciones</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center md:hidden">
+                <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-gray-500 hover:text-brand-900 focus:outline-none">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
             </div>
         </div>
     </nav>
+
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a th:href="@{/}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-brand-900 hover:bg-gray-50">Home</a>
+            <a th:href="@{/properties}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-brand-900 hover:bg-gray-50">Propiedades</a>
+            <a th:href="@{/agents}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-brand-900 hover:bg-gray-50">Agentes</a>
+        </div>
+    </div>
 </header>
