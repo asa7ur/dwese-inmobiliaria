@@ -8,27 +8,60 @@
                 </a>
             </div>
 
-            <div class="hidden md:flex md:items-center md:space-x-6">
+            <div class="hidden md:flex md:items-center md:space-x-8">
+
+                <a th:href="@{/}"
+                   class="px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                   th:classappend="${activePage == 'home'} ? 'bg-brand-50 text-brand-800 font-bold' : 'text-gray-600 hover:text-brand-800 hover:bg-gray-50'">
+                    Home
+                </a>
 
                 <a th:href="@{/properties}"
-                   class="text-gray-600 hover:text-brand-800 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                   th:classappend="${activePage == 'properties'} ? 'text-brand-800 font-bold'">Propiedades</a>
+                   class="px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                   th:classappend="${activePage == 'properties'} ? 'bg-brand-50 text-brand-800 font-bold' : 'text-gray-600 hover:text-brand-800 hover:bg-gray-50'">
+                    Propiedades
+                </a>
 
                 <a th:href="@{/agents}"
-                   class="text-gray-600 hover:text-brand-800 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                   th:classappend="${activePage == 'agents'} ? 'text-brand-800 font-bold'">Agentes</a>
+                   class="px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                   th:classappend="${activePage == 'agents'} ? 'bg-brand-50 text-brand-800 font-bold' : 'text-gray-600 hover:text-brand-800 hover:bg-gray-50'">
+                    Agentes
+                </a>
 
                 <div class="relative group">
-                    <button class="text-gray-600 hover:text-brand-800 px-3 py-2 rounded-md text-sm font-medium inline-flex items-center">
+                    <button class="px-3 py-2 rounded-md text-sm font-medium inline-flex items-center transition-colors"
+                            th:classappend="${activePage == 'appointments' or activePage == 'clients' or activePage == 'offices' or activePage == 'transactions'} ? 'bg-brand-50 text-brand-800 font-bold' : 'text-gray-600 hover:text-brand-800 hover:bg-gray-50'">
                         Gestión <i class="fa-solid fa-chevron-down ml-1 text-xs"></i>
                     </button>
+
                     <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right z-50">
-                        <a th:href="@{/appointments}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Citas</a>
-                        <a th:href="@{/clients}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Clientes</a>
-                        <a th:href="@{/offices}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Oficinas</a>
-                        <a th:href="@{/transactions}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Transacciones</a>
+                        <a th:href="@{/appointments}"
+                           class="block px-4 py-2 text-sm hover:bg-gray-50"
+                           th:classappend="${activePage == 'appointments'} ? 'text-brand-800 font-bold bg-gray-50' : 'text-gray-700'">
+                            Citas
+                        </a>
+
+                        <a th:href="@{/clients}"
+                           class="block px-4 py-2 text-sm hover:bg-gray-50"
+                           th:classappend="${activePage == 'clients'} ? 'text-brand-800 font-bold bg-gray-50' : 'text-gray-700'">
+                            Clientes
+                        </a>
+
+                        <a th:href="@{/offices}"
+                           class="block px-4 py-2 text-sm hover:bg-gray-50"
+                           th:classappend="${activePage == 'offices'} ? 'text-brand-800 font-bold bg-gray-50' : 'text-gray-700'">
+                            Oficinas
+                        </a>
+
+                        <a th:href="@{/transactions}"
+                           class="block px-4 py-2 text-sm hover:bg-gray-50"
+                           th:classappend="${activePage == 'transactions'} ? 'text-brand-800 font-bold bg-gray-50' : 'text-gray-700'">
+                            Transacciones
+                        </a>
                     </div>
                 </div>
+
+            </div>
 
                 <div class="flex items-center gap-2 pl-6 border-l border-gray-200 ml-2">
                     <i class="fa-solid fa-globe text-gray-400 text-sm"></i>
@@ -55,7 +88,6 @@
                     <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
             </div>
-        </div>
     </nav>
 
     <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
