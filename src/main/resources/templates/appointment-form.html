@@ -70,7 +70,7 @@
                         </label>
                         <select id="agent" name="agent" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white">
                             <option value="" disabled selected>Seleccionar agente...</option>
-                            <option th:each="ag : ${agents}" th:value="${ag.id}" th:text="${ag.code}"
+                            <option th:each="ag : ${agents}" th:value="${ag.id}" th:text="${ag.name}"
                                     th:selected="${appointment.agent != null} ? ${appointment.agent.id == ag.id} : false">
                             </option>
                         </select>
@@ -82,7 +82,7 @@
                         </label>
                         <select id="client" name="client" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white">
                             <option value="" disabled selected>Seleccionar cliente...</option>
-                            <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.code}"
+                            <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.name}"
                                     th:selected="${appointment.client != null} ? ${appointment.client.id == c.id} : false">
                             </option>
                         </select>

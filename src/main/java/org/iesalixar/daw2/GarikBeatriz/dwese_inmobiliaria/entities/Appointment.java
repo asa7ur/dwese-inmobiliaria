@@ -37,7 +37,6 @@ public class Appointment {
     @Column(name = "location", nullable = false)
     private String location;
 
-    @NotEmpty(message = "{msg.appointment.notes.notEmpty}")
     @Column(name = "notes")
     private String notes;
 
@@ -68,6 +67,15 @@ public class Appointment {
     }
 
     @PostLoad
+    public void onLoad() {
+        this.generateCode();
+
+        if (this.appointmentDate == null && this.appointmentTimestamp > 0) {
+            this.appointmentDate = Instant.ofEpochSecond(this.appointmentTimestamp)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        }
+    }
     @PostPersist
     @PostUpdate
     private void generateCode() {
