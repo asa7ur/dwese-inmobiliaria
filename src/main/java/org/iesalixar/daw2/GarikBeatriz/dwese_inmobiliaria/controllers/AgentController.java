@@ -119,13 +119,13 @@ public class AgentController {
             @Valid @ModelAttribute("agent") Agent agent,
             BindingResult result,
             @RequestParam("imageFile") MultipartFile imageFile,
-            @RequestParam(value = "propertyIds", required = false) List<Long> propertyIds, // AGREGADO
+            @RequestParam(value = "propertyIds", required = false) List<Long> propertyIds,
             Model model,
             RedirectAttributes redirectAttributes
     ){
         if(result.hasErrors()){
             model.addAttribute("offices",  officeRepository.findAll());
-            model.addAttribute("allProperties", propertyRepository.findAll()); // Recargar lista si hay error
+            model.addAttribute("allProperties", propertyRepository.findAll());
             return "agent-form";
         }
 
@@ -151,6 +151,7 @@ public class AgentController {
         }
 
         agentRepository.save(agent);
+
         redirectAttributes.addFlashAttribute("successMessage", "Agente insertado correctamente.");
         return "redirect:/agents";
     }
@@ -160,7 +161,7 @@ public class AgentController {
             @Valid @ModelAttribute("agent") Agent agent,
             BindingResult result,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-            @RequestParam(value = "propertyIds", required = false) List<Long> propertyIds, // AGREGADO
+            @RequestParam(value = "propertyIds", required = false) List<Long> propertyIds,
             Model model,
             RedirectAttributes redirectAttributes
     ){
@@ -177,21 +178,32 @@ public class AgentController {
             return "agent-form";
         }
 
-        if (propertyIds != null) {
-            List<Property> selectedProperties = propertyRepository.findAllById(propertyIds);
-            agent.setProperties(selectedProperties);
-        } else {
-            agent.setProperties(new ArrayList<>());
-        }
+        Optional<Agent> existingOpt = agentRepository.findById(agent.getId());
+        if(existingOpt.isPresent()){
+            Agent existingAgent = existingOpt.get();
 
-        if(imageFile != null && !imageFile.isEmpty()){
-            String fileName = fileStorageService.saveFile(imageFile);
-            if(fileName != null){
-                agent.setImage(fileName);
+            existingAgent.setName(agent.getName());
+            existingAgent.setDni(agent.getDni());
+            existingAgent.setPhone(agent.getPhone());
+            existingAgent.setEmail(agent.getEmail());
+            existingAgent.setOffice(agent.getOffice());
+
+            if (propertyIds != null) {
+                List<Property> selectedProperties = propertyRepository.findAllById(propertyIds);
+                existingAgent.setProperties(selectedProperties);
+            } else {
+                existingAgent.setProperties(new ArrayList<>());
             }
-        }
 
-        agentRepository.save(agent);
+            if(imageFile != null && !imageFile.isEmpty()) {
+                String fileName = fileStorageService.saveFile(imageFile);
+                if (fileName != null) {
+                    existingAgent.setImage(fileName);
+                }
+            }
+
+            agentRepository.save(existingAgent);
+        }
 
         redirectAttributes.addFlashAttribute("successMessage", "Agente actualizado correctamente.");
         return "redirect:/agents";

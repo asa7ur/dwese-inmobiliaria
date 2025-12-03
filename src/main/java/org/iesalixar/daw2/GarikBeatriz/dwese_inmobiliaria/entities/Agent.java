@@ -63,7 +63,14 @@ public class Agent {
     @EqualsAndHashCode.Exclude
     private List<Transaction> transactions;
 
-    @ManyToMany(mappedBy = "agents")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "property_agent",
+            joinColumns = @JoinColumn(name = "agent_id"),
+            inverseJoinColumns = @JoinColumn(name = "property_id")
+    )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Property> properties;
 
     @PostLoad

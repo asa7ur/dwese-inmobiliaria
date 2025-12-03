@@ -140,9 +140,8 @@ public class PropertyController {
             model.addAttribute("statuses", Property.Status.values());
             return "property-form";
         }
-
-
         Optional<Property> existingOpt = propertyRepository.findById(property.getId());
+
         if (existingOpt.isPresent()) {
             Property existingProperty = existingOpt.get();
 
@@ -156,16 +155,15 @@ public class PropertyController {
             existingProperty.setBathrooms(property.getBathrooms());
             existingProperty.setStatus(property.getStatus());
 
-            // Procesar y añadir NUEVAS imágenes a la lista existente
             fileStorageService.processImages(existingProperty, files);
 
             propertyRepository.save(existingProperty);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Propiedad actualizada correctamente.");
         } else {
-            // Fallback por si no existe
-            propertyRepository.save(property);
+            redirectAttributes.addFlashAttribute("errorMessage", "No se encontró la propiedad.");
         }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Propiedad actualizada correctamente.");
         return "redirect:/properties";
     }
 

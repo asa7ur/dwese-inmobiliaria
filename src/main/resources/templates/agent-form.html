@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Insert/Update Agent')}">
+<head th:replace="~{fragments/head :: head ('Real Estate Agency - Agente')}">
     <title th:text="#{msg.title}">Real Estate Agency</title>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -8,7 +8,7 @@
 
 <main class="flex-grow-1 container mt-5">
     <h1 th:text="${agent.id == null} ? #{msg.agent-form.add} : #{msg.agent-form.edit}"></h1>
-    <!-- Error Message -->
+
     <div th:if="${errorMessage}" class="alert alert-danger">
         <p th:text="${errorMessage}"></p>
     </div>
@@ -21,64 +21,46 @@
 
         <input type="hidden" th:field="*{id}"/>
 
-        <!-- DNI -->
         <div class="mb-3">
             <label for="dni" class="form-label" th:text="#{msg.agent-form.dni}">DNI:</label>
-            <input type="text" th:field="*{dni}" id="dni"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('dni')}"
-                 class="text-danger"
-                 th:errors="*{dni}"></div>
+            <input type="text" th:field="*{dni}" id="dni" class="form-control" required/>
+            <div th:if="${#fields.hasErrors('dni')}" class="text-danger" th:errors="*{dni}"></div>
         </div>
 
-        <!-- NAME -->
         <div class="mb-3">
             <label for="name" class="form-label" th:text="#{msg.agent-form.name}">Name:</label>
-            <input type="text" th:field="*{name}" id="name"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('name')}"
-                 class="text-danger"
-                 th:errors="*{name}"></div>
+            <input type="text" th:field="*{name}" id="name" class="form-control" required/>
+            <div th:if="${#fields.hasErrors('name')}" class="text-danger" th:errors="*{name}"></div>
         </div>
 
-        <!-- PHONE -->
         <div class="mb-3">
             <label for="phone" class="form-label" th:text="#{msg.agent-form.phone}">Phone:</label>
-            <input type="text" th:field="*{phone}" id="phone"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('phone')}"
-                 class="text-danger"
-                 th:errors="*{phone}"></div>
+            <input type="text" th:field="*{phone}" id="phone" class="form-control" required/>
+            <div th:if="${#fields.hasErrors('phone')}" class="text-danger" th:errors="*{phone}"></div>
         </div>
 
-        <!-- EMAIL -->
         <div class="mb-3">
             <label for="email" class="form-label" th:text="#{msg.agent-form.email}">Email:</label>
-            <input type="email" th:field="*{email}" id="email"
-                   class="form-control" required/>
-            <div th:if="${#fields.hasErrors('email')}"
-                 class="text-danger"
-                 th:errors="*{email}"></div>
+            <input type="email" th:field="*{email}" id="email" class="form-control" required/>
+            <div th:if="${#fields.hasErrors('email')}" class="text-danger" th:errors="*{email}"></div>
         </div>
 
-        <!-- OFFICE -->
         <div class="mb-3">
             <label for="office_id" class="form-label" th:text="#{msg.agent-form.office}">Office:</label>
-            <select th:field="*{office.id}" id="office_id"
-                    class="form-select" required>
+            <select th:field="*{office.id}" id="office_id" class="form-select" required>
                 <option value="" th:text="#{msg.common.select-option}">-- Select Office --</option>
-                <option th:each="office : ${offices}"
-                        th:value="${office.id}"
-                        th:text="${office.name}"></option>
+                <option th:each="office : ${offices}" th:value="${office.id}" th:text="${office.name}"></option>
             </select>
-            <div th:if="${#fields.hasErrors('office.id')}"
-                 class="text-danger"
-                 th:errors="*{office.id}"></div>
+            <div th:if="${#fields.hasErrors('office.id')}" class="text-danger" th:errors="*{office.id}"></div>
         </div>
 
-        <div th:if="${allProperties != null}" class="mb-4">
-            <label class="form-label">Properties managed by this agent:</label>
-            <div class="border p-3 rounded" style="max-height: 250px; overflow-y: auto;">
+        <div class="mb-4">
+            <label class="form-label fw-bold">Propiedades gestionadas:</label>
+            <div class="border p-3 rounded bg-light" style="max-height: 250px; overflow-y: auto;">
+
+                <div th:if="${#lists.isEmpty(allProperties)}" class="text-muted">
+                    No hay propiedades disponibles en el sistema.
+                </div>
 
                 <div th:each="propItem : ${allProperties}" class="form-check">
                     <input class="form-check-input"
@@ -90,10 +72,11 @@
 
                     <label class="form-check-label" th:for="'property-checkbox-' + ${propItem.id}">
                         <span th:text="${propItem.name}"></span>
+                        <small class="text-muted" th:text="'(' + ${propItem.location} + ')'"></small>
                     </label>
                 </div>
             </div>
-            <small class="text-muted">Select one or more properties managed by this agent.</small>
+            <div class="form-text">Seleccione las propiedades que gestionará este agente.</div>
         </div>
 
         <div class="mb-3">
@@ -103,27 +86,13 @@
 
         <div class="mb-3" th:if="${agent.id != null and agent.image != null and !#strings.isEmpty(agent.image)}">
             <label class="form-label" th:text="#{msg.agent-form.current-image}">Current Image:</label>
-
-            <div class="d-flex flex-wrap gap-3">
-                <div class="card position-relative" style="width: 150px;">
-                    <img th:src="@{'/uploads/' + ${agent.image}}"
-                         class="card-img-top"
-                         style="height: 150px; object-fit: cover; border-bottom: 1px solid #ddd;"
-                         alt="Agent Photo">
-
-                    <div class="card-body p-1 text-center">
-                        <button type="submit"
-                                formaction="/agents/deleteImage"
-                                formmethod="post"
-                                name="id"
-                                th:value="${agent.id}"
-                                class="btn btn-danger btn-sm w-100"
-                                style="font-size: 0.8rem;"
-                                th:text="#{msg.agent-form.delete-image}"
-                                onclick="return confirm('Delete this image permanently?')">
-                            Delete
-                        </button>
-                    </div>
+            <div class="card position-relative" style="width: 150px;">
+                <img th:src="@{'/uploads/' + ${agent.image}}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                <div class="card-body p-1 text-center">
+                    <button type="submit" formaction="/agents/deleteImage" formmethod="post" name="id" th:value="${agent.id}"
+                            class="btn btn-danger btn-sm w-100" onclick="return confirm('Delete this image permanently?')">
+                        Delete
+                    </button>
                 </div>
             </div>
         </div>

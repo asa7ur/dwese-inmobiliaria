@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{fragments/head :: head ('Real Estate Agency - Insertar/Actualizar Propiedad')}">
+<head th:replace="~{fragments/head :: head ('Real Estate Agency - Propiedad')}">
     <title>Real Estate Agency</title>
 </head>
 <body>
@@ -9,7 +9,6 @@
 <main class="flex-grow-1 container mt-5">
     <h1 th:text="${property.id == null ? 'Add New Property' : 'Edit Property'}"></h1>
 
-    <!-- Muestra un mensaje de error si hay algún problema -->
     <div th:if="${errorMessage}" class="alert alert-danger">
         <p th:text="${errorMessage}"></p>
     </div>
@@ -23,33 +22,25 @@
             <label for="name" class="form-label">Name:</label>
             <input type="text" th:field="*{name}" id="name" class="form-control"
                    th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"/>
-            <div th:if="${#fields.hasErrors('name')}"
-                 class="text-danger"
-                 th:errors="*{name}"></div>
+            <div th:if="${#fields.hasErrors('name')}" class="text-danger" th:errors="*{name}"></div>
         </div>
 
         <div class="mb-3">
             <label for="description" class="form-label">Description:</label>
             <textarea th:field="*{description}" id="description" class="form-control" rows="3"></textarea>
-            <div th:if="${#fields.hasErrors('description')}"
-                 class="text-danger"
-                 th:errors="*{description}"></div>
+            <div th:if="${#fields.hasErrors('description')}" class="text-danger" th:errors="*{description}"></div>
         </div>
 
         <div class="mb-3">
             <label for="location" class="form-label">Location:</label>
             <input type="text" th:field="*{location}" id="location" class="form-control" />
-            <div th:if="${#fields.hasErrors('location')}"
-                 class="text-danger"
-                 th:errors="*{location}"></div>
+            <div th:if="${#fields.hasErrors('location')}" class="text-danger" th:errors="*{location}"></div>
         </div>
 
         <div class="mb-3">
             <label for="price" class="form-label">Price:</label>
             <input type="number" step="0.01" th:field="*{price}" id="price" class="form-control" />
-            <div th:if="${#fields.hasErrors('price')}"
-                 class="text-danger"
-                 th:errors="*{price}"></div>
+            <div th:if="${#fields.hasErrors('price')}" class="text-danger" th:errors="*{price}"></div>
         </div>
 
         <div class="mb-3">
@@ -58,32 +49,24 @@
                 <option value="" disabled selected>Select Type</option>
                 <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
             </select>
-            <div th:if="${#fields.hasErrors('type')}"
-                 class="text-danger"
-                 th:errors="*{type}"></div>
+            <div th:if="${#fields.hasErrors('type')}" class="text-danger" th:errors="*{type}"></div>
         </div>
 
         <div class="row">
             <div class="col-md-4 mb-3">
                 <label for="floors" class="form-label">Floors:</label>
                 <input type="number" th:field="*{floors}" id="floors" class="form-control" />
-                <div th:if="${#fields.hasErrors('floors')}"
-                     class="text-danger"
-                     th:errors="*{floors}"></div>
+                <div th:if="${#fields.hasErrors('floors')}" class="text-danger" th:errors="*{floors}"></div>
             </div>
             <div class="col-md-4 mb-3">
                 <label for="bedrooms" class="form-label">Bedrooms:</label>
                 <input type="number" th:field="*{bedrooms}" id="bedrooms" class="form-control" />
-                <div th:if="${#fields.hasErrors('bedrooms')}"
-                     class="text-danger"
-                     th:errors="*{bedrooms}"></div>
+                <div th:if="${#fields.hasErrors('bedrooms')}" class="text-danger" th:errors="*{bedrooms}"></div>
             </div>
             <div class="col-md-4 mb-3">
                 <label for="bathrooms" class="form-label">Bathrooms:</label>
                 <input type="number" th:field="*{bathrooms}" id="bathrooms" class="form-control" />
-                <div th:if="${#fields.hasErrors('bathrooms')}"
-                     class="text-danger"
-                     th:errors="*{bathrooms}"></div>
+                <div th:if="${#fields.hasErrors('bathrooms')}" class="text-danger" th:errors="*{bathrooms}"></div>
             </div>
         </div>
 
@@ -93,29 +76,29 @@
                 <option value="" disabled selected>Select Status</option>
                 <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
             </select>
-            <div th:if="${#fields.hasErrors('status')}"
-                 class="text-danger"
-                 th:errors="*{status}"></div>
+            <div th:if="${#fields.hasErrors('status')}" class="text-danger" th:errors="*{status}"></div>
         </div>
 
-        <div th:if="${allAgents != null}" class="mb-4">
-            <label class="form-label">Agents managing this property:</label>
-            <div class="border p-3 rounded" style="max-height: 250px; overflow-y: auto;">
+        <div class="mb-4" th:if="${property.id != null}">
+            <label class="form-label fw-bold">Agentes encargados:</label>
 
-                <div th:each="agentItem : ${allAgents}" class="form-check">
-                    <input class="form-check-input"
-                           type="checkbox"
-                           name="agentIds"
-                           th:value="${agentItem.id}"
-                           th:id="'agent-checkbox-' + ${agentItem.id}"
-                           th:checked="${property.agents != null and #lists.contains(property.agents, agentItem)}">
-
-                    <label class="form-check-label" th:for="'agent-checkbox-' + ${agentItem.id}">
-                        <span th:text="${agentItem.name} + ' (' + ${agentItem.email} + ')'"></span>
-                    </label>
+            <div class="card p-3 bg-light">
+                <div th:if="${#lists.isEmpty(property.agents)}" class="text-muted fst-italic">
+                    <i class="bi bi-info-circle"></i> No hay agentes asignados a esta propiedad actualmente.
                 </div>
+
+                <ul th:if="${not #lists.isEmpty(property.agents)}" class="list-group list-group-flush">
+                    <li th:each="agent : ${property.agents}" class="list-group-item bg-transparent">
+                        <i class="bi bi-person-badge me-2"></i>
+                        <span class="fw-bold" th:text="${agent.name}">Nombre</span>
+                        <span class="text-muted ms-2" th:text="'(' + ${agent.email} + ')'">Email</span>
+                    </li>
+                </ul>
             </div>
-            <small class="text-muted">Select one or more agents managing this property.</small>
+            <div class="form-text mt-1 text-primary">
+                <i class="bi bi-exclamation-circle"></i>
+                La asignación de propiedades se realiza desde el perfil del Agente.
+            </div>
         </div>
 
         <div class="mb-3">
@@ -125,25 +108,15 @@
 
         <div class="mb-3" th:if="${property.id != null}">
             <label class="form-label">Current Images:</label>
-
             <div th:if="${#lists.isEmpty(property.images)}" class="text-muted">
                 <small>No images assigned.</small>
             </div>
-
             <div class="d-flex flex-wrap gap-3">
                 <div th:each="img : ${property.images}" class="card position-relative" style="width: 120px;">
-                    <img th:src="@{'/uploads/' + ${img.fileName}}" class="card-img-top"
-                         style="height: 80px; object-fit: cover; border-bottom: 1px solid #ddd;">
-
+                    <img th:src="@{'/uploads/' + ${img.fileName}}" class="card-img-top" style="height: 80px; object-fit: cover;">
                     <div class="card-body p-1 text-center">
-                        <button type="submit"
-                                formaction="/properties/delete-image"
-                                formmethod="post"
-                                name="imageId"
-                                th:value="${img.id}"
-                                class="btn btn-danger btn-sm w-100"
-                                style="font-size: 0.7rem;"
-                                onclick="return confirm('Delete this image permanently?')">
+                        <button type="submit" formaction="/properties/delete-image" formmethod="post" name="imageId" th:value="${img.id}"
+                                class="btn btn-danger btn-sm w-100" onclick="return confirm('Delete this image permanently?')">
                             <input type="hidden" name="propertyId" th:value="${property.id}" />
                             Delete
                         </button>

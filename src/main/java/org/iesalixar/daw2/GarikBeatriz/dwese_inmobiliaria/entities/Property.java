@@ -73,12 +73,7 @@ public class Property {
     @EqualsAndHashCode.Exclude
     private Transaction transaction;
 
-    @ManyToMany
-    @JoinTable(
-            name = "property_agent",
-            joinColumns = @JoinColumn(name = "property_id"),
-            inverseJoinColumns = @JoinColumn(name = "agent_id")
-    )
+    @ManyToMany(mappedBy = "properties", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Agent> agents;
