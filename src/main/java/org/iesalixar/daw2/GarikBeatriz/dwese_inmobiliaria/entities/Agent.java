@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -71,7 +72,7 @@ public class Agent {
     )
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<Property> properties;
+    private List<Property> properties = new ArrayList<>();
 
     @PostLoad
     @PostPersist
