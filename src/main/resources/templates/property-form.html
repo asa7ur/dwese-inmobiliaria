@@ -99,17 +99,19 @@
         </div>
 
         <div th:if="${allAgents != null}" class="mb-4">
-            <label class="form-label text-light">Agents managing this property:</label>
+            <label class="form-label">Agents managing this property:</label>
             <div class="border p-3 rounded" style="max-height: 250px; overflow-y: auto;">
-                <div th:each="stage : ${allAgents}" class="form-check bg-dark text-light border-light">
+
+                <div th:each="agentItem : ${allAgents}" class="form-check">
                     <input class="form-check-input"
                            type="checkbox"
                            name="agentIds"
-                           th:value="${agent.id}"
-                           th:checked="${#lists.contains(assignedAgents, agent)}"
-                           id="agent-checkbox-[[${agent.id}]]">
-                    <label class="form-check-label" th:for="'agent-checkbox-' + ${agent.id}">
-                        <span th:text="${agent.name}"></span>
+                           th:value="${agentItem.id}"
+                           th:id="'agent-checkbox-' + ${agentItem.id}"
+                           th:checked="${property.agents != null and #lists.contains(property.agents, agentItem)}">
+
+                    <label class="form-check-label" th:for="'agent-checkbox-' + ${agentItem.id}">
+                        <span th:text="${agentItem.name} + ' (' + ${agentItem.email} + ')'"></span>
                     </label>
                 </div>
             </div>
