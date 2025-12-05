@@ -116,14 +116,14 @@
                             </div>
                             <div class="ml-3 text-sm">
                                 <label class="font-medium text-gray-700 cursor-pointer block">
-                                    <span th:text="${prop.name}" th:text="#{msg.agent-form.property-name}"></span>
+                                    <span th:text="${prop.name} + ' ' + #{msg.agent-form.property-name}"></span>
                                     <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
-                                          th:text="${prop.status}" th:text="#{msg.agent-form.property-status}"></span>
+                                          th:text="${prop.status} + ' ' + #{msg.agent-form.property-status}"></span>
                                 </label>
                                 <p class="text-gray-500 text-xs mt-0.5">
-                                    <i class="fa-solid fa-location-dot mr-1"></i> <span th:text="${prop.location}" th:text="#{msg.agent-form.property-location}"></span>
+                                    <i class="fa-solid fa-location-dot mr-1"></i> <span th:text="${prop.location} + ' ' + #{msg.agent-form.property-location}"></span>
                                     <span class="mx-1">|</span>
-                                    <span th:text="${prop.price} + '€'" th:text="#{msg.agent-form.property-price}"></span>
+                                    <span th:text="${prop.price} + '€' + ' ' + #{msg.agent-form.property-price}"></span>
                                 </p>
                             </div>
                         </div>
