@@ -10,11 +10,12 @@
 
     <div class="flex flex-col md:flex-row justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-heading font-bold text-gray-900">Historial de Transacciones</h1>
-            <p class="text-gray-500 mt-1">Registro de ventas y alquileres realizados.</p>
+            <h1 class="text-3xl font-heading font-bold text-gray-900" th:text="#{msg.transaction.title}"></h1>
+            <p class="text-gray-500 mt-1" th:text="#{msg.transaction.description}"></p>
         </div>
         <a th:href="@{/transactions/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
-            <i class="fa-solid fa-file-contract"></i> Nueva Transacción
+            <i class="fa-solid fa-file-contract"></i>
+            <span th:text="#{msg.transaction.add}"></span>
         </a>
     </div>
 
@@ -37,27 +38,29 @@
                         </span>
                     <input type="text" name="keyword" th:value="${keyword}"
                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
-                           placeholder="Buscar por Propiedad, Cliente, Agente...">
+                           th:placeholder="#{msg.transaction.placeholder}">
                 </div>
-                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors">Buscar</button>
+                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors" th:text="#{msg.common.search}"></button>
                 <a th:if="${keyword != null && keyword != ''}" th:href="@{/transactions}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center">
                     <i class="fa-solid fa-xmark"></i>
                 </a>
             </form>
 
             <div class="flex flex-wrap gap-2 items-center text-sm">
-                <span class="text-gray-500 font-medium mr-1">Ordenar por:</span>
+                <span class="text-gray-500 font-medium mr-1" th:text="#{msg.common.order}"></span>
 
                 <a th:href="@{/transactions(page=${listTransactions.currentPage}, keyword=${keyword}, sortBy='price', direction=${sortBy == 'price' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'price'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
-                    Precio <i th:if="${sortBy == 'price'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    <span th:text="#{msg.transaction.price}"></span>
+                    <i th:if="${sortBy == 'price'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
 
                 <a th:href="@{/transactions(page=${listTransactions.currentPage}, keyword=${keyword}, sortBy='transactionTimestamp', direction=${sortBy == 'transactionTimestamp' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'transactionTimestamp'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
-                    Fecha <i th:if="${sortBy == 'transactionTimestamp'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    <span th:text="#{msg.transaction.date}"></span>
+                    <i th:if="${sortBy == 'transactionTimestamp'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
             </div>
         </div>
@@ -83,7 +86,7 @@
             <div class="md:w-2/6 border-l border-gray-100 pl-4">
                 <h3 class="text-lg font-bold text-gray-900 leading-tight mb-1">
                     <i class="fa-solid fa-house text-gray-400 mr-1 text-sm"></i>
-                    <span th:text="${transaction.property != null} ? ${transaction.property.name} : 'Propiedad no disponible'"></span>
+                    <span th:text="${transaction.property != null} ? ${transaction.property.name} : #{msg.transaction.no-property}"></span>
                 </h3>
                 <div class="text-2xl font-bold text-brand-800">
                     <span th:text="${transaction.price}"></span> €
@@ -91,23 +94,27 @@
                 <div class="text-sm text-gray-500">
                     <i class="fa-regular fa-calendar mr-1"></i>
                     <span th:if="${transaction.transactionDate != null}" th:text="${#temporals.format(transaction.transactionDate, 'dd-MM-yyyy')}"></span>
-                    <span th:unless="${transaction.transactionDate != null}">Fecha pendiente</span>
+                    <span th:unless="${transaction.transactionDate != null}" th:text="#{msg.transaction.date}"></span>
                 </div>
             </div>
 
             <div class="md:w-2/6 flex flex-col gap-2 text-sm border-l border-gray-100 pl-4">
                 <div class="flex items-center justify-between bg-gray-50 p-2 rounded">
-                    <span class="text-gray-500"><i class="fa-solid fa-user-tie mr-2 w-4"></i> Agente:</span>
+                    <span class="text-gray-500"><i class="fa-solid fa-user-tie mr-2 w-4"></i>
+                        <span th:text="#{msg.transaction.agent}"></span>
+                    </span>
                     <span class="font-medium text-gray-900 truncate max-w-[150px]" th:text="${transaction.agent != null} ? ${transaction.agent.name} : '-'"></span>
                 </div>
                 <div class="flex items-center justify-between bg-gray-50 p-2 rounded">
-                    <span class="text-gray-500"><i class="fa-solid fa-user mr-2 w-4"></i> Cliente:</span>
+                    <span class="text-gray-500"><i class="fa-solid fa-user mr-2 w-4"></i>
+                        <span th:text="#{msg.transaction.client}"></span>
+                    </span>
                     <span class="font-medium text-gray-900 truncate max-w-[150px]" th:text="${transaction.client != null} ? ${transaction.client.name} : '-'"></span>
                 </div>
             </div>
 
             <div class="md:w-1/6 flex justify-end gap-2 md:border-l md:border-gray-100 md:pl-4">
-                <a th:href="@{/transactions/edit(id=${transaction.id})}" class="text-gray-400 hover:text-brand-600 hover:bg-brand-50 p-2 rounded-lg transition-colors" title="Editar">
+                <a th:href="@{/transactions/edit(id=${transaction.id})}" class="text-gray-400 hover:text-brand-600 hover:bg-brand-50 p-2 rounded-lg transition-colors" title="#{msg.common.edit}">
                     <i class="fa-solid fa-pen-to-square text-lg"></i>
                 </a>
 
@@ -116,8 +123,8 @@
                     <button type="submit"
                             class="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
                             th:data-code="${transaction.code}"
-                            onclick="return confirm('¿Eliminar transacción ' + this.getAttribute('data-code') + '?')"
-                            title="Eliminar">
+                            onclick="return confirm(#{msg.transaction.confirm} + this.getAttribute('data-code') + '?')"
+                            title="#{msg.common.delete}">
                         <i class="fa-solid fa-trash-can text-lg"></i>
                     </button>
                 </form>
@@ -128,8 +135,8 @@
             <div class="bg-gray-50 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-3">
                 <i class="fa-solid fa-folder-open text-2xl text-gray-400"></i>
             </div>
-            <h3 class="text-lg font-medium text-gray-900">No hay transacciones</h3>
-            <p class="text-gray-500 mt-1">Registra la primera venta o alquiler.</p>
+            <h3 class="text-lg font-medium text-gray-900" th:text="#{msg.transaction.no-transaction}"></h3>
+            <p class="text-gray-500 mt-1" th:text="#{msg.transaction.register}"></p>
         </div>
 
     </div>
@@ -161,7 +168,8 @@
 
     <div class="text-center mt-8">
         <a th:href="@{/}" class="text-gray-500 hover:text-brand-800 text-sm font-medium transition-colors">
-            <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Inicio
+            <i class="fa-solid fa-arrow-left mr-1"></i>
+            <span th:text="#{msg.common.return-back}"></span>
         </a>
     </div>
 

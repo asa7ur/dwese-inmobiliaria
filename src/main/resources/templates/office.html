@@ -10,11 +10,12 @@
 
     <div class="flex flex-col md:flex-row justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-heading font-bold text-gray-900">Nuestras Oficinas</h1>
-            <p class="text-gray-500 mt-1">Encuentra la sucursal más cercana a ti.</p>
+            <h1 class="text-3xl font-heading font-bold text-gray-900" th:text="#{msg.office.title}"></h1>
+            <p class="text-gray-500 mt-1" th:text="#{msg.office.description}"></p>
         </div>
         <a th:href="@{/offices/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
-            <i class="fa-solid fa-building-circle-check"></i> Nueva Oficina
+            <i class="fa-solid fa-building-circle-check"></i>
+            <span th:text="#{msg.office.add}"></span>
         </a>
     </div>
 
@@ -41,27 +42,29 @@
                         </span>
                     <input type="text" name="keyword" th:value="${keyword}"
                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
-                           placeholder="Buscar por nombre, código...">
+                           th:placeholder="#{msg.office.placeholder}">
                 </div>
-                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors">Buscar</button>
+                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors" th:text="#{msg.common.search}"></button>
                 <a th:if="${keyword != null && keyword != ''}" th:href="@{/offices}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center">
                     <i class="fa-solid fa-xmark"></i>
                 </a>
             </form>
 
             <div class="flex flex-wrap gap-2 items-center text-sm">
-                <span class="text-gray-500 font-medium mr-1">Ordenar por:</span>
+                <span class="text-gray-500 font-medium mr-1" th:text="#{msg.common.order}"></span>
 
                 <a th:href="@{/offices(page=${listOffices.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'name'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
-                    Nombre <i th:if="${sortBy == 'name'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    <span th:text="#{msg.office.name}"></span>
+                    <i th:if="${sortBy == 'name'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
 
                 <a th:href="@{/offices(page=${listOffices.currentPage}, keyword=${keyword}, sortBy='address', direction=${sortBy == 'address' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'address'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
-                    Dirección <i th:if="${sortBy == 'address'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    <span th:text="#{msg.office.address}"></span>
+                    <i th:if="${sortBy == 'address'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
             </div>
         </div>
@@ -101,13 +104,13 @@
 
                 <div class="flex gap-3 pt-2">
                     <a th:href="@{/offices/edit(id=${office.id})}" class="flex-1 text-center bg-white border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 hover:text-brand-600 hover:border-brand-300 transition-colors text-sm font-medium">
-                        Editar
+                        <span th:text="#{msg.common.edit}"></span>
                     </a>
                     <form th:action="@{/offices/delete}" method="post" class="flex-1">
                         <input type="hidden" name="id" th:value="${office.id}"/>
                         <button type="submit" class="w-full bg-white border border-red-200 text-red-500 py-2 rounded-lg hover:bg-red-50 hover:border-red-300 transition-colors text-sm font-medium"
-                                th:onclick="|return confirm('¿Seguro que deseas eliminar esta oficina?')|">
-                            Eliminar
+                                th:onclick="|return confirm(#{msg.office.confirm})|">
+                            <span th:text="#{msg.common.delete}"></span>
                         </button>
                     </form>
                 </div>
@@ -118,8 +121,8 @@
             <div class="bg-gray-50 rounded-full h-24 w-24 flex items-center justify-center mx-auto mb-4 border-2 border-dashed border-gray-200">
                 <i class="fa-solid fa-building text-4xl text-gray-300"></i>
             </div>
-            <h3 class="text-lg font-medium text-gray-900">No hay oficinas registradas</h3>
-            <p class="text-gray-500 mt-1">Comienza añadiendo una nueva sucursal.</p>
+            <h3 class="text-lg font-medium text-gray-900" th:text="#{msg.office.no-office}"></h3>
+            <p class="text-gray-500 mt-1" th:text="#{msg.office.start}"></p>
         </div>
 
     </div>
@@ -151,7 +154,8 @@
 
     <div class="text-center mt-8">
         <a th:href="@{/}" class="text-gray-500 hover:text-brand-800 text-sm font-medium transition-colors">
-            <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Inicio
+            <i class="fa-solid fa-arrow-left mr-1"></i>
+            <span th:text="#{msg.common.return-back}"></span>
         </a>
     </div>
 

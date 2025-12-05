@@ -10,11 +10,12 @@
 
     <div class="flex flex-col md:flex-row justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-heading font-bold text-gray-900">Propiedades</h1>
-            <p class="text-gray-500 mt-1">Gestiona y visualiza tu cartera de inmuebles.</p>
+            <h1 class="text-3xl font-heading font-bold text-gray-900" th:text="#{msg.property.title}"></h1>
+            <p class="text-gray-500 mt-1" th:text="#{msg.property.description}"></p>
         </div>
         <a th:href="@{/properties/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
-            <i class="fa-solid fa-plus"></i> Nueva Propiedad
+            <i class="fa-solid fa-plus"></i>
+            <span th:text="#{msg.property.add}"></span>
         </a>
     </div>
 
@@ -35,20 +36,21 @@
                         </span>
                     <input type="text" name="keyword" th:value="${keyword}"
                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
-                           placeholder="Buscar por nombre, ubicación...">
+                           th:placeholder="#{msg.property.placeholder}">
                 </div>
-                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors">Buscar</button>
+                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors" th:text="#{msg.common.search}"></button>
                 <a th:if="${keyword != null && keyword != ''}" th:href="@{/properties}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center">
                     <i class="fa-solid fa-xmark"></i>
                 </a>
             </form>
 
             <div class="flex flex-wrap gap-2 items-center text-sm">
-                <span class="text-gray-500 font-medium mr-1">Ordenar por:</span>
+                <span class="text-gray-500 font-medium mr-1" th:text="#{msg.common.order}"></span>
                 <a th:href="@{/properties(page=${listProperties.currentPage}, keyword=${keyword}, sortBy='price', direction=${sortBy == 'price' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'price'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
-                    Precio <i th:if="${sortBy == 'price'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    <span th:text="#{msg.property.price}"></span>
+                    <i th:if="${sortBy == 'price'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
             </div>
         </div>
@@ -72,7 +74,7 @@
                          th:data-images="${@imgHelper.getImagesAsString(property.images)}"
 
                          data-index="0"
-                         alt="Imagen propiedad"
+                         alt="#{msg.property.photo}"
                          class="w-full h-full object-cover transition-transform duration-700"/>
 
                     <div th:if="${property.images.size() > 1}" class="absolute inset-0 flex items-center justify-between px-2 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
@@ -91,7 +93,7 @@
                 <div th:unless="${property.images != null and !property.images.isEmpty()}" class="h-full w-full flex items-center justify-center bg-gray-100 text-gray-400">
                     <div class="text-center">
                         <i class="fa-regular fa-image text-4xl mb-2"></i>
-                        <p class="text-sm">Sin imagen</p>
+                        <p class="text-sm" th:text="#{msg.property.no-image}"></p>
                     </div>
                 </div>
             </div>
@@ -125,7 +127,7 @@
                 </div>
 
                 <div class="py-3 border-t border-gray-100 mt-auto">
-                    <p class="text-xs text-gray-400 uppercase font-semibold mb-2">Agentes:</p>
+                    <p class="text-xs text-gray-400 uppercase font-semibold mb-2" th:text="#{msg.property.agent}"></p>
 
                     <div th:if="${not #lists.isEmpty(property.agents)}" class="flex flex-wrap gap-2">
                             <span th:each="agent : ${property.agents}"
@@ -136,17 +138,18 @@
                     </div>
 
                     <div th:if="${#lists.isEmpty(property.agents)}" class="text-xs text-gray-400 italic">
-                        <i class="fa-regular fa-circle-question mr-1"></i> Sin asignar
+                        <i class="fa-regular fa-circle-question mr-1"></i>
+                        <span th:text="#{msg.common.no-assigned}"></span>
                     </div>
                 </div>
 
                 <div class="pt-4 grid grid-cols-2 gap-3">
-                    <a th:href="@{/properties/edit(id=${property.id})}" class="text-center bg-gray-50 border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-300 py-2 rounded-lg text-sm font-medium transition-colors">Editar</a>
+                    <a th:href="@{/properties/edit(id=${property.id})}" class="text-center bg-gray-50 border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-300 py-2 rounded-lg text-sm font-medium transition-colors" th:text="#{msg.common.edit}"></a>
                     <form th:action="@{/properties/delete}" method="post" class="w-full">
                         <input type="hidden" name="id" th:value="${property.id}"/>
                         <button type="submit" class="w-full text-center bg-gray-50 border border-gray-200 text-gray-600 hover:text-red-600 hover:border-red-300 py-2 rounded-lg text-sm font-medium transition-colors"
                                 th:data-name="${property.name}"
-                                onclick="return confirm('¿Seguro que quieres eliminar: ' + this.getAttribute('data-name') + '?')">Borrar</button>
+                                onclick="return confirm(#{msg.property.confirm} + this.getAttribute('data-name') + '?')" th:text="#{msg.common.delete}"></button>
                     </form>
                 </div>
             </div>
@@ -180,7 +183,8 @@
 
     <div class="text-center mt-8">
         <a th:href="@{/}" class="text-gray-500 hover:text-brand-800 text-sm font-medium transition-colors">
-            <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Inicio
+            <i class="fa-solid fa-arrow-left mr-1"></i>
+            <span th:text="#{msg.common.return-back}"></span>
         </a>
     </div>
 </main>

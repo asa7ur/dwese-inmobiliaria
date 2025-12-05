@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{fragments/head :: head ('Gestión de Agentes - Real Estate Agency')}">
-    <title>#{msg.common.title}</title>
+    <title th:text="#{msg.common.title}"></title>
 </head>
 <body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
 
@@ -13,7 +13,7 @@
         <div class="mb-6 flex justify-between items-end">
             <div>
                 <h1 class="text-3xl font-heading font-bold text-brand-900"
-                    th:text="${agent.id == null ? #{msg.agent-form.add} : #{msg.agent-form.edit}}"></h1>
+                    th:text="#{${agent.id == null ? 'msg.agent-form.add' : 'msg.agent-form.edit'}}"></h1>
                 <p class="text-gray-500 mt-1" th:text="#{msg.agent-form.information}"></p>
             </div>
             <a th:href="@{/agents}" class="text-sm text-gray-500 hover:text-brand-800 transition-colors">
@@ -116,14 +116,14 @@
                             </div>
                             <div class="ml-3 text-sm">
                                 <label class="font-medium text-gray-700 cursor-pointer block">
-                                    <span th:text="${prop.name}">#{msg.agent-form.property-name}</span>
+                                    <span th:text="${prop.name}" th:text="#{msg.agent-form.property-name}"></span>
                                     <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
-                                          th:text="${prop.status}">#{msg.agent-form.property-status}</span>
+                                          th:text="${prop.status}" th:text="#{msg.agent-form.property-status}"></span>
                                 </label>
                                 <p class="text-gray-500 text-xs mt-0.5">
-                                    <i class="fa-solid fa-location-dot mr-1"></i> <span th:text="${prop.location}">#{msg.agent-form.property-location}</span>
+                                    <i class="fa-solid fa-location-dot mr-1"></i> <span th:text="${prop.location}" th:text="#{msg.agent-form.property-location}"></span>
                                     <span class="mx-1">|</span>
-                                    <span th:text="${prop.price} + '€'">#{msg.agent-form.property-price}</span>
+                                    <span th:text="${prop.price} + '€'" th:text="#{msg.agent-form.property-price}"></span>
                                 </p>
                             </div>
                         </div>
@@ -159,7 +159,7 @@
 
                 <div class="flex justify-end pt-4">
                     <button type="submit" class="bg-brand-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-brand-900 shadow-md hover:shadow-lg transition-all transform active:scale-95"
-                            th:text="${agent.id == null ? #{msg.agent-form.create} :  #{msg.common.save}}"></button>
+                            th:text="#{${agent.id == null ? 'msg.agent-form.create' :  'msg.common.save'}}"></button>
                 </div>
             </form>
 

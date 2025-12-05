@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/head :: head ('Gestión de Transacción - Real Estate Agency')}">
-    <title>Agencia Inmobiliaria</title>
+    <title th:text="#{msg.common.title}"></title>
 </head>
 <body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
 
@@ -13,11 +13,12 @@
         <div class="mb-6 flex justify-between items-end">
             <div>
                 <h1 class="text-3xl font-heading font-bold text-brand-900"
-                    th:text="${transaction.id == null ? 'Nueva Transacción' : 'Editar Transacción'}"></h1>
-                <p class="text-gray-500 mt-1">Registra los detalles financieros y legales.</p>
+                    th:text="#{${transaction.id == null ? 'msg.transaction-form.add' : 'msg.transaction-form.edit'}}"></h1>
+                <p class="text-gray-500 mt-1" th:text="#{msg.transaction-form.title}"></p>
             </div>
             <a th:href="@{/transactions}" class="text-sm text-gray-500 hover:text-brand-800 transition-colors">
-                <i class="fa-solid fa-times mr-1"></i> Cancelar
+                <i class="fa-solid fa-times mr-1"></i>
+                <span th:text="#{msg.common.cancel}"></span>
             </a>
         </div>
 
@@ -35,7 +36,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="transaction_date" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Transacción</label>
+                        <label for="transaction_date" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.date}"></label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                                 <i class="fa-regular fa-calendar-check"></i>
@@ -47,14 +48,14 @@
                     </div>
 
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Estado Actual</label>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.status}"></label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                                 <i class="fa-solid fa-tag"></i>
                             </span>
                             <select th:field="*{status}" id="status"
                                     class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
-                                <option value="" disabled>Seleccionar Estado...</option>
+                                <option value="" disabled th:text="#{msg.transaction-form.select-status}"></option>
                                 <option th:each="status : ${T(org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Transaction.Status).values()}"
                                         th:value="${status}"
                                         th:text="${status}">
@@ -65,17 +66,17 @@
                 </div>
 
                 <div class="border-t border-gray-100 pt-2"></div>
-                <h3 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-2">Detalles del Inmueble</h3>
+                <h3 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-2" th:text="#{msg.transaction-form.details}"></h3>
 
                 <div>
-                    <label for="property_id" class="block text-sm font-medium text-gray-700 mb-1">Propiedad</label>
+                    <label for="property_id" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.property}"></label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fa-solid fa-house"></i>
                         </span>
                         <select th:field="*{property.id}" id="property_id"
                                 class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
-                            <option value="">-- Seleccionar Propiedad --</option>
+                            <option value="" th:text="#{msg.transaction-form.select-property}"></option>
                             <option th:each="property : ${properties}"
                                     th:value="${property.id}"
                                     th:text="${property.name}"></option>
@@ -85,14 +86,14 @@
                 </div>
 
                 <div class="border-t border-gray-100 pt-2"></div>
-                <h3 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-2">Intervinientes</h3>
+                <h3 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-2" th:text="#{msg.transaction-form.interveners}"></h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg">
                     <div>
-                        <label for="client_id" class="block text-sm font-bold text-gray-700 mb-1">Cliente (Comprador/Inquilino)</label>
+                        <label for="client_id" class="block text-sm font-bold text-gray-700 mb-1" th:text="#{msg.transaction-form.client}"></label>
                         <select th:field="*{client.id}" id="client_id"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
-                            <option value="">-- Seleccionar Cliente --</option>
+                            <option value="" th:text="#{msg.transaction-form.select-client}"></option>
                             <option th:each="client : ${clients}"
                                     th:value="${client.id}"
                                     th:text="${client.name}"></option>
@@ -101,10 +102,10 @@
                     </div>
 
                     <div>
-                        <label for="agent_id" class="block text-sm font-bold text-gray-700 mb-1">Agente Responsable</label>
+                        <label for="agent_id" class="block text-sm font-bold text-gray-700 mb-1" th:text="#{msg.transaction-form.agent}"></label>
                         <select th:field="*{agent.id}" id="agent_id"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
-                            <option value="">-- Seleccionar Agente --</option>
+                            <option value="" th:text="#{msg.transaction-form.select-agent}"></option>
                             <option th:each="agent : ${agents}"
                                     th:value="${agent.id}"
                                     th:text="${agent.name}"></option>
@@ -114,7 +115,7 @@
                 </div>
 
                 <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Precio Final de Operación</label>
+                    <label for="price" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.price}"></label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fa-solid fa-euro-sign"></i>
@@ -127,10 +128,10 @@
                 </div>
 
                 <div class="pt-6 border-t border-gray-100 flex justify-end gap-3">
-                    <a th:href="@{/transactions}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</a>
+                    <a th:href="@{/transactions}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors" th:text="#{msg.common.cancel}"></a>
                     <button type="submit" class="bg-brand-800 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-brand-900 shadow-md hover:shadow-lg transition-all transform active:scale-95 flex items-center gap-2">
                         <i class="fa-solid fa-check"></i>
-                        <span th:text="${transaction.id == null ? 'Registrar Transacción' : 'Guardar Cambios'}"></span>
+                        <span th:text="#{${transaction.id == null ? 'msg.transaction-form.create' : 'msg.common.save'}}"></span>
                     </button>
                 </div>
 
