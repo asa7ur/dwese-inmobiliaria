@@ -63,23 +63,23 @@
 
             </div>
 
-                <div class="flex items-center gap-2 pl-6 border-l border-gray-200 ml-2">
-                    <i class="fa-solid fa-globe text-gray-400 text-sm"></i>
+            <div class="flex items-center gap-2 pl-6 border-l border-gray-200 ml-2">
+                <i class="fa-solid fa-globe text-gray-400 text-sm"></i>
 
-                    <a th:href="@{''(lang='es')}"
-                       class="text-sm transition-colors hover:text-brand-600"
-                       th:classappend="${#locale.language == 'es'} ? 'font-bold text-brand-800' : 'text-gray-500'">
-                        ES
-                    </a>
+                <a th:href="@{''(id=${param.id != null ? param.id[0] : null}, lang='es')}"
+                   class="text-sm transition-colors hover:text-brand-600"
+                   th:classappend="${#locale.language == 'es'} ? 'font-bold text-brand-800' : 'text-gray-500'">
+                    ES
+                </a>
 
-                    <span class="text-gray-300">|</span>
+                <span class="text-gray-300">|</span>
 
-                    <a th:href="@{''(lang='en')}"
-                       class="text-sm transition-colors hover:text-brand-600"
-                       th:classappend="${#locale.language == 'en'} ? 'font-bold text-brand-800' : 'text-gray-500'">
-                        EN
-                    </a>
-                </div>
+                <a th:href="@{''(id=${param.id != null ? param.id[0] : null}, lang='en')}"
+                   class="text-sm transition-colors hover:text-brand-600"
+                   th:classappend="${#locale.language == 'en'} ? 'font-bold text-brand-800' : 'text-gray-500'">
+                    EN
+                </a>
+            </div>
 
             </div>
 
