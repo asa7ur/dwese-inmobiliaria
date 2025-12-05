@@ -10,11 +10,12 @@
 
     <div class="flex flex-col md:flex-row justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-heading font-bold text-gray-900">Cartera de Clientes</h1>
-            <p class="text-gray-500 mt-1">Gestión de contactos y potenciales compradores.</p>
+            <h1 class="text-3xl font-heading font-bold text-gray-900" th:text="#{msg.client.title}"></h1>
+            <p class="text-gray-500 mt-1" th:text="#{msg.client.description}"></p>
         </div>
         <a th:href="@{/clients/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
-            <i class="fa-solid fa-user-plus"></i> Nuevo Cliente
+            <i class="fa-solid fa-user-plus"></i>
+            <span th:text="#{msg.client.add}"></span>
         </a>
     </div>
 
@@ -41,27 +42,29 @@
                         </span>
                     <input type="text" name="keyword" th:value="${keyword}"
                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
-                           placeholder="Buscar por nombre, DNI, email...">
+                           th:placeholder="#{msg.client.placeholder}">
                 </div>
-                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors">Buscar</button>
+                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors" th:text="#{msg.common.search}"></button>
                 <a th:if="${keyword != null && keyword != ''}" th:href="@{/clients}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center">
                     <i class="fa-solid fa-xmark"></i>
                 </a>
             </form>
 
             <div class="flex flex-wrap gap-2 items-center text-sm">
-                <span class="text-gray-500 font-medium mr-1">Ordenar por:</span>
+                <span class="text-gray-500 font-medium mr-1" th:text="#{msg.common.order}"></span>
 
                 <a th:href="@{/clients(page=${listClients.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'name'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
-                    Nombre <i th:if="${sortBy == 'name'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    <span th:text="#{msg.client.name}"></span>
+                    <i th:if="${sortBy == 'name'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
 
                 <a th:href="@{/clients(page=${listClients.currentPage}, keyword=${keyword}, sortBy='dni', direction=${sortBy == 'dni' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'dni'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
-                    DNI <i th:if="${sortBy == 'dni'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    <span th:text="#{msg.client.dni}"></span>
+                    <i th:if="${sortBy == 'dni'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
             </div>
         </div>
@@ -103,7 +106,7 @@
             </div>
 
             <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 flex justify-between items-center">
-                <span class="text-xs text-gray-400 font-medium">Acciones</span>
+                <span class="text-xs text-gray-400 font-medium" th:text="#{msg.client.actions}"></span>
                 <div class="flex gap-2">
                     <a th:href="@{/clients/edit(id=${client.id})}" class="text-brand-600 hover:text-brand-800 bg-white border border-gray-200 hover:border-brand-300 p-2 rounded-md transition-colors shadow-sm" title="Editar">
                         <i class="fa-solid fa-pen-to-square"></i>
@@ -115,8 +118,8 @@
                         <button type="submit"
                                 class="text-red-500 hover:text-red-700 bg-white border border-gray-200 hover:border-red-300 p-2 rounded-md transition-colors shadow-sm"
                                 th:data-name="${client.name}"
-                                onclick="return confirm('¿Eliminar cliente: ' + this.getAttribute('data-name') + '?')"
-                                title="Eliminar">
+                                onclick="return confirm(#{msg.client.confirm} + this.getAttribute('data-name') + '?')"
+                                title="#{msg.client.delete}">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </form>
@@ -128,8 +131,8 @@
             <div class="bg-gray-100 rounded-full h-20 w-20 flex items-center justify-center mx-auto mb-4">
                 <i class="fa-solid fa-users-viewfinder text-3xl text-gray-400"></i>
             </div>
-            <h3 class="text-lg font-medium text-gray-900">No hay clientes registrados</h3>
-            <p class="text-gray-500 mt-1">Añade uno nuevo o ajusta la búsqueda.</p>
+            <h3 class="text-lg font-medium text-gray-900" th:text="#{msg.client.no-client}"></h3>
+            <p class="text-gray-500 mt-1" th:text="#{msg.client.search}"></p>
         </div>
 
     </div>
@@ -161,7 +164,8 @@
 
     <div class="text-center mt-8">
         <a th:href="@{/}" class="text-gray-500 hover:text-brand-800 text-sm font-medium transition-colors">
-            <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Inicio
+            <i class="fa-solid fa-arrow-left mr-1"></i>
+            <span th:text="#{msg.common.return-back}"></span>
         </a>
     </div>
 

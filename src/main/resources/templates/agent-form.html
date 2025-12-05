@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{fragments/head :: head ('Gestión de Agentes - Real Estate Agency')}">
-    <title>Agencia Inmobiliaria</title>
+    <title>#{msg.common.title}</title>
 </head>
 <body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
 
@@ -13,11 +13,12 @@
         <div class="mb-6 flex justify-between items-end">
             <div>
                 <h1 class="text-3xl font-heading font-bold text-brand-900"
-                    th:text="${agent.id == null ? 'Nuevo Agente' : 'Editar Agente'}"></h1>
-                <p class="text-gray-500 mt-1">Información personal y cartera de propiedades.</p>
+                    th:text="${agent.id == null ? #{msg.agent-form.add} : #{msg.agent-form.edit}}"></h1>
+                <p class="text-gray-500 mt-1" th:text="#{msg.agent-form.information}"></p>
             </div>
             <a th:href="@{/agents}" class="text-sm text-gray-500 hover:text-brand-800 transition-colors">
-                <i class="fa-solid fa-times mr-1"></i> Cancelar
+                <i class="fa-solid fa-times mr-1"></i>
+                <span th:text="#{msg.common.cancel}"></span>
             </a>
         </div>
 
@@ -39,14 +40,14 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="dni" class="block text-sm font-medium text-gray-700 mb-1">DNI</label>
+                        <label for="dni" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.agent-form.dni}"></label>
                         <input type="text" th:field="*{dni}" id="dni"
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
                         <p th:if="${#fields.hasErrors('dni')}" class="mt-1 text-sm text-red-600" th:errors="*{dni}"></p>
                     </div>
 
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.agent-form.name}"></label>
                         <input type="text" th:field="*{name}" id="name"
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
                         <p th:if="${#fields.hasErrors('name')}" class="mt-1 text-sm text-red-600" th:errors="*{name}"></p>
@@ -55,7 +56,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.agent-form.phone}"></label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                                 <i class="fa-solid fa-phone"></i>
@@ -67,7 +68,7 @@
                     </div>
 
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.agent-form.email}"></label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                                 <i class="fa-solid fa-envelope"></i>
@@ -80,14 +81,14 @@
                 </div>
 
                 <div>
-                    <label for="office_id" class="block text-sm font-medium text-gray-700 mb-1">Oficina Asignada</label>
+                    <label for="office_id" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.agent-form.office}"></label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fa-solid fa-building"></i>
                         </span>
                         <select th:field="*{office.id}" id="office_id"
                                 class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
-                            <option value="">-- Seleccionar Oficina --</option>
+                            <option value="" th:text="#{msg.agent-form.select-option}"></option>
                             <option th:each="office : ${offices}"
                                     th:value="${office.id}"
                                     th:text="${office.name}"></option>
@@ -99,13 +100,11 @@
                 <hr class="border-gray-100">
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Asignar Propiedades</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" th:text="#{msg.agent-form.property}"></label>
 
                     <div class="border border-gray-300 rounded-lg bg-gray-50 max-h-60 overflow-y-auto">
 
-                        <div th:if="${#lists.isEmpty(allProperties)}" class="p-4 text-sm text-gray-500 italic text-center">
-                            No hay propiedades disponibles en el sistema.
-                        </div>
+                        <div th:if="${#lists.isEmpty(allProperties)}" class="p-4 text-sm text-gray-500 italic text-center" th:text="#{msg.agent-form.no-property}"></div>
 
                         <div th:each="prop : ${allProperties}" class="flex items-start p-3 border-b border-gray-200 last:border-0 hover:bg-gray-100 transition-colors">
                             <div class="flex items-center h-5">
@@ -117,27 +116,28 @@
                             </div>
                             <div class="ml-3 text-sm">
                                 <label class="font-medium text-gray-700 cursor-pointer block">
-                                    <span th:text="${prop.name}">Nombre Propiedad</span>
+                                    <span th:text="${prop.name}">#{msg.agent-form.property-name}</span>
                                     <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
-                                          th:text="${prop.status}">Estado</span>
+                                          th:text="${prop.status}">#{msg.agent-form.property-status}</span>
                                 </label>
                                 <p class="text-gray-500 text-xs mt-0.5">
-                                    <i class="fa-solid fa-location-dot mr-1"></i> <span th:text="${prop.location}">Ubicación</span>
+                                    <i class="fa-solid fa-location-dot mr-1"></i> <span th:text="${prop.location}">#{msg.agent-form.property-location}</span>
                                     <span class="mx-1">|</span>
-                                    <span th:text="${prop.price} + '€'">Precio</span>
+                                    <span th:text="${prop.price} + '€'">#{msg.agent-form.property-price}</span>
                                 </p>
                             </div>
                         </div>
                     </div>
                     <p class="text-xs text-gray-500 mt-1">
-                        <i class="fa-solid fa-circle-info mr-1"></i> Selecciona las propiedades que gestionará este agente.
+                        <i class="fa-solid fa-circle-info mr-1"></i>
+                        <span th:text="#{msg.agent-form.property-select}"></span>
                     </p>
                 </div>
 
                 <hr class="border-gray-100">
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Foto de Perfil</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2" th:text="#{msg.agent.current-image}"></label>
 
                     <div class="flex items-center gap-6">
                         <div th:if="${agent.image != null}" class="relative group">
@@ -152,23 +152,24 @@
                             <input type="file" name="imageFile" id="imageFile"
                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition-all"
                                    accept="image/*"/>
-                            <p class="text-xs text-gray-500 mt-1">Recomendado: Formato cuadrado (JPG, PNG).</p>
+                            <p class="text-xs text-gray-500 mt-1" th:text="#{msg.agent-form.format}"></p>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex justify-end pt-4">
                     <button type="submit" class="bg-brand-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-brand-900 shadow-md hover:shadow-lg transition-all transform active:scale-95"
-                            th:text="${agent.id == null ? 'Crear Agente' : 'Guardar Cambios'}"></button>
+                            th:text="${agent.id == null ? #{msg.agent-form.create} :  #{msg.common.save}}"></button>
                 </div>
             </form>
 
             <div th:if="${agent.image != null}" class="mt-4 pt-4 border-t border-gray-100 flex justify-end">
                 <form th:action="@{/agents/deleteImage}" method="post" class="flex items-center gap-3">
-                    <span class="text-sm text-gray-500">¿Quieres quitar la foto actual?</span>
+                    <span class="text-sm text-gray-500" th:text="#{msg.agent.question-image}"></span>
                     <input type="hidden" name="id" th:value="${agent.id}"/>
                     <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-medium hover:underline flex items-center gap-1">
-                        <i class="fa-solid fa-trash-can"></i> Eliminar Foto
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span th:text="#{msg.agent.delete-image}"></span>
                     </button>
                 </form>
             </div>

@@ -10,11 +10,11 @@
 
     <div class="flex flex-col md:flex-row justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-heading font-bold text-gray-900">Agenda de Citas</h1>
-            <p class="text-gray-500 mt-1">Planificación de visitas y reuniones.</p>
+            <h1 class="text-3xl font-heading font-bold text-gray-900" th:text="#{msg.appointments.title}"></h1>
+            <p class="text-gray-500 mt-1" th:text="#{msg.appointments.subtitle}"></p>
         </div>
         <a th:href="@{/appointments/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
-            <i class="fa-regular fa-calendar-plus"></i> Nueva Cita
+            <i class="fa-regular fa-calendar-plus"></i> <span th:text="#{msg.appointments.new}"></span>
         </a>
     </div>
 
@@ -37,27 +37,29 @@
                         </span>
                     <input type="text" name="keyword" th:value="${keyword}"
                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
-                           placeholder="Buscar por ubicación...">
+                           th:placeholder="#{msg.appointments.search.placeholder}">
                 </div>
-                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors">Buscar</button>
+                <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-medium transition-colors" th:text="#{msg.appointments.search.button}"></button>
                 <a th:if="${keyword != null && keyword != ''}" th:href="@{/appointments}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center">
                     <i class="fa-solid fa-xmark"></i>
                 </a>
             </form>
 
             <div class="flex flex-wrap gap-2 items-center text-sm">
-                <span class="text-gray-500 font-medium mr-1">Ordenar por:</span>
+                <span class="text-gray-500 font-medium mr-1" th:text="#{msg.common.sort}"></span>
 
                 <a th:href="@{/appointments(page=${listAppointments.currentPage}, keyword=${keyword}, sortBy='location', direction=${sortBy == 'location' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'location'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
-                    Ubicación <i th:if="${sortBy == 'location'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    <span th:text="#{msg.appointments.location}"></span>
+                    <i th:if="${sortBy == 'location'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
 
                 <a th:href="@{/appointments(page=${listAppointments.currentPage}, keyword=${keyword}, sortBy='agent', direction=${sortBy == 'agent' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'agent'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
-                    Agente <i th:if="${sortBy == 'agent'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    <span th:text="#{msg.appointments.agent}"></span>
+                    <i th:if="${sortBy == 'agent'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
             </div>
         </div>
@@ -70,7 +72,7 @@
             <div class="bg-brand-50 md:w-48 p-4 flex flex-col justify-center items-center text-center border-b md:border-b-0 md:border-r border-brand-100">
                 <div class="text-brand-800 font-bold text-lg flex items-center gap-2">
                     <i class="fa-regular fa-calendar-days"></i>
-                    <span th:text="${#temporals.format(appointment.appointmentDate, 'dd-MM-yyyy')}">Fecha</span>
+                    <span th:text="${#temporals.format(appointment.appointmentDate, 'dd-MM-yyyy')}" th:text="#{msg.appointments.date}"></span>
                 </div>
 
                 <div class="text-brand-600 font-medium text-sm mt-1 bg-white px-3 py-1 rounded-full shadow-sm">
@@ -99,9 +101,9 @@
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-xs text-gray-500 font-semibold uppercase">Agente</span>
+                        <span class="text-xs text-gray-500 font-semibold uppercase" th:text="#{msg.appointments.agent}"></span>
                         <span class="text-sm font-medium text-gray-900"
-                              th:text="${appointment.agent != null} ? ${appointment.agent.name} : 'Sin asignar'"></span>
+                              th:text="${appointment.agent != null} ? ${appointment.agent.name} : #{msg.commons.no-assigned}"></span>
                     </div>
                 </div>
 
@@ -110,9 +112,9 @@
                         <i class="fa-solid fa-user"></i>
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-xs text-gray-500 font-semibold uppercase">Cliente</span>
+                        <span class="text-xs text-gray-500 font-semibold uppercase" th:text="#{msg.appointments.client}"></span>
                         <span class="text-sm font-medium text-gray-900"
-                              th:text="${appointment.client != null} ? ${appointment.client.name} : 'Sin asignar'"></span>
+                              th:text="${appointment.client != null} ? ${appointment.client.name} : #{msg.commons.no-assigned}"></span>
                     </div>
                 </div>
             </div>
@@ -128,7 +130,7 @@
                             class="text-gray-500 hover:text-red-600 hover:bg-red-50 p-2 rounded-md transition-colors"
                             title="Eliminar"
                             th:data-loc="${appointment.location}"
-                            onclick="return confirm('¿Cancelar cita en ' + this.getAttribute('data-loc') + '?')">
+                            onclick="return confirm(#{msg.commons.no-assigned}  + this.getAttribute('data-loc') + '?')">
                         <i class="fa-solid fa-trash-can text-lg"></i>
                     </button>
                 </form>
@@ -140,8 +142,8 @@
             <div class="bg-gray-50 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-3">
                 <i class="fa-regular fa-calendar-xmark text-2xl text-gray-400"></i>
             </div>
-            <h3 class="text-lg font-medium text-gray-900">Sin citas programadas</h3>
-            <p class="text-gray-500 mt-1">Tu agenda está libre por ahora.</p>
+            <h3 class="text-lg font-medium text-gray-900" th:text="#{msg.appointments.no-appointment}"></h3>
+            <p class="text-gray-500 mt-1" th:text="#{msg.appointments.agenda}"></p>
         </div>
 
     </div>
@@ -173,7 +175,8 @@
 
     <div class="text-center mt-8">
         <a th:href="@{/}" class="text-gray-500 hover:text-brand-800 text-sm font-medium transition-colors">
-            <i class="fa-solid fa-arrow-left mr-1"></i> Volver al Inicio
+            <i class="fa-solid fa-arrow-left mr-1"></i>
+            <span th:text="#{msg.common.return-back}"></span>
         </a>
     </div>
 
