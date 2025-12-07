@@ -53,17 +53,20 @@ public class Property {
     @Enumerated(EnumType.STRING)
     private Type type;
 
+    @NotNull(message = "{msg.property.floors.positive}")
     @Positive(message = "{msg.property.floors.positive}")
     @Column(name = "floors", nullable = false)
-    private int floors;
+    private Integer floors;
 
+    @NotNull(message = "{msg.property.bedrooms.positive}")
     @Positive(message = "{msg.property.bedrooms.positive}")
     @Column(name = "bedrooms", nullable = false)
-    private int bedrooms;
+    private Integer bedrooms;
 
+    @NotNull(message = "{msg.property.bathrooms.positive}")
     @Positive(message = "{msg.property.bathrooms.positive}")
     @Column(name = "bathrooms", nullable = false)
-    private int bathrooms;
+    private Integer bathrooms;
 
     @NotNull(message = "{msg.property.status.notNull}")
     @Enumerated(EnumType.STRING)

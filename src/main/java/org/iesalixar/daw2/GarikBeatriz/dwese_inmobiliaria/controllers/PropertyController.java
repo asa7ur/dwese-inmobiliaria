@@ -5,11 +5,12 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.PropertyDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
-
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.FileStorageService;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource; // IMPORTANTE
+import org.springframework.context.i18n.LocaleContextHolder; // IMPORTANTE
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,22 +38,24 @@ public class PropertyController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @GetMapping
     public String listProperties(@RequestParam(defaultValue = "1") int page,
                                  @RequestParam(defaultValue = "") String keyword,
                                  @RequestParam(defaultValue = "id") String sortBy,
                                  @RequestParam(defaultValue = "asc") String direction,
                                  Model model) {
-        logger.info("Listing propertiess. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
+        logger.info("Listing properties. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
 
         int pageSize = 6;
-
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-
         Page<Property> propertyPage;
+
         if (keyword == null || keyword.isEmpty()) {
             propertyPage = propertyRepository.findAll(pageable);
         } else {
@@ -93,7 +96,8 @@ public class PropertyController {
         Optional<Property> propertyOpt = propertyRepository.findById(id);
 
         if (propertyOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Propiedad no encontrada");
+            String message = messageSource.getMessage("msg.property.flash.not-found", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
             return "redirect:/properties";
         }
 
@@ -101,7 +105,6 @@ public class PropertyController {
         model.addAttribute("agents", agentRepository.findAll());
         model.addAttribute("types", Property.Type.values());
         model.addAttribute("statuses", Property.Status.values());
-
         model.addAttribute("allAgents", agentRepository.findAll());
         return "property-form";
     }
@@ -121,9 +124,10 @@ public class PropertyController {
         }
 
         fileStorageService.processImages(property, files);
-
         propertyRepository.save(property);
-        redirectAttributes.addFlashAttribute("successMessage", "Propiedad insertada correctamente.");
+
+        String message = messageSource.getMessage("msg.property.flash.created", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
         return "redirect:/properties";
     }
 
@@ -138,13 +142,17 @@ public class PropertyController {
         if(result.hasErrors()){
             model.addAttribute("types", Property.Type.values());
             model.addAttribute("statuses", Property.Status.values());
+            if (property.getId() != null) {
+                Optional<Property> optProperty = propertyRepository.findById(property.getId());
+                optProperty.ifPresent(value -> property.setImages(value.getImages()));
+            }
             return "property-form";
         }
         Optional<Property> existingOpt = propertyRepository.findById(property.getId());
 
         if (existingOpt.isPresent()) {
             Property existingProperty = existingOpt.get();
-
+            // Actualización de campos...
             existingProperty.setName(property.getName());
             existingProperty.setDescription(property.getDescription());
             existingProperty.setLocation(property.getLocation());
@@ -156,12 +164,13 @@ public class PropertyController {
             existingProperty.setStatus(property.getStatus());
 
             fileStorageService.processImages(existingProperty, files);
-
             propertyRepository.save(existingProperty);
 
-            redirectAttributes.addFlashAttribute("successMessage", "Propiedad actualizada correctamente.");
+            String message = messageSource.getMessage("msg.property.flash.updated", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("successMessage", message);
         } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "No se encontró la propiedad.");
+            String message = messageSource.getMessage("msg.property.flash.not-found", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
         }
 
         return "redirect:/properties";
@@ -170,7 +179,9 @@ public class PropertyController {
     @PostMapping("/delete")
     public String deleteProperty(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
         propertyRepository.deleteById(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Propiedad eliminada correctamente.");
+
+        String message = messageSource.getMessage("msg.property.flash.deleted", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
         return "redirect:/properties";
     }
 
@@ -183,14 +194,30 @@ public class PropertyController {
         Optional<Property> propertyOpt = propertyRepository.findById(propertyId);
         if (propertyOpt.isPresent()) {
             Property property = propertyOpt.get();
-
-            // Buscar la imagen en la lista y eliminarla (orphanRemoval se encargará del resto al guardar)
             property.getImages().removeIf(img -> img.getId().equals(imageId));
             propertyRepository.save(property);
 
-            redirectAttributes.addFlashAttribute("successMessage", "Imagen eliminada.");
+            String message = messageSource.getMessage("msg.property.flash.image-deleted", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("successMessage", message);
         }
 
         return "redirect:/properties/edit?id=" + propertyId;
+    }
+
+    // Redirecciones de seguridad (get methods for post actions)
+    @GetMapping("/update")
+    public String redirectLostUpdate(@RequestParam(required = false) Long id) {
+        if (id != null) return "redirect:/properties/edit?id=" + id;
+        return "redirect:/properties";
+    }
+
+    @GetMapping("/insert")
+    public String redirectLostInsert() {
+        return "redirect:/properties/new";
+    }
+
+    @GetMapping({"/delete", "/delete-image"})
+    public String redirectLostDelete() {
+        return "redirect:/properties";
     }
 }

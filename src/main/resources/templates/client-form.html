@@ -44,7 +44,8 @@
                                 <i class="fa-regular fa-id-card"></i>
                             </span>
                             <input type="text" th:field="*{dni}" id="dni"
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                                   th:classappend="${#fields.hasErrors('dni')} ? 'border-red-500 focus:border-red-500' : ''" />
                         </div>
                         <p th:if="${#fields.hasErrors('dni')}" class="mt-1 text-sm text-red-600" th:errors="*{dni}"></p>
                     </div>
@@ -52,7 +53,8 @@
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.client-form.name}"></label>
                         <input type="text" th:field="*{name}" id="name"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                               th:classappend="${#fields.hasErrors('name')} ? 'border-red-500 focus:border-red-500' : ''" />
                         <p th:if="${#fields.hasErrors('name')}" class="mt-1 text-sm text-red-600" th:errors="*{name}"></p>
                     </div>
                 </div>
@@ -65,7 +67,8 @@
                                 <i class="fa-solid fa-phone"></i>
                             </span>
                             <input type="text" th:field="*{phone}" id="phone"
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                                   th:classappend="${#fields.hasErrors('phone')} ? 'border-red-500 focus:border-red-500' : ''" />
                         </div>
                         <p th:if="${#fields.hasErrors('phone')}" class="mt-1 text-sm text-red-600" th:errors="*{phone}"></p>
                     </div>
@@ -77,7 +80,8 @@
                                 <i class="fa-regular fa-envelope"></i>
                             </span>
                             <input type="email" th:field="*{email}" id="email"
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                                   th:classappend="${#fields.hasErrors('email')} ? 'border-red-500 focus:border-red-500' : ''" />
                         </div>
                         <p th:if="${#fields.hasErrors('email')}" class="mt-1 text-sm text-red-600" th:errors="*{email}"></p>
                     </div>

@@ -46,6 +46,24 @@
 
             <div class="flex flex-wrap gap-2 items-center text-sm">
                 <span class="text-gray-500 font-medium mr-1" th:text="#{msg.common.order}"></span>
+                <a th:href="@{/properties(page=${listProperties.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'name'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    <span th:text="#{msg.property.name}"></span>
+                    <i th:if="${sortBy == 'name'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+                <a th:href="@{/properties(page=${listProperties.currentPage}, keyword=${keyword}, sortBy='location', direction=${sortBy == 'location' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'location'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    <span th:text="#{msg.property.location}"></span>
+                    <i th:if="${sortBy == 'location'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
+                <a th:href="@{/properties(page=${listProperties.currentPage}, keyword=${keyword}, sortBy='type', direction=${sortBy == 'type' ? reverseSortDir : 'asc'})}"
+                   class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
+                   th:classappend="${sortBy == 'type'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
+                    <span th:text="#{msg.property.type}"></span>
+                    <i th:if="${sortBy == 'type'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                </a>
                 <a th:href="@{/properties(page=${listProperties.currentPage}, keyword=${keyword}, sortBy='price', direction=${sortBy == 'price' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'price'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
@@ -150,8 +168,9 @@
                         <button type="submit"
                                 class="w-full text-center bg-gray-50 border border-gray-200 text-gray-600 hover:text-red-600 hover:border-red-300 py-2 rounded-lg text-sm font-medium transition-colors"
                                 th:title="#{msg.common.delete}"
+                                th:data-name="${property.name}"
                                 th:data-confirm-msg="#{msg.property.confirm}"
-                                onclick="return confirm(this.getAttribute('data-confirm-msg') + '?')">
+                                onclick="return confirm(this.getAttribute('data-confirm-msg') + ' ' + this.getAttribute('data-name') + '?')">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </form>

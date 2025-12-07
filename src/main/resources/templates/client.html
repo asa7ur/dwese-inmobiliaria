@@ -118,8 +118,9 @@
                         <button type="submit"
                                 class="text-red-500 hover:text-red-700 bg-white border border-gray-200 hover:border-red-300 p-2 rounded-md transition-colors shadow-sm"
                                 th:title="#{msg.common.delete}"
+                                th:data-name="${client.name}"
                                 th:data-confirm-msg="#{msg.client.confirm-delete}"
-                                onclick="return confirm(this.getAttribute('data-confirm-msg') + '?')">
+                                onclick="return confirm(this.getAttribute('data-confirm-msg')  + ' ' + this.getAttribute('data-name') +  '?')">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </form>

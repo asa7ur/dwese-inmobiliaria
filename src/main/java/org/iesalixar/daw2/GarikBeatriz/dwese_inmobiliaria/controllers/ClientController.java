@@ -7,6 +7,8 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.ClientRep
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder; // IMPORTANTE
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +19,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -27,6 +28,9 @@ public class ClientController {
 
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @GetMapping
     public String listClients(
@@ -38,13 +42,12 @@ public class ClientController {
         logger.info("Listing clients. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
 
         int pageSize = 6;
-
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page -1, pageSize, sort);
-
         Page<Client> clientPage;
+
         if (keyword == null || keyword.isEmpty()){
             clientPage = clientRepository.findAll(pageable);
         } else {
@@ -84,8 +87,10 @@ public class ClientController {
         Optional<Client> clientOpt = clientRepository.findById(id);
 
         if(clientOpt.isEmpty()){
-            logger.warn("No se encontro el cliente con ID {}", id);
-            redirectAttributes.addFlashAttribute("message", "Cliente no encontrado");
+            logger.warn("No se encontró el cliente con ID {}", id);
+
+            String message = messageSource.getMessage("msg.client.flash.not-found", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
             return "redirect:/clients";
         }
 
@@ -95,7 +100,7 @@ public class ClientController {
 
     @PostMapping("/insert")
     public String insertClient(
-            @Valid @ModelAttribute("agent") Client client,
+            @Valid @ModelAttribute("client") Client client, // CORREGIDO: antes ponía "agent"
             BindingResult result,
             Model model,
             RedirectAttributes redirectAttributes
@@ -109,13 +114,17 @@ public class ClientController {
 
         if(clientRepository.existsClientByDni(client.getDni())){
             logger.warn("Existe un cliente con el DNI {}", client.getDni());
-            redirectAttributes.addFlashAttribute("message", "El cliente ya existe");
+
+            String message = messageSource.getMessage("msg.client.flash.dni-exists", null, LocaleContextHolder.getLocale());
+            model.addAttribute("errorMessage", message);
             return "client-form";
         }
 
         clientRepository.save(client);
         logger.info("Cliente con DNI {} insertado con éxito", client.getDni());
-        redirectAttributes.addFlashAttribute("message", "Cliente insertado");
+
+        String message = messageSource.getMessage("msg.client.flash.created", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
         return "redirect:/clients";
     }
 
@@ -135,26 +144,32 @@ public class ClientController {
 
         if(clientRepository.existsClientByDniAndIdNot(client.getDni(), client.getId())){
             logger.warn("El DNI del cliente {} ya existe.", client.getDni());
-            model.addAttribute("message", "El DNI del cliente ya existe");
+
+            String message = messageSource.getMessage("msg.client.flash.dni-exists", null, LocaleContextHolder.getLocale());
+            model.addAttribute("errorMessage", message);
             return "client-form";
         }
 
         clientRepository.save(client);
         logger.info("Cliente con ID {} actualizado correctamente", client.getId());
-        redirectAttributes.addFlashAttribute("message", "Cliente actualizado correctamente");
+
+        String message = messageSource.getMessage("msg.client.flash.updated", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
 
         return "redirect:/clients";
     }
 
     @PostMapping("/delete")
-    public String deleteAgent(
-            @RequestParam("id") Long id,
-            RedirectAttributes redirectAttributes
+    public String deleteClient(
+                                @RequestParam("id") Long id,
+                                RedirectAttributes redirectAttributes
     ){
         logger.info("Eliminando cliente con ID {}", id);
         clientRepository.deleteById(id);
         logger.info("Cliente con ID {} eliminado correctamente", id);
-        redirectAttributes.addFlashAttribute("message", "Cliente eliminado correctamente");
+
+        String message = messageSource.getMessage("msg.client.flash.deleted", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
         return "redirect:/clients";
     }
 }

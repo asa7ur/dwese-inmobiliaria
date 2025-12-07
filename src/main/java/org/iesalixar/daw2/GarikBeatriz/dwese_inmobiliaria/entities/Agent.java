@@ -38,7 +38,7 @@ public class Agent {
     @Column(name = "phone", nullable = false, length = 25)
     private String phone;
 
-    @NotEmpty(message = "{msg.agent.name.notEmpty}")
+    @NotEmpty(message = "{msg.agent.email.notEmpty}")
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", message = "{msg.agent.email.notValid}")
     @Size(max = 100, message = "{msg.agent.email.size}")
     @Column(name = "email", nullable = false, length = 100)

@@ -11,6 +11,8 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.FileStorageSe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource; // IMPORTANTE
+import org.springframework.context.i18n.LocaleContextHolder; // IMPORTANTE
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +45,9 @@ public class AgentController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @GetMapping
     public String listAgents(
             @RequestParam(defaultValue = "1") int page,
@@ -53,13 +58,12 @@ public class AgentController {
         logger.info("Listing agents. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
 
         int pageSize = 8;
-
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-
         Page<Agent> agentPage;
+
         if (keyword == null || keyword.isEmpty()) {
             agentPage = agentRepository.findAll(pageable);
         } else {
@@ -88,7 +92,6 @@ public class AgentController {
         model.addAttribute("agent", new Agent());
         model.addAttribute("offices", officeRepository.findAll());
         model.addAttribute("allProperties", propertyRepository.findAll());
-
         return "agent-form";
     }
 
@@ -102,15 +105,14 @@ public class AgentController {
         Optional<Agent> agentOpt = agentRepository.findById(id);
 
         if(agentOpt.isEmpty()){
-            redirectAttributes.addFlashAttribute("message", "Agente no encontrado");
+            String message = messageSource.getMessage("msg.agent.flash.not-found", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
             return "redirect:/agents";
         }
 
         model.addAttribute("agent", agentOpt.get());
         model.addAttribute("offices",  officeRepository.findAll());
-
         model.addAttribute("allProperties", propertyRepository.findAll());
-
         return "agent-form";
     }
 
@@ -130,7 +132,9 @@ public class AgentController {
         }
 
         if(agentRepository.existsAgentByDni(agent.getDni())){
-            redirectAttributes.addFlashAttribute("errorMessage", "El Dni del agente ya existe");
+            String message = messageSource.getMessage("msg.agent.flash.dni-exists", null, LocaleContextHolder.getLocale());
+            model.addAttribute("errorMessage", message);
+
             model.addAttribute("offices",  officeRepository.findAll());
             model.addAttribute("allProperties", propertyRepository.findAll());
             return "agent-form";
@@ -152,7 +156,8 @@ public class AgentController {
 
         agentRepository.save(agent);
 
-        redirectAttributes.addFlashAttribute("successMessage", "Agente insertado correctamente.");
+        String message = messageSource.getMessage("msg.agent.flash.created", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
         return "redirect:/agents";
     }
 
@@ -172,7 +177,9 @@ public class AgentController {
         }
 
         if(agentRepository.existsAgentByDniAndIdNot(agent.getDni(), agent.getId())){
-            model.addAttribute("errorMessage", "El DNI ya existe.");
+            String message = messageSource.getMessage("msg.agent.flash.dni-exists", null, LocaleContextHolder.getLocale());
+            model.addAttribute("errorMessage", message);
+
             model.addAttribute("offices",  officeRepository.findAll());
             model.addAttribute("allProperties", propertyRepository.findAll());
             return "agent-form";
@@ -201,11 +208,15 @@ public class AgentController {
                     existingAgent.setImage(fileName);
                 }
             }
-
             agentRepository.save(existingAgent);
+
+            String message = messageSource.getMessage("msg.agent.flash.updated", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("successMessage", message);
+        } else {
+            String message = messageSource.getMessage("msg.agent.flash.not-found", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
         }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Agente actualizado correctamente.");
         return "redirect:/agents";
     }
 
@@ -217,7 +228,9 @@ public class AgentController {
         logger.info("Eliminando agente con ID {}", id);
         agentRepository.deleteById(id);
         logger.info("Agente con ID {} eliminado correctamente", id);
-        redirectAttributes.addFlashAttribute("successMessage", "Agente eliminado correctamente.");
+
+        String message = messageSource.getMessage("msg.agent.flash.deleted", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
         return "redirect:/agents";
     }
 
@@ -226,15 +239,18 @@ public class AgentController {
             @RequestParam("id") Long id,
             RedirectAttributes redirectAttributes){
         Optional<Agent> agentOpt = agentRepository.findById(id);
+
         if (agentOpt.isPresent() && agentOpt.get().getImage() != null) {
             fileStorageService.deleteFile(agentOpt.get().getImage());
             agentOpt.get().setImage(null);
             agentRepository.save(agentOpt.get());
-            redirectAttributes.addFlashAttribute("successMessage", "Imagen del agente eliminada correctamente.");
+
+            String message = messageSource.getMessage("msg.agent.flash.image-deleted", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("successMessage", message);
         } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "No se encontró imagen para eliminar.");
+            String message = messageSource.getMessage("msg.agent.flash.image-not-found", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
         }
         return "redirect:/agents/edit?id=" + id;
     }
-
 }
