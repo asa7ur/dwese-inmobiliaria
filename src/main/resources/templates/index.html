@@ -113,7 +113,7 @@
 
                     <div th:if="${property.images != null and !property.images.isEmpty()}"
                          class="h-48 bg-gray-300 bg-cover bg-center"
-                         th:style="'background-image: url(' + @{'/uploads/' + ${property.images[0].fileName}} + ');'">
+                         th:style="|background-image: url('/uploads/${property.images[0].fileName}');|">
                     </div>
                     <div th:unless="${property.images != null and !property.images.isEmpty()}"
                          class="h-48 bg-gray-200 flex items-center justify-center text-gray-400">
