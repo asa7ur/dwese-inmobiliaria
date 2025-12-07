@@ -3,6 +3,7 @@ package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Client;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.ClientDTO;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AppointmentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.ClientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,9 @@ public class ClientController {
 
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
     @Autowired
     private MessageSource messageSource;
@@ -165,11 +169,38 @@ public class ClientController {
                                 RedirectAttributes redirectAttributes
     ){
         logger.info("Eliminando cliente con ID {}", id);
+
+        if (appointmentRepository.existsByClientId(id)) {
+            logger.warn("El cliente con ID {} tiene citas pendientes y no se puede borrar.", id);
+
+            String message = messageSource.getMessage("msg.client.flash.has-appointments", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
+
+            return "redirect:/clients";
+        }
+
         clientRepository.deleteById(id);
         logger.info("Cliente con ID {} eliminado correctamente", id);
 
         String message = messageSource.getMessage("msg.client.flash.deleted", null, LocaleContextHolder.getLocale());
         redirectAttributes.addFlashAttribute("successMessage", message);
+        return "redirect:/clients";
+    }
+
+    // Redirecciones de seguridad (get methods for post actions)
+    @GetMapping("/update")
+    public String redirectLostUpdate(@RequestParam(required = false) Long id) {
+        if (id != null) return "redirect:/clients/edit?id=" + id;
+        return "redirect:/clients";
+    }
+
+    @GetMapping("/insert")
+    public String redirectLostInsert() {
+        return "redirect:/clients/new";
+    }
+
+    @GetMapping({"/delete"})
+    public String redirectLostDelete() {
         return "redirect:/clients";
     }
 }

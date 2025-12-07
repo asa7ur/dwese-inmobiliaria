@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.PropertyDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AppointmentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.TransactionRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.FileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,12 @@ public class PropertyController {
 
     @Autowired
     private AgentRepository agentRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
     @Autowired
     private FileStorageService fileStorageService;
@@ -178,6 +186,26 @@ public class PropertyController {
 
     @PostMapping("/delete")
     public String deleteProperty(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
+        logger.info("Intentando eliminar propiedad con ID {}", id);
+
+        if (transactionRepository.existsByPropertyId(id)) {
+            logger.warn("No se puede eliminar la propiedad ID {} porque tiene transacciones.", id);
+
+            String message = messageSource.getMessage("msg.property.flash.has-transaction", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
+
+            return "redirect:/properties";
+        }
+
+        if (appointmentRepository.existsByPropertyId(id)) {
+            logger.warn("Propiedad ID {} tiene citas pendientes.", id);
+
+            String message = messageSource.getMessage("msg.property.flash.has-appointments", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
+
+            return "redirect:/properties";
+        }
+
         propertyRepository.deleteById(id);
 
         String message = messageSource.getMessage("msg.property.flash.deleted", null, LocaleContextHolder.getLocale());

@@ -1,13 +1,17 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
+import jakarta.validation.Valid;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Appointment;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.AppointmentDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AppointmentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.ClientRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,16 +33,22 @@ public class AppointmentController {
     private AppointmentRepository appointmentRepository;
 
     @Autowired
+    private PropertyRepository propertyRepository;
+
+    @Autowired
     private AgentRepository agentRepository;
 
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @GetMapping
     public String listAppointments(@RequestParam(defaultValue = "1") int page,
                                    @RequestParam(defaultValue = "") String keyword,
-                                   @RequestParam(defaultValue = "id") String sortBy,
-                                   @RequestParam(defaultValue = "asc") String direction,
+                                   @RequestParam(defaultValue = "appointmentTimestamp") String sortBy,
+                                   @RequestParam(defaultValue = "desc") String direction,
                                    Model model) {
         logger.info("Listing appointments. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
 
@@ -78,6 +88,7 @@ public class AppointmentController {
         model.addAttribute("appointment", new Appointment());
         model.addAttribute("agents", agentRepository.findAll());
         model.addAttribute("clients", clientRepository.findAll());
+        model.addAttribute("properties", propertyRepository.findAll());
         return "appointment-form";
     }
 
@@ -88,18 +99,21 @@ public class AppointmentController {
 
         if (appointmentOpt.isEmpty()) {
             logger.warn("No se encontró la cita con ID {}", id);
-            redirectAttributes.addFlashAttribute("message", "Cita no encontrada");
+
+            String message = messageSource.getMessage("msg.appointment.flash.not-found", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
             return "redirect:/appointments";
         }
 
         model.addAttribute("appointment", appointmentOpt.get());
         model.addAttribute("agents", agentRepository.findAll());
         model.addAttribute("clients", clientRepository.findAll());
+        model.addAttribute("properties", propertyRepository.findAll());
         return "appointment-form";
     }
 
     @PostMapping("/insert")
-    public String insertAppointment(@ModelAttribute("appointment") Appointment appointment,
+    public String insertAppointment(@Valid @ModelAttribute("appointment") Appointment appointment,
                                     BindingResult result,
                                     Model model,
                                     RedirectAttributes redirectAttributes) {
@@ -109,17 +123,20 @@ public class AppointmentController {
             logger.warn("Errores de validación en el formulario de nueva cita.");
             model.addAttribute("agents", agentRepository.findAll());
             model.addAttribute("clients", clientRepository.findAll());
+            model.addAttribute("properties", propertyRepository.findAll());
             return "appointment-form";
         }
 
         appointmentRepository.save(appointment);
         logger.info("Cita {} insertada con éxito.", appointment.getCode());
-        redirectAttributes.addFlashAttribute("successMessage", "Cita insertada correctamente.");
+
+        String message = messageSource.getMessage("msg.appointment.flash.created", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
         return "redirect:/appointments";
     }
 
     @PostMapping("/update")
-    public String updateAppointment(@ModelAttribute("appointment") Appointment appointment,
+    public String updateAppointment(@Valid @ModelAttribute("appointment") Appointment appointment,
                                     BindingResult result,
                                     Model model,
                                     RedirectAttributes redirectAttributes) {
@@ -129,12 +146,15 @@ public class AppointmentController {
             logger.warn("Errores de validación al actualizar la cita.");
             model.addAttribute("agents", agentRepository.findAll());
             model.addAttribute("clients", clientRepository.findAll());
-            return "transaction-form";
+            model.addAttribute("properties", propertyRepository.findAll());
+            return "appointment-form";
         }
 
         appointmentRepository.save(appointment);
         logger.info("Cita con ID {} actualizada con éxito.", appointment.getId());
-        redirectAttributes.addFlashAttribute("successMessage", "Cita actualizada correctamente.");
+
+        String message = messageSource.getMessage("msg.appointment.flash.updated", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
         return "redirect:/appointments";
     }
 
@@ -143,7 +163,26 @@ public class AppointmentController {
         logger.info("Eliminando cita con ID {}", id);
         appointmentRepository.deleteById(id);
         logger.info("Cita con ID {} eliminada con éxito.", id);
-        redirectAttributes.addFlashAttribute("successMessage", "Cita eliminada correctamente.");
+
+        String message = messageSource.getMessage("msg.appointment.flash.deleted", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
+        return "redirect:/appointments";
+    }
+
+    // Redirecciones de seguridad (get methods for post actions)
+    @GetMapping("/update")
+    public String redirectLostUpdate(@RequestParam(required = false) Long id) {
+        if (id != null) return "redirect:/appointments/edit?id=" + id;
+        return "redirect:/appointments";
+    }
+
+    @GetMapping("/insert")
+    public String redirectLostInsert() {
+        return "redirect:/appointments/new";
+    }
+
+    @GetMapping({"/delete"})
+    public String redirectLostDelete() {
         return "redirect:/appointments";
     }
 }

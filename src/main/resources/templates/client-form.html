@@ -31,8 +31,11 @@
 
         <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden p-8">
 
-            <form th:action="${client.id == null} ? '/clients/insert' : '/clients/update'"
-                  th:object="${client}" method="post" class="space-y-6">
+            <form th:action="(${client.id == null} ? @{/clients/insert} : @{/clients/update(id=${client.id})})"
+                  th:object="${client}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="space-y-6">
 
                 <input type="hidden" th:field="*{id}"/>
 

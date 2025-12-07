@@ -5,14 +5,15 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Agent;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.AgentDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AppointmentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.OfficeRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.FileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource; // IMPORTANTE
-import org.springframework.context.i18n.LocaleContextHolder; // IMPORTANTE
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,9 @@ public class AgentController {
 
     @Autowired
     private OfficeRepository officeRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
     @Autowired
     PropertyRepository propertyRepository;
@@ -226,6 +230,16 @@ public class AgentController {
             RedirectAttributes redirectAttributes
     ){
         logger.info("Eliminando agente con ID {}", id);
+
+        if (appointmentRepository.existsByAgentId(id)) {
+            logger.warn("El agente con ID {} no se puede eliminar porque tiene citas.", id);
+
+            String message = messageSource.getMessage("msg.agent.flash.has-appointments", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
+
+            return "redirect:/agents";
+        }
+
         agentRepository.deleteById(id);
         logger.info("Agente con ID {} eliminado correctamente", id);
 
@@ -252,5 +266,22 @@ public class AgentController {
             redirectAttributes.addFlashAttribute("errorMessage", message);
         }
         return "redirect:/agents/edit?id=" + id;
+    }
+
+    // Redirecciones de seguridad (get methods for post actions)
+    @GetMapping("/update")
+    public String redirectLostUpdate(@RequestParam(required = false) Long id) {
+        if (id != null) return "redirect:/agents/edit?id=" + id;
+        return "redirect:/agents";
+    }
+
+    @GetMapping("/insert")
+    public String redirectLostInsert() {
+        return "redirect:/agents/new";
+    }
+
+    @GetMapping({"/delete", "/delete-image"})
+    public String redirectLostDelete() {
+        return "redirect:/agents";
     }
 }

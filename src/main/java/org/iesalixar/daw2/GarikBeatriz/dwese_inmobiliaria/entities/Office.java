@@ -43,7 +43,7 @@ public class Office {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @OneToMany(mappedBy = "office", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "office", fetch = FetchType.LAZY)
     private List<Agent> agents;
 
     @PostLoad

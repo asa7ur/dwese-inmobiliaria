@@ -31,10 +31,11 @@
 
         <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden p-8">
 
-            <form th:action="${agent.id == null} ? '/agents/insert' : '/agents/update'"
+            <form th:action="(${agent.id == null} ? @{/agents/insert} : @{/agents/update(id=${agent.id})})"
                   th:object="${agent}"
                   method="post"
-                  enctype="multipart/form-data" class="space-y-6">
+                  enctype="multipart/form-data"
+                  class="space-y-6">
 
                 <input type="hidden" th:field="*{id}"/>
 

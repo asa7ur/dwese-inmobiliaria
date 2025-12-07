@@ -64,12 +64,13 @@ CREATE TABLE IF NOT EXISTS property_agent (
 CREATE TABLE IF NOT EXISTS appointments (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     appointment_timestamp BIGINT NOT NULL,
-    location VARCHAR(100) NOT NULL,
     notes VARCHAR(255),
     agent_id BIGINT NOT NULL,
     client_id BIGINT NOT NULL,
+    property_id BIGINT NOT NULL,
     CONSTRAINT fk_appointment_agent FOREIGN KEY (agent_id) REFERENCES agents(id),
-    CONSTRAINT fk_appointment_client FOREIGN KEY (client_id) REFERENCES clients(id)
+    CONSTRAINT fk_appointment_client FOREIGN KEY (client_id) REFERENCES clients(id),
+    CONSTRAINT fk_appointment_property FOREIGN KEY (property_id) REFERENCES properties(id)
 );
 
 -- Tabla transactions

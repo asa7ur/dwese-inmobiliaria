@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{fragments/head :: head ('Gestión de Transacción - Real Estate Agency')}">
-    <title th:text="#{msg.common.title}"></title>
+<head th:replace="~{fragments/head :: head (#{msg.common.title})}">
+    <title>Gestión de Transacción</title>
 </head>
 <body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
 
@@ -13,12 +13,14 @@
         <div class="mb-6 flex justify-between items-end">
             <div>
                 <h1 class="text-3xl font-heading font-bold text-brand-900"
-                    th:text="#{${transaction.id == null ? 'msg.transaction-form.add' : 'msg.transaction-form.edit'}}"></h1>
-                <p class="text-gray-500 mt-1" th:text="#{msg.transaction-form.title}"></p>
+                    th:text="#{${transaction.id == null ? 'msg.transaction-form.add' : 'msg.transaction-form.edit'}}">
+                    Nueva Transacción
+                </h1>
+                <p class="text-gray-500 mt-1" th:text="#{msg.transaction-form.title}">Registra los detalles.</p>
             </div>
             <a th:href="@{/transactions}" class="text-sm text-gray-500 hover:text-brand-800 transition-colors">
                 <i class="fa-solid fa-times mr-1"></i>
-                <span th:text="#{msg.common.cancel}"></span>
+                <span th:text="#{msg.common.cancel}">Cancelar</span>
             </a>
         </div>
 
@@ -29,109 +31,119 @@
 
         <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden p-8">
 
-            <form th:action="${transaction.id == null} ? '/transactions/insert' : '/transactions/update'"
-                  th:object="${transaction}" method="post" class="space-y-6">
+            <form th:action="(${transaction.id == null} ? @{/transactions/insert} : @{/transactions/update(id=${transaction.id})})"
+                  th:object="${transaction}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="space-y-6">
 
                 <input type="hidden" th:field="*{id}"/>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="transaction_date" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.date}"></label>
+                        <label for="transaction_date" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.date}">Fecha</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                                 <i class="fa-regular fa-calendar-check"></i>
                             </span>
                             <input type="date" th:field="*{transactionDate}" id="transaction_date"
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" required/>
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                                   th:classappend="${#fields.hasErrors('transactionDate')} ? 'border-red-500 focus:border-red-500' : ''"/>
                         </div>
                         <p th:if="${#fields.hasErrors('transactionDate')}" class="mt-1 text-sm text-red-600" th:errors="*{transactionDate}"></p>
                     </div>
 
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.status}"></label>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.status}">Estado</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                                 <i class="fa-solid fa-tag"></i>
                             </span>
                             <select th:field="*{status}" id="status"
-                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
-                                <option value="" disabled th:text="#{msg.transaction-form.select-status}"></option>
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+                                    th:classappend="${#fields.hasErrors('status')} ? 'border-red-500 focus:border-red-500' : ''">
+                                <option value="" disabled th:text="#{msg.transaction-form.select-status}">Seleccionar...</option>
                                 <option th:each="status : ${T(org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Transaction.Status).values()}"
                                         th:value="${status}"
                                         th:text="${status}">
                                 </option>
                             </select>
                         </div>
+                        <p th:if="${#fields.hasErrors('status')}" class="mt-1 text-sm text-red-600" th:errors="*{status}"></p>
                     </div>
                 </div>
 
                 <div class="border-t border-gray-100 pt-2"></div>
-                <h3 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-2" th:text="#{msg.transaction-form.details}"></h3>
+                <h3 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-2" th:text="#{msg.transaction-form.details}">Detalles</h3>
 
                 <div>
-                    <label for="property_id" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.property}"></label>
+                    <label for="property" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.property}">Propiedad</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fa-solid fa-house"></i>
                         </span>
-                        <select th:field="*{property.id}" id="property_id"
-                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
-                            <option value="" th:text="#{msg.transaction-form.select-property}"></option>
-                            <option th:each="property : ${properties}"
-                                    th:value="${property.id}"
-                                    th:text="${property.name}"></option>
+                        <select th:field="*{property}" id="property"
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+                                th:classappend="${#fields.hasErrors('property')} ? 'border-red-500 focus:border-red-500' : ''">
+                            <option value="" th:text="#{msg.transaction-form.select-property}">-- Seleccionar --</option>
+                            <option th:each="prop : ${properties}"
+                                    th:value="${prop.id}"
+                                    th:text="${prop.name}"></option>
                         </select>
                     </div>
-                    <p th:if="${#fields.hasErrors('property.id')}" class="mt-1 text-sm text-red-600" th:errors="*{property.id}"></p>
+                    <p th:if="${#fields.hasErrors('property')}" class="mt-1 text-sm text-red-600" th:errors="*{property}"></p>
                 </div>
 
                 <div class="border-t border-gray-100 pt-2"></div>
-                <h3 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-2" th:text="#{msg.transaction-form.interveners}"></h3>
+                <h3 class="text-sm uppercase tracking-wide text-gray-500 font-bold mb-2" th:text="#{msg.transaction-form.interveners}">Intervinientes</h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg">
                     <div>
-                        <label for="client_id" class="block text-sm font-bold text-gray-700 mb-1" th:text="#{msg.transaction-form.client}"></label>
-                        <select th:field="*{client.id}" id="client_id"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
-                            <option value="" th:text="#{msg.transaction-form.select-client}"></option>
-                            <option th:each="client : ${clients}"
-                                    th:value="${client.id}"
-                                    th:text="${client.name}"></option>
+                        <label for="client" class="block text-sm font-bold text-gray-700 mb-1" th:text="#{msg.transaction-form.client}">Cliente</label>
+                        <select th:field="*{client}" id="client"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+                                th:classappend="${#fields.hasErrors('client')} ? 'border-red-500 focus:border-red-500' : ''">
+                            <option value="" th:text="#{msg.transaction-form.select-client}">-- Seleccionar --</option>
+                            <option th:each="cli : ${clients}"
+                                    th:value="${cli.id}"
+                                    th:text="${cli.name}"></option>
                         </select>
-                        <p th:if="${#fields.hasErrors('client.id')}" class="mt-1 text-sm text-red-600" th:errors="*{client.id}"></p>
+                        <p th:if="${#fields.hasErrors('client')}" class="mt-1 text-sm text-red-600" th:errors="*{client}"></p>
                     </div>
 
                     <div>
-                        <label for="agent_id" class="block text-sm font-bold text-gray-700 mb-1" th:text="#{msg.transaction-form.agent}"></label>
-                        <select th:field="*{agent.id}" id="agent_id"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white" required>
-                            <option value="" th:text="#{msg.transaction-form.select-agent}"></option>
-                            <option th:each="agent : ${agents}"
-                                    th:value="${agent.id}"
-                                    th:text="${agent.name}"></option>
+                        <label for="agent" class="block text-sm font-bold text-gray-700 mb-1" th:text="#{msg.transaction-form.agent}">Agente</label>
+                        <select th:field="*{agent}" id="agent"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-white"
+                                th:classappend="${#fields.hasErrors('agent')} ? 'border-red-500 focus:border-red-500' : ''">
+                            <option value="" th:text="#{msg.transaction-form.select-agent}">-- Seleccionar --</option>
+                            <option th:each="agt : ${agents}"
+                                    th:value="${agt.id}"
+                                    th:text="${agt.name}"></option>
                         </select>
-                        <p th:if="${#fields.hasErrors('agent.id')}" class="mt-1 text-sm text-red-600" th:errors="*{agent.id}"></p>
+                        <p th:if="${#fields.hasErrors('agent')}" class="mt-1 text-sm text-red-600" th:errors="*{agent}"></p>
                     </div>
                 </div>
 
                 <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.price}"></label>
+                    <label for="price" class="block text-sm font-medium text-gray-700 mb-1" th:text="#{msg.transaction-form.price}">Precio</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fa-solid fa-euro-sign"></i>
                         </span>
                         <input type="text" th:field="*{price}" id="price"
                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors text-lg font-bold text-gray-800"
-                               placeholder="0.00" required/>
+                               placeholder="0.00"
+                               th:classappend="${#fields.hasErrors('price')} ? 'border-red-500 focus:border-red-500' : ''"/>
                     </div>
                     <p th:if="${#fields.hasErrors('price')}" class="mt-1 text-sm text-red-600" th:errors="*{price}"></p>
                 </div>
 
                 <div class="pt-6 border-t border-gray-100 flex justify-end gap-3">
-                    <a th:href="@{/transactions}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors" th:text="#{msg.common.cancel}"></a>
+                    <a th:href="@{/transactions}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors" th:text="#{msg.common.cancel}">Cancelar</a>
                     <button type="submit" class="bg-brand-800 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-brand-900 shadow-md hover:shadow-lg transition-all transform active:scale-95 flex items-center gap-2">
                         <i class="fa-solid fa-check"></i>
-                        <span th:text="#{${transaction.id == null ? 'msg.transaction-form.create' : 'msg.common.save'}}"></span>
+                        <span th:text="#{${transaction.id == null ? 'msg.transaction-form.create' : 'msg.common.save'}}">Guardar</span>
                     </button>
                 </div>
 

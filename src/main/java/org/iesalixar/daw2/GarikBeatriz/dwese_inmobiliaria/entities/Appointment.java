@@ -1,9 +1,7 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,16 +24,11 @@ public class Appointment {
 
     @Transient
     @NotNull(message = "{msg.appointment.timestamp.notNull}")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate appointmentDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime appointmentDate;
 
     @Column(name = "appointment_timestamp", nullable = false)
     private long appointmentTimestamp;
-
-    @NotEmpty(message = "{msg.appointment.location.notEmpty}")
-    @Size(max = 100, message = "{msg.appointment.location.size}")
-    @Column(name = "location", nullable = false)
-    private String location;
 
     @Column(name = "notes")
     private String notes;
@@ -50,32 +43,41 @@ public class Appointment {
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    public LocalDate getAppointmentDate() {
-        if (appointmentDate == null) {
+    @NotNull(message = "{msg.appointment.property.notNull}")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "property_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Property property;
+
+    public LocalDateTime getAppointmentDate() {
+        if (appointmentDate == null && appointmentTimestamp > 0) {
             return Instant.ofEpochSecond(appointmentTimestamp)
                     .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
+                    .toLocalDateTime();
         }
         return appointmentDate;
     }
 
-    public void setAppointmentDate(LocalDate appointmentDate) {
+    public void setAppointmentDate(LocalDateTime appointmentDate) {
         this.appointmentDate = appointmentDate;
-        this.appointmentTimestamp = appointmentDate
-                .atStartOfDay(ZoneId.systemDefault())
-                .toEpochSecond();
+        if (appointmentDate != null) {
+            this.appointmentTimestamp = appointmentDate
+                    .atZone(ZoneId.systemDefault())
+                    .toEpochSecond();
+        }
     }
 
     @PostLoad
     public void onLoad() {
         this.generateCode();
-
         if (this.appointmentDate == null && this.appointmentTimestamp > 0) {
             this.appointmentDate = Instant.ofEpochSecond(this.appointmentTimestamp)
                     .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
+                    .toLocalDateTime();
         }
     }
+
     @PostPersist
     @PostUpdate
     private void generateCode() {
@@ -84,13 +86,11 @@ public class Appointment {
 
     public Appointment(String code,
                        long timestamp,
-                       String location,
                        String notes,
                        Agent agent,
                        Client client) {
         this.code = code;
         this.appointmentTimestamp = timestamp;
-        this.location = location;
         this.notes = notes;
         this.agent = agent;
         this.client = client;

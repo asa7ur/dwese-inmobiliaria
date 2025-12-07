@@ -31,8 +31,11 @@
 
         <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden p-8">
 
-            <form th:action="${office.id == null} ? '/offices/insert' : '/offices/update'"
-                  th:object="${office}" method="post" enctype="multipart/form-data" class="space-y-6">
+            <form th:action="(${office.id == null} ? @{/offices/insert} : @{/offices/update(id=${office.id})})"
+                  th:object="${office}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="space-y-6">
 
                 <input type="hidden" th:field="*{id}" />
 
@@ -44,7 +47,8 @@
                         </span>
                         <input type="text" th:field="*{name}" id="name"
                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-                               th:placeholder="#{msg.office-form.placeholder-name}" />
+                               th:placeholder="#{msg.office-form.placeholder-name}"
+                               th:classappend="${#fields.hasErrors('name')} ? 'border-red-500 focus:border-red-500' : ''" />
                     </div>
                     <p th:if="${#fields.hasErrors('name')}" class="mt-1 text-sm text-red-600" th:errors="*{name}"></p>
                 </div>
@@ -57,7 +61,8 @@
                         </span>
                         <input type="text" th:field="*{address}" id="address"
                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-                               th:placeholder="#{msg.office-form.placeholder-address}" />
+                               th:placeholder="#{msg.office-form.placeholder-address}"
+                               th:classappend="${#fields.hasErrors('address')} ? 'border-red-500 focus:border-red-500' : ''" />
                     </div>
                     <p th:if="${#fields.hasErrors('address')}" class="mt-1 text-sm text-red-600" th:errors="*{address}"></p>
                 </div>
@@ -70,7 +75,8 @@
                                 <i class="fa-solid fa-phone"></i>
                             </span>
                             <input type="text" th:field="*{phone}" id="phone"
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" />
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                                   th:classappend="${#fields.hasErrors('phone')} ? 'border-red-500 focus:border-red-500' : ''" />
                         </div>
                         <p th:if="${#fields.hasErrors('phone')}" class="mt-1 text-sm text-red-600" th:errors="*{phone}"></p>
                     </div>
@@ -82,7 +88,8 @@
                                 <i class="fa-solid fa-envelope"></i>
                             </span>
                             <input type="text" th:field="*{email}" id="email"
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" />
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
+                                   th:classappend="${#fields.hasErrors('email')} ? 'border-red-500 focus:border-red-500' : ''" />
                         </div>
                         <p th:if="${#fields.hasErrors('email')}" class="mt-1 text-sm text-red-600" th:errors="*{email}"></p>
                     </div>

@@ -21,4 +21,6 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
             "LOWER(a.office.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Agent> searchAgents(@Param("keyword") String keyword, Pageable pageable);
 
+    boolean existsByOfficeId(Long officeId);
+
 }

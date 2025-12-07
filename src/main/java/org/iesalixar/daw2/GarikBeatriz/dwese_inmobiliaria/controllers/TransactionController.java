@@ -10,6 +10,8 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.Transacti
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource; // IMPORTANTE
+import org.springframework.context.i18n.LocaleContextHolder; // IMPORTANTE
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +43,9 @@ public class TransactionController {
     @Autowired
     private AgentRepository agentRepository;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @GetMapping
     public String listTransactions(
             @RequestParam(defaultValue = "1") int page,
@@ -58,7 +63,7 @@ public class TransactionController {
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
 
         Page<Transaction> transactionPage;
-        if (keyword ==null || keyword.isEmpty()) {
+        if (keyword == null || keyword.isEmpty()) {
             transactionPage = transactionRepository.findAll(pageable);
         } else {
             transactionPage = transactionRepository.searchTransactions(keyword, pageable);
@@ -70,7 +75,7 @@ public class TransactionController {
                 page
         );
 
-        logger.info("Se han cargado {} transaciiones.", transactionDTO.getTransactions().size());
+        logger.info("Se han cargado {} transacciones.", transactionDTO.getTransactions().size());
         model.addAttribute("listTransactions", transactionDTO);
         model.addAttribute("keyword", keyword);
         model.addAttribute("sortBy", sortBy);
@@ -88,15 +93,9 @@ public class TransactionController {
         transaction.setTransactionDate(LocalDate.now());
 
         model.addAttribute("transaction", transaction);
-
-        List<Property> properties = propertyRepository.findAll();
-        model.addAttribute("properties", properties);
-
-        List<Client> clients = clientRepository.findAll();
-        model.addAttribute("clients", clients);
-
-        List<Agent> agents = agentRepository.findAll();
-        model.addAttribute("agents", agents);
+        model.addAttribute("properties", propertyRepository.findAll());
+        model.addAttribute("clients", clientRepository.findAll());
+        model.addAttribute("agents", agentRepository.findAll());
 
         return "transaction-form";
     }
@@ -107,12 +106,14 @@ public class TransactionController {
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        logger.info("Solicitando formulario para editar transaciión con ID {}", id);
+        logger.info("Solicitando formulario para editar transacción con ID {}", id);
         Optional<Transaction> transactionOpt = transactionRepository.findById(id);
 
         if(transactionOpt.isEmpty()){
             logger.warn("No se encontró la transacción con ID {}", id);
-            redirectAttributes.addFlashAttribute("message", "Transacción no encontrada");
+
+            String message = messageSource.getMessage("msg.transaction.flash.not-found", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
             return "redirect:/transactions";
         }
 
@@ -130,14 +131,14 @@ public class TransactionController {
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        logger.info("Insertando nuevo transaccion");
+        logger.info("Insertando nueva transacción");
 
         if (transaction.getProperty() != null && transactionRepository.existsByPropertyId(transaction.getProperty().getId())) {
-            result.rejectValue("property.id", "error.transaction", "Esta propiedad ya tiene una transacción asociada activa.");
+            result.rejectValue("property", "msg.transaction.error.property-busy", "Esta propiedad ya tiene una transacción asociada activa.");
         }
 
         if(result.hasErrors()){
-            logger.warn("Errores de validación en el formulario de nueva transaccion.");
+            logger.warn("Errores de validación en el formulario de nueva transacción.");
             model.addAttribute("properties",  propertyRepository.findAll());
             model.addAttribute("clients", clientRepository.findAll());
             model.addAttribute("agents", agentRepository.findAll());
@@ -145,8 +146,10 @@ public class TransactionController {
         }
 
         transactionRepository.save(transaction);
-        logger.info("Transaccion {} insertado con éxito", transaction.getCode());
-        redirectAttributes.addFlashAttribute("successMessage", "Transaccion insertada correctamente.");
+        logger.info("Transacción {} insertada con éxito", transaction.getCode());
+
+        String message = messageSource.getMessage("msg.transaction.flash.created", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
         return "redirect:/transactions";
     }
 
@@ -157,10 +160,10 @@ public class TransactionController {
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        logger.info("Actualizando transaccion con ID {}", transaction.getId());
+        logger.info("Actualizando transacción con ID {}", transaction.getId());
 
         if(result.hasErrors()){
-            logger.warn("Errores de validación al actualizar la transaccion.");
+            logger.warn("Errores de validación al actualizar la transacción.");
             model.addAttribute("properties",  propertyRepository.findAll());
             model.addAttribute("clients", clientRepository.findAll());
             model.addAttribute("agents", agentRepository.findAll());
@@ -168,8 +171,10 @@ public class TransactionController {
         }
 
         transactionRepository.save(transaction);
-        logger.info("Transaccion con ID {} actualizada correctamente", transaction.getId());
-        redirectAttributes.addFlashAttribute("successMessage", "Transaccion actualizada correctamente.");
+        logger.info("Transacción con ID {} actualizada correctamente", transaction.getId());
+
+        String message = messageSource.getMessage("msg.transaction.flash.updated", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
 
         return "redirect:/transactions";
     }
@@ -179,10 +184,29 @@ public class TransactionController {
             @RequestParam("id") Long id,
             RedirectAttributes redirectAttributes
     ){
-        logger.info("Eliminando transaccion con ID {}", id);
+        logger.info("Eliminando transacción con ID {}", id);
         transactionRepository.deleteById(id);
-        logger.info("Transaccion con ID {} eliminada correctamente", id);
-        redirectAttributes.addFlashAttribute("successMessage", "Transaccion eliminada correctamente.");
+        logger.info("Transacción con ID {} eliminada correctamente", id);
+
+        String message = messageSource.getMessage("msg.transaction.flash.deleted", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
+        return "redirect:/transactions";
+    }
+
+    // Redirecciones de seguridad (get methods for post actions)
+    @GetMapping("/update")
+    public String redirectLostUpdate(@RequestParam(required = false) Long id) {
+        if (id != null) return "redirect:/transactions/edit?id=" + id;
+        return "redirect:/transactions";
+    }
+
+    @GetMapping("/insert")
+    public String redirectLostInsert() {
+        return "redirect:/transactions/new";
+    }
+
+    @GetMapping({"/delete", "/delete-image"})
+    public String redirectLostDelete() {
         return "redirect:/transactions";
     }
 }
