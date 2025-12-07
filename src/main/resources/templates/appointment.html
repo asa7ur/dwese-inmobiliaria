@@ -103,7 +103,7 @@
                     <div class="flex flex-col">
                         <span class="text-xs text-gray-500 font-semibold uppercase" th:text="#{msg.appointment.agent}"></span>
                         <span class="text-sm font-medium text-gray-900"
-                              th:text="${appointment.agent != null} ? ${appointment.agent.name} : #{msg.commons.no-assigned}"></span>
+                              th:text="${appointment.agent != null} ? ${appointment.agent.name} : #{msg.common.no-assigned}"></span>
                     </div>
                 </div>
 
@@ -114,7 +114,7 @@
                     <div class="flex flex-col">
                         <span class="text-xs text-gray-500 font-semibold uppercase" th:text="#{msg.appointment.client}"></span>
                         <span class="text-sm font-medium text-gray-900"
-                              th:text="${appointment.client != null} ? ${appointment.client.name} : #{msg.commons.no-assigned}"></span>
+                              th:text="${appointment.client != null} ? ${appointment.client.name} : #{msg.common.no-assigned}"></span>
                     </div>
                 </div>
             </div>
@@ -128,9 +128,10 @@
                     <input type="hidden" name="id" th:value="${appointment.id}"/>
                     <button type="submit"
                             class="text-gray-500 hover:text-red-600 hover:bg-red-50 p-2 rounded-md transition-colors"
-                            title="#{msg.common.delete}"
+                            th:title="#{msg.common.delete}"
                             th:data-loc="${appointment.location}"
-                            onclick="return confirm(#{msg.commons.no-assigned}  + this.getAttribute('data-loc') + '?')">
+                            th:data-confirm-msg="#{msg.appointment.confirm-delete}"
+                            onclick="return confirm(this.getAttribute('data-confirm-msg') + ' ' + this.getAttribute('data-loc') + '?')">
                         <i class="fa-solid fa-trash-can text-lg"></i>
                     </button>
                 </form>

@@ -147,9 +147,13 @@
                     <a th:href="@{/properties/edit(id=${property.id})}" class="text-center bg-gray-50 border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-300 py-2 rounded-lg text-sm font-medium transition-colors" th:text="#{msg.common.edit}"></a>
                     <form th:action="@{/properties/delete}" method="post" class="w-full">
                         <input type="hidden" name="id" th:value="${property.id}"/>
-                        <button type="submit" class="w-full text-center bg-gray-50 border border-gray-200 text-gray-600 hover:text-red-600 hover:border-red-300 py-2 rounded-lg text-sm font-medium transition-colors"
-                                th:data-name="${property.name}"
-                                onclick="return confirm(#{msg.property.confirm} + this.getAttribute('data-name') + '?')" th:text="#{msg.common.delete}"></button>
+                        <button type="submit"
+                                class="w-full text-center bg-gray-50 border border-gray-200 text-gray-600 hover:text-red-600 hover:border-red-300 py-2 rounded-lg text-sm font-medium transition-colors"
+                                th:title="#{msg.common.delete}"
+                                th:data-confirm-msg="#{msg.property.confirm}"
+                                onclick="return confirm(this.getAttribute('data-confirm-msg') + '?')">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </form>
                 </div>
             </div>

@@ -84,7 +84,7 @@
                 </div>
 
                 <div class="pt-6 border-t border-gray-100 flex justify-end gap-3">
-                    <a th:href="@{/clients}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</a>
+                    <a th:href="@{/clients}" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors" th:text="#{msg.common.cancel}"></a>
                     <button type="submit" class="bg-brand-800 text-white px-8 py-2.5 rounded-lg font-bold hover:bg-brand-900 shadow-md hover:shadow-lg transition-all transform active:scale-95 flex items-center gap-2">
                         <i class="fa-solid fa-check"></i>
                         <span th:text="#{${client.id == null ? 'msg.client-form.create' : 'msg.common.save'}}"></span>

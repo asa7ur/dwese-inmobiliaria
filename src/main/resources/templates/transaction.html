@@ -123,9 +123,10 @@
                     <button type="submit"
                             class="text-gray-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
                             th:data-code="${transaction.code}"
-                            onclick="return confirm(#{msg.transaction.confirm} + this.getAttribute('data-code') + '?')"
-                            title="#{msg.common.delete}">
-                        <i class="fa-solid fa-trash-can text-lg"></i>
+                            th:data-msg="#{msg.transaction.confirm}"
+                            onclick="return confirm(this.getAttribute('data-msg') + ' ' + this.getAttribute('data-code') + '?')"
+                            th:title="#{msg.common.delete}">
+                        <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </form>
             </div>
