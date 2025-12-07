@@ -20,24 +20,24 @@
                 <div class="w-full lg:w-8/12 px-4 ml-auto mr-auto text-center">
 
                     <h1 class="text-white font-heading font-bold text-4xl sm:text-5xl md:text-6xl mb-4 drop-shadow-lg">
-                        <span th:text="#{index.hero.title.part1}"></span> <br/>
-                        <span th:text="#{index.hero.title.part2}"></span>
+                        <span th:text="#{msg.index.hero.title.part1}"></span> <br/>
+                        <span th:text="#{msg.index.hero.title.part2}"></span>
                     </h1>
 
-                    <p class="mt-4 text-lg text-gray-200 mb-10 drop-shadow-md max-w-2xl mx-auto" th:text="#{index.hero.subtitle}"></p>
+                    <p class="mt-4 text-lg text-gray-200 mb-10 drop-shadow-md max-w-2xl mx-auto" th:text="#{msg.index.hero.subtitle}"></p>
 
                     <div class="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up">
 
                         <a th:href="@{/properties}"
                            class="bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-brand-500/50 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
                             <i class="fa-solid fa-house-chimney"></i>
-                            <span th:text="#{index.hero.explore}"></span>
+                            <span th:text="#{msg.index.hero.explore}"></span>
                         </a>
 
                         <a th:href="@{/agents}"
                            class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold py-4 px-8 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center gap-2 text-lg">
                             <i class="fa-solid fa-users"></i>
-                            <span th:text="#{index.hero.contact}"></span>
+                            <span th:text="#{msg.index.hero.contact}"></span>
                         </a>
 
                     </div>
@@ -50,8 +50,8 @@
         <div class="container mx-auto px-4">
             <div class="flex flex-wrap justify-center text-center mb-16">
                 <div class="w-full lg:w-6/12 px-4">
-                    <h2 class="text-3xl font-heading font-bold text-gray-900 mb-4" th:text="#{index.why.title}"></h2>
-                    <p class="text-lg leading-relaxed text-gray-500" th:text="#{index.why.subtitle}"></p>
+                    <h2 class="text-3xl font-heading font-bold text-gray-900 mb-4" th:text="#{msg.index.why.title}"></h2>
+                    <p class="text-lg leading-relaxed text-gray-500" th:text="#{msg.index.why.subtitle}"></p>
                 </div>
             </div>
             <div class="flex flex-wrap">
@@ -61,8 +61,8 @@
                             <div class="text-white p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 shadow-lg rounded-full bg-brand-500">
                                 <i class="fas fa-award text-xl"></i>
                             </div>
-                            <h6 class="text-xl font-bold text-gray-800" th:text="#{index.why.card1.title}"></h6>
-                            <p class="mt-2 mb-4 text-gray-500" th:text="#{index.why.card1.text}"></p>
+                            <h6 class="text-xl font-bold text-gray-800" th:text="#{msg.index.why.card1.title}"></h6>
+                            <p class="mt-2 mb-4 text-gray-500" th:text="#{msg.index.why.card1.text}"></p>
                         </div>
                     </div>
                 </div>
@@ -72,8 +72,8 @@
                             <div class="text-white p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 shadow-lg rounded-full bg-brand-500">
                                 <i class="fas fa-hand-holding-dollar text-xl"></i>
                             </div>
-                            <h6 class="text-xl font-bold text-gray-800" th:text="#{index.why.card2.title}"></h6>
-                            <p class="mt-2 mb-4 text-gray-500" th:text="#{index.why.card2.text}"></p>
+                            <h6 class="text-xl font-bold text-gray-800" th:text="#{msg.index.why.card2.title}"></h6>
+                            <p class="mt-2 mb-4 text-gray-500" th:text="#{msg.index.why.card2.text}"></p>
                         </div>
                     </div>
                 </div>
@@ -83,8 +83,8 @@
                             <div class="text-white p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 shadow-lg rounded-full bg-brand-500">
                                 <i class="fas fa-users text-xl"></i>
                             </div>
-                            <h6 class="text-xl font-bold text-gray-800" th:text="#{index.why.card3.title}"></h6>
-                            <p class="mt-2 mb-4 text-gray-500" th:text="#{index.why.card3.text}"></p>
+                            <h6 class="text-xl font-bold text-gray-800" th:text="#{msg.index.why.card3.title}"></h6>
+                            <p class="mt-2 mb-4 text-gray-500" th:text="#{msg.index.why.card3.text}"></p>
                         </div>
                     </div>
                 </div>
@@ -96,12 +96,12 @@
         <div class="container mx-auto px-4">
             <div class="flex flex-wrap justify-between items-end mb-12">
                 <div class="w-full md:w-8/12">
-                    <h2 class="text-3xl font-heading font-bold text-gray-900" th:text="#{index.recent.title}"></h2>
-                    <p class="mt-2 text-gray-500" th:text="#{index.recent.subtitle}"></p>
+                    <h2 class="text-3xl font-heading font-bold text-gray-900" th:text="#{msg.index.recent.title}"></h2>
+                    <p class="mt-2 text-gray-500" th:text="#{msg.index.recent.subtitle}"></p>
                 </div>
                 <div class="w-full md:w-4/12 text-right mt-4 md:mt-0">
                     <a th:href="@{/properties}" class="inline-block text-brand-800 font-bold hover:text-brand-600 transition-colors">
-                        <span th:text="#{index.recent.viewAll}"></span>
+                        <span th:text="#{msg.index.recent.viewAll}"></span>
                         <i class="fa-solid fa-arrow-right ml-1"></i>
                     </a>
                 </div>
@@ -140,7 +140,7 @@
                 </div>
 
                 <div th:if="${featuredProperties == null or featuredProperties.isEmpty()}" class="col-span-3 text-center py-10 text-gray-400">
-                    <p th:text="#{index.no-properties}"></p>
+                    <p th:text="#{msg.index.no-property}"></p>
                 </div>
 
             </div>
