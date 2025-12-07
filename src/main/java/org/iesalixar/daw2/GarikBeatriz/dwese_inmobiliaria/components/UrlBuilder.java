@@ -1,4 +1,4 @@
-package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils;
+package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.components;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;

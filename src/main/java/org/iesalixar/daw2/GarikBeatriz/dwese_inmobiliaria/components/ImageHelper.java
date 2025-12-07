@@ -1,4 +1,4 @@
-package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils;
+package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.components;
 
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.PropertyImage;
 import org.springframework.stereotype.Component;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component("imgHelper") // El nombre "imgHelper" es como lo llamaremos en el HTML
-public class ImageUtils {
+public class ImageHelper {
 
     public String getImagesAsString(List<PropertyImage> images) {
         if (images == null || images.isEmpty()) {
