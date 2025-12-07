@@ -60,13 +60,12 @@
                         </a>
                     </div>
                 </div>
-
             </div>
 
-            <div class="flex items-center gap-2 pl-6 border-l border-gray-200 ml-2">
+            <div class="hidden md:flex items-center gap-2 pl-6 border-l border-gray-200 ml-2">
                 <i class="fa-solid fa-globe text-gray-400 text-sm"></i>
 
-                <a th:href="@{''(id=${param.id != null ? param.id[0] : null}, lang='es')}"
+                <a th:href="${@urlBuilder.replaceParam('lang', 'es')}"
                    class="text-sm transition-colors hover:text-brand-600"
                    th:classappend="${#locale.language == 'es'} ? 'font-bold text-brand-800' : 'text-gray-500'">
                     ES
@@ -74,13 +73,11 @@
 
                 <span class="text-gray-300">|</span>
 
-                <a th:href="@{''(id=${param.id != null ? param.id[0] : null}, lang='en')}"
+                <a th:href="${@urlBuilder.replaceParam('lang', 'en')}"
                    class="text-sm transition-colors hover:text-brand-600"
                    th:classappend="${#locale.language == 'en'} ? 'font-bold text-brand-800' : 'text-gray-500'">
                     EN
                 </a>
-            </div>
-
             </div>
 
             <div class="flex items-center md:hidden">
@@ -88,6 +85,7 @@
                     <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
             </div>
+        </div>
     </nav>
 
     <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
@@ -106,12 +104,12 @@
 
             <div class="border-t border-gray-100 my-2 pt-2 flex items-center gap-4 px-3 py-2">
                 <span class="text-sm font-medium text-gray-500"><i class="fa-solid fa-globe mr-1"></i> Idioma:</span>
-                <a th:href="@{''(lang='es')}"
+                <a th:href="${@urlBuilder.replaceParam('lang', 'es')}"
                    class="px-2 py-1 rounded text-sm"
                    th:classappend="${#locale.language == 'es'} ? 'bg-brand-50 text-brand-800 font-bold' : 'text-gray-600'">
                     Español
                 </a>
-                <a th:href="@{''(lang='en')}"
+                <a th:href="${@urlBuilder.replaceParam('lang', 'en')}"
                    class="px-2 py-1 rounded text-sm"
                    th:classappend="${#locale.language == 'en'} ? 'bg-brand-50 text-brand-800 font-bold' : 'text-gray-600'">
                     English
