@@ -20,25 +20,24 @@
                 <div class="w-full lg:w-8/12 px-4 ml-auto mr-auto text-center">
 
                     <h1 class="text-white font-heading font-bold text-4xl sm:text-5xl md:text-6xl mb-4 drop-shadow-lg">
-                        Encuentra tu lugar <br/> en el mundo
+                        <span th:text="#{index.hero.title.part1}"></span> <br/>
+                        <span th:text="#{index.hero.title.part2}"></span>
                     </h1>
 
-                    <p class="mt-4 text-lg text-gray-200 mb-10 drop-shadow-md max-w-2xl mx-auto">
-                        Garik Asatryan & Beatriz Barrachina presentan la mejor selección de propiedades exclusivas. Tu futuro hogar está a un solo clic.
-                    </p>
+                    <p class="mt-4 text-lg text-gray-200 mb-10 drop-shadow-md max-w-2xl mx-auto" th:text="#{index.hero.subtitle}"></p>
 
                     <div class="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up">
 
                         <a th:href="@{/properties}"
                            class="bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-brand-500/50 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2 text-lg">
                             <i class="fa-solid fa-house-chimney"></i>
-                            Explorar Propiedades
+                            <span th:text="#{index.hero.explore}"></span>
                         </a>
 
                         <a th:href="@{/agents}"
                            class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold py-4 px-8 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center gap-2 text-lg">
                             <i class="fa-solid fa-users"></i>
-                            Contactar Agente
+                            <span th:text="#{index.hero.contact}"></span>
                         </a>
 
                     </div>
@@ -51,10 +50,8 @@
         <div class="container mx-auto px-4">
             <div class="flex flex-wrap justify-center text-center mb-16">
                 <div class="w-full lg:w-6/12 px-4">
-                    <h2 class="text-3xl font-heading font-bold text-gray-900 mb-4">¿Por qué elegirnos?</h2>
-                    <p class="text-lg leading-relaxed text-gray-500">
-                        No solo vendemos casas, creamos hogares. Nuestro equipo se dedica a brindarte la mejor experiencia.
-                    </p>
+                    <h2 class="text-3xl font-heading font-bold text-gray-900 mb-4" th:text="#{index.why.title}"></h2>
+                    <p class="text-lg leading-relaxed text-gray-500" th:text="#{index.why.subtitle}"></p>
                 </div>
             </div>
             <div class="flex flex-wrap">
@@ -64,10 +61,8 @@
                             <div class="text-white p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 shadow-lg rounded-full bg-brand-500">
                                 <i class="fas fa-award text-xl"></i>
                             </div>
-                            <h6 class="text-xl font-bold text-gray-800">Mejores Propiedades</h6>
-                            <p class="mt-2 mb-4 text-gray-500">
-                                Seleccionamos cuidadosamente cada inmueble para asegurar calidad y confort.
-                            </p>
+                            <h6 class="text-xl font-bold text-gray-800" th:text="#{index.why.card1.title}"></h6>
+                            <p class="mt-2 mb-4 text-gray-500" th:text="#{index.why.card1.text}"></p>
                         </div>
                     </div>
                 </div>
@@ -77,10 +72,8 @@
                             <div class="text-white p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 shadow-lg rounded-full bg-brand-500">
                                 <i class="fas fa-hand-holding-dollar text-xl"></i>
                             </div>
-                            <h6 class="text-xl font-bold text-gray-800">Precio Justo</h6>
-                            <p class="mt-2 mb-4 text-gray-500">
-                                Valoraciones precisas y negociaciones transparentes para tu beneficio.
-                            </p>
+                            <h6 class="text-xl font-bold text-gray-800" th:text="#{index.why.card2.title}"></h6>
+                            <p class="mt-2 mb-4 text-gray-500" th:text="#{index.why.card2.text}"></p>
                         </div>
                     </div>
                 </div>
@@ -90,10 +83,8 @@
                             <div class="text-white p-3 text-center inline-flex items-center justify-center w-16 h-16 mb-5 shadow-lg rounded-full bg-brand-500">
                                 <i class="fas fa-users text-xl"></i>
                             </div>
-                            <h6 class="text-xl font-bold text-gray-800">Agentes Expertos</h6>
-                            <p class="mt-2 mb-4 text-gray-500">
-                                Un equipo profesional dispuesto a acompañarte en todo el proceso.
-                            </p>
+                            <h6 class="text-xl font-bold text-gray-800" th:text="#{index.why.card3.title}"></h6>
+                            <p class="mt-2 mb-4 text-gray-500" th:text="#{index.why.card3.text}"></p>
                         </div>
                     </div>
                 </div>
@@ -105,12 +96,13 @@
         <div class="container mx-auto px-4">
             <div class="flex flex-wrap justify-between items-end mb-12">
                 <div class="w-full md:w-8/12">
-                    <h2 class="text-3xl font-heading font-bold text-gray-900">Propiedades Recientes</h2>
-                    <p class="mt-2 text-gray-500">Echa un vistazo a nuestras últimas incorporaciones.</p>
+                    <h2 class="text-3xl font-heading font-bold text-gray-900" th:text="#{index.recent.title}"></h2>
+                    <p class="mt-2 text-gray-500" th:text="#{index.recent.subtitle}"></p>
                 </div>
                 <div class="w-full md:w-4/12 text-right mt-4 md:mt-0">
                     <a th:href="@{/properties}" class="inline-block text-brand-800 font-bold hover:text-brand-600 transition-colors">
-                        Ver todas <i class="fa-solid fa-arrow-right ml-1"></i>
+                        <span th:text="#{index.recent.viewAll}"></span>
+                        <i class="fa-solid fa-arrow-right ml-1"></i>
                     </a>
                 </div>
             </div>
@@ -134,21 +126,21 @@
                              th:classappend="${#strings.toString(property.status) == 'SALE'} ? 'text-green-600' : 'text-brand-500'">
                         </div>
 
-                        <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-1" th:text="${property.name}">Título</h3>
-                        <p class="text-gray-500 text-sm mb-4 line-clamp-1" th:text="${property.location}">Ubicación</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-1" th:text="${property.name} + ' ' + #{msg.index.property.title}"></h3>
+                        <p class="text-gray-500 text-sm mb-4 line-clamp-1" th:text="${property.location} + ' ' + #{msg.index.property.location}"></p>
 
                         <div class="mt-auto pt-4 border-t border-gray-100">
                             <div class="flex justify-between items-center text-gray-500 text-sm">
                                 <span title="Habitaciones"><i class="fa-solid fa-bed mr-1 text-brand-300"></i> <span th:text="${property.bedrooms}"></span></span>
                                 <span title="Baños"><i class="fa-solid fa-bath mr-1 text-brand-300"></i> <span th:text="${property.bathrooms}"></span></span>
-                                <span class="text-brand-900 font-bold text-lg" th:text="${property.price} + ' €'">Precio</span>
+                                <span class="text-brand-900 font-bold text-lg" th:text="${property.price} + ' €' + ' ' + #{msg.index.property.price}"></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div th:if="${featuredProperties == null or featuredProperties.isEmpty()}" class="col-span-3 text-center py-10 text-gray-400">
-                    <p>No hay propiedades destacadas en este momento.</p>
+                    <p th:text="#{index.no-properties}"></p>
                 </div>
 
             </div>
