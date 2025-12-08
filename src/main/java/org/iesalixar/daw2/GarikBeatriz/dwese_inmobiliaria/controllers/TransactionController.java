@@ -11,8 +11,8 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.Transacti
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource; // IMPORTANTE
-import org.springframework.context.i18n.LocaleContextHolder; // IMPORTANTE
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -137,10 +136,16 @@ public class TransactionController {
     ){
         logger.info("Insertando nueva transacción");
 
+        // 1. Validación de Negocio: Propiedad Ocupada
+        // Verificamos si la propiedad seleccionada ya tiene una transacción activa (ej: ya está vendida).
+        // Si existe, rechazamos el valor del campo 'property' manualmente.
         if (transaction.getProperty() != null && transactionRepository.existsByPropertyId(transaction.getProperty().getId())) {
             result.rejectValue("property", "msg.transaction.error.property-busy", "Esta propiedad ya tiene una transacción asociada activa.");
         }
 
+        // 2. Validación de Negocio: Asignación Agente-Propiedad
+        // Verificamos que el Agente seleccionado realmente gestiona la Propiedad seleccionada.
+        // Esto evita que asignemos una venta a un agente que no tiene permisos sobre esa casa.
         if (!result.hasFieldErrors("property") && !result.hasFieldErrors("agent")) {
             if (transaction.getProperty() != null && transaction.getAgent() != null) {
                 agentPropertyValidator.validate(
@@ -177,6 +182,10 @@ public class TransactionController {
     ){
         logger.info("Actualizando transacción con ID {}", transaction.getId());
 
+        // 1. Validación de Negocio: Asignación Agente-Propiedad
+        // Al editar, volvemos a comprobar que el agente asignado sea válido para esa propiedad.
+        // NOTA: Aquí NO comprobamos si la propiedad está ocupada (existsByPropertyId) porque
+        // la transacción YA existe y está ocupando esa propiedad (es ella misma).
         if (!result.hasFieldErrors("property") && !result.hasFieldErrors("agent")) {
             if (transaction.getProperty() != null && transaction.getAgent() != null) {
                 agentPropertyValidator.validate(
@@ -211,11 +220,29 @@ public class TransactionController {
             RedirectAttributes redirectAttributes
     ){
         logger.info("Eliminando transacción con ID {}", id);
-        transactionRepository.deleteById(id);
-        logger.info("Transacción con ID {} eliminada correctamente", id);
+        Optional<Transaction> transactionOpt = transactionRepository.findById(id);
 
-        String message = messageSource.getMessage("msg.transaction.flash.deleted", null, LocaleContextHolder.getLocale());
-        redirectAttributes.addFlashAttribute("successMessage", message);
+        if (transactionOpt.isPresent()) {
+            Transaction transaction = transactionOpt.get();
+
+            // 2. IMPORTANTE: Romper la relación bidireccional con Property
+            // Si la propiedad sigue apuntando a la transacción borrada, Hibernate lanza el error.
+            if (transaction.getProperty() != null) {
+                transaction.getProperty().setTransaction(null);
+            }
+
+            // 3. Ahora podemos eliminar sin problemas
+            transactionRepository.delete(transaction);
+
+            logger.info("Transacción con ID {} eliminada correctamente", id);
+            String message = messageSource.getMessage("msg.transaction.flash.deleted", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("successMessage", message);
+
+        } else {
+            // Manejo del caso en que no exista (opcional, pero recomendado)
+            String message = messageSource.getMessage("msg.transaction.flash.not-found", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
+        }
         return "redirect:/transactions";
     }
 

@@ -44,7 +44,7 @@ public class AgentController {
     private AppointmentRepository appointmentRepository;
 
     @Autowired
-    PropertyRepository propertyRepository;
+    private PropertyRepository propertyRepository;
 
     @Autowired
     private FileStorageService fileStorageService;
@@ -54,32 +54,44 @@ public class AgentController {
 
     @GetMapping
     public String listAgents(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(defaultValue = "1") int page,             // Página actual (por defecto la 1)
+            @RequestParam(defaultValue = "") String keyword,        // Palabra clave de búsqueda (por defecto vacía)
+            @RequestParam(defaultValue = "id") String sortBy,       // Campo por el que ordenar (por defecto 'id')
+            @RequestParam(defaultValue = "asc") String direction,   // Dirección de ordenación (ascendente por defecto)
             Model model) {
         logger.info("Listing agents. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
 
+        // 1. Configuración de la Paginación y Ordenación
         int pageSize = 8;
+
+        // Creamos el objeto Sort dependiendo de la dirección elegida
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
+        // Creamos el objeto Pageable. Restamos 1 a 'page' porque Spring Data cuenta páginas desde 0,
+        // pero en la URL es más amigable empezar por 1.
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
         Page<Agent> agentPage;
 
+        // 2. Lógica de Búsqueda vs Listado Completo
         if (keyword == null || keyword.isEmpty()) {
+            // Si no hay palabra clave, traemos todos los agentes paginados
             agentPage = agentRepository.findAll(pageable);
         } else {
+            // Si hay palabra clave, usamos el metodo de búsqueda personalizado (por nombre, dni, email...)
             agentPage = agentRepository.searchAgents(keyword, pageable);
         }
 
+        // 3. Empaquetado de datos (DTO)
+        // Usamos un DTO para enviar la lista de agentes y la info de paginación a la vista de forma limpia
         AgentDTO agentDTO = new AgentDTO(
                 agentPage.getContent(),
                 agentPage.getTotalPages(),
                 page
         );
 
+        // Devolvemos estos parámetros a la vista para que los enlaces de paginación y ordenación
+        // mantengan el estado actual (ej: si cambio de página, que no se pierda la búsqueda).
         logger.info("Se han cargado {} agentes.", agentDTO.getAgents().size());
         model.addAttribute("listAgents", agentDTO);
         model.addAttribute("keyword", keyword);
@@ -135,6 +147,7 @@ public class AgentController {
             return "agent-form";
         }
 
+        // 2. Validación de negocio: Verificar que el DNI no esté duplicado en la base de datos
         if(agentRepository.existsAgentByDni(agent.getDni())){
             String message = messageSource.getMessage("msg.agent.flash.dni-exists", null, LocaleContextHolder.getLocale());
             model.addAttribute("errorMessage", message);
@@ -144,13 +157,14 @@ public class AgentController {
             return "agent-form";
         }
 
+        // 3. Gestión de la relación ManyToMany (Propiedades asignadas al agente)
+        // Si el formulario envía IDs de propiedades, las buscamos y las asignamos.
         if (propertyIds != null) {
             List<Property> selectedProperties = propertyRepository.findAllById(propertyIds);
             agent.setProperties(selectedProperties);
-        } else {
-            agent.setProperties(new ArrayList<>());
         }
 
+        // 4. Gestión de subida de imagen de perfil
         if(imageFile != null && !imageFile.isEmpty()){
             String fileName = fileStorageService.saveFile(imageFile);
             if(fileName != null){
@@ -174,7 +188,11 @@ public class AgentController {
             Model model,
             RedirectAttributes redirectAttributes
     ){
+        // 1. Manejo de errores de validación al actualizar
         if(result.hasErrors()){
+            // Si hay error, el objeto 'agent' que viene del formulario no tiene la imagen antigua.
+            // Debemos recuperarla de la BD para que, al volver a mostrar el formulario con errores,
+            // no parezca que la foto se ha perdido (la vista necesita saber si hay imagen para mostrarla).
             if (agent.getId() != null) {
                 Optional<Agent> dbAgent = agentRepository.findById(agent.getId());
                 dbAgent.ifPresent(value -> agent.setImage(value.getImage()));
@@ -185,6 +203,8 @@ public class AgentController {
             return "agent-form";
         }
 
+        // 2. Validación de DNI duplicado (Excluyendo al propio agente que estamos editando)
+        // Verificamos si existe otro agente con ese DNI que NO sea este mismo ID.
         if(agentRepository.existsAgentByDniAndIdNot(agent.getDni(), agent.getId())){
             if (agent.getId() != null) {
                 Optional<Agent> agentOpt = agentRepository.findById(agent.getId());
@@ -199,16 +219,20 @@ public class AgentController {
             return "agent-form";
         }
 
+        // 3. Proceso de actualización
+        // Primero recuperamos la entidad original de la base de datos (Persistente)
         Optional<Agent> existingOpt = agentRepository.findById(agent.getId());
         if(existingOpt.isPresent()){
             Agent existingAgent = existingOpt.get();
 
+            // Actualizamos los campos básicos con los datos del formulario
             existingAgent.setName(agent.getName());
             existingAgent.setDni(agent.getDni());
             existingAgent.setPhone(agent.getPhone());
             existingAgent.setEmail(agent.getEmail());
             existingAgent.setOffice(agent.getOffice());
 
+            // Actualizamos la lista de propiedades (Relación ManyToMany)
             if (propertyIds != null) {
                 List<Property> selectedProperties = propertyRepository.findAllById(propertyIds);
                 existingAgent.setProperties(selectedProperties);
@@ -216,6 +240,8 @@ public class AgentController {
                 existingAgent.setProperties(new ArrayList<>());
             }
 
+            // Actualizamos la imagen SOLO si el usuario ha subido un fichero nuevo.
+            // Si el campo viene vacío, mantenemos la imagen que ya tenía 'existingAgent'.
             if(imageFile != null && !imageFile.isEmpty()) {
                 String fileName = fileStorageService.saveFile(imageFile);
                 if (fileName != null) {
@@ -264,8 +290,12 @@ public class AgentController {
             RedirectAttributes redirectAttributes){
         Optional<Agent> agentOpt = agentRepository.findById(id);
 
+        // Verificar si el agente existe y si tiene una imagen asignada
         if (agentOpt.isPresent() && agentOpt.get().getImage() != null) {
+            // Borrado Físico: Eliminar el archivo del disco duro (carpeta 'uploads')
             fileStorageService.deleteFile(agentOpt.get().getImage());
+
+            // Borrado Lógico: Poner el campo 'image' a null en la base de datos
             agentOpt.get().setImage(null);
             agentRepository.save(agentOpt.get());
 
@@ -275,6 +305,8 @@ public class AgentController {
             String message = messageSource.getMessage("msg.agent.flash.image-not-found", null, LocaleContextHolder.getLocale());
             redirectAttributes.addFlashAttribute("errorMessage", message);
         }
+        // Redirección: Volvemos al formulario de edición de ESTE mismo agente
+        // para que el usuario vea que la foto ha desaparecido.
         return "redirect:/agents/edit?id=" + id;
     }
 

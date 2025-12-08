@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder; // IMPORTANTE
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -104,7 +104,7 @@ public class ClientController {
 
     @PostMapping("/insert")
     public String insertClient(
-            @Valid @ModelAttribute("client") Client client, // CORREGIDO: antes ponía "agent"
+            @Valid @ModelAttribute("client") Client client,
             BindingResult result,
             Model model,
             RedirectAttributes redirectAttributes

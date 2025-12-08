@@ -1,6 +1,7 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import jakarta.validation.Valid;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Agent;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.PropertyDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
@@ -11,8 +12,8 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.FileStorageSe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource; // IMPORTANTE
-import org.springframework.context.i18n.LocaleContextHolder; // IMPORTANTE
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -131,6 +132,9 @@ public class PropertyController {
             return "property-form";
         }
 
+        // Procesamiento de Imágenes
+        // Este servicio recorre el array 'files', guarda cada uno en el disco y
+        // añade el nombre del archivo a la lista de imágenes de la entidad 'property'.
         fileStorageService.processImages(property, files);
         propertyRepository.save(property);
 
@@ -150,6 +154,9 @@ public class PropertyController {
         if(result.hasErrors()){
             model.addAttribute("types", Property.Type.values());
             model.addAttribute("statuses", Property.Status.values());
+
+            // IMPORTANTE: Si hay error, el objeto 'property' que viene del formulario ha perdido la lista de imágenes antiguas.
+            // Las recuperamos de la BD para que se sigan viendo en la vista mientras el usuario corrige el formulario.
             if (property.getId() != null) {
                 Optional<Property> optProperty = propertyRepository.findById(property.getId());
                 optProperty.ifPresent(value -> property.setImages(value.getImages()));
@@ -160,7 +167,8 @@ public class PropertyController {
 
         if (existingOpt.isPresent()) {
             Property existingProperty = existingOpt.get();
-            // Actualización de campos...
+
+            // Actualizamos los campos manualmente para no sobrescribir accidentalmente relaciones no presentes en el form
             existingProperty.setName(property.getName());
             existingProperty.setDescription(property.getDescription());
             existingProperty.setLocation(property.getLocation());
@@ -171,6 +179,9 @@ public class PropertyController {
             existingProperty.setBathrooms(property.getBathrooms());
             existingProperty.setStatus(property.getStatus());
 
+            // Añadir NUEVAS imágenes
+            // Las imágenes antiguas ya están en 'existingProperty.getImages()'.
+            // processImages añadirá las nuevas que vengan en 'files' a esa lista existente.
             fileStorageService.processImages(existingProperty, files);
             propertyRepository.save(existingProperty);
 
@@ -190,26 +201,41 @@ public class PropertyController {
 
         if (transactionRepository.existsByPropertyId(id)) {
             logger.warn("No se puede eliminar la propiedad ID {} porque tiene transacciones.", id);
-
             String message = messageSource.getMessage("msg.property.flash.has-transaction", null, LocaleContextHolder.getLocale());
             redirectAttributes.addFlashAttribute("errorMessage", message);
-
             return "redirect:/properties";
         }
 
         if (appointmentRepository.existsByPropertyId(id)) {
             logger.warn("Propiedad ID {} tiene citas pendientes.", id);
-
             String message = messageSource.getMessage("msg.property.flash.has-appointments", null, LocaleContextHolder.getLocale());
             redirectAttributes.addFlashAttribute("errorMessage", message);
-
             return "redirect:/properties";
         }
 
-        propertyRepository.deleteById(id);
+        Optional<Property> propertyOpt = propertyRepository.findById(id);
 
-        String message = messageSource.getMessage("msg.property.flash.deleted", null, LocaleContextHolder.getLocale());
-        redirectAttributes.addFlashAttribute("successMessage", message);
+        if (propertyOpt.isPresent()) {
+            Property property = propertyOpt.get();
+
+            // 1. Desvincular agentes (Limpiar tabla intermedia property_agent)
+            // Iteramos sobre los agentes de la propiedad y la quitamos de SU lista.
+            // Es necesario guardar el agente porque él es el "dueño" de la relación (@JoinTable).
+            for (Agent agent : property.getAgents()) {
+                agent.getProperties().remove(property);
+                agentRepository.save(agent);
+            }
+
+            // 2. Ahora podemos eliminar la propiedad sin violar la integridad referencial
+            propertyRepository.delete(property);
+
+            String message = messageSource.getMessage("msg.property.flash.deleted", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("successMessage", message);
+        } else {
+            String message = messageSource.getMessage("msg.property.flash.not-found", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
+        }
+
         return "redirect:/properties";
     }
 

@@ -1,7 +1,7 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository; // O tu Service si lo usas
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,6 @@ import java.util.List;
 @Controller
 public class HomeController {
 
-    // 1. Inyectamos el repositorio para poder buscar datos
     @Autowired
     private PropertyRepository propertyRepository;
 

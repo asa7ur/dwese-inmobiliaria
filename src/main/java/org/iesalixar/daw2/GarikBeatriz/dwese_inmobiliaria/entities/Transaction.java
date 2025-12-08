@@ -43,7 +43,15 @@ public class Transaction {
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-
+    /**
+     * GETTER PERSONALIZADO
+     * Este metodo se usa cuando pides la fecha (ej: en el HTML con th:text="${transaction.transactionDate}").
+     * * Lógica:
+     * 1. Si 'transactionDate' (campo LocalDate) ya tiene valor, lo devuelve.
+     * 2. Si es null (ej: acabamos de cargar de la BD donde solo se guarda el timestamp),
+     * convierte el 'transactionTimestamp' (segundos) a un objeto LocalDate.
+     * * Esto permite tratar la fecha como un objeto Java normal aunque en la BD sea un número.
+     */
     public LocalDate getTransactionDate() {
         if (transactionDate == null) {
             return Instant.ofEpochSecond(transactionTimestamp)
@@ -53,6 +61,16 @@ public class Transaction {
         return transactionDate;
     }
 
+    /**
+     * SETTER PERSONALIZADO
+     * Este metodo se llama cuando el formulario envía la fecha (ej: al crear/editar).
+     * * Lógica:
+     * 1. Guarda la fecha en el campo 'transactionDate' (para uso inmediato en Java).
+     * 2. IMPORTANTE: Calcula y guarda también el 'transactionTimestamp'.
+     * Convierte la fecha al inicio del día (00:00:00) en la zona horaria del sistema
+     * y extrae los segundos (Epoch Second).
+     * * Así mantenemos sincronizado el campo que se guarda en BD (timestamp) con el que se usa en la App (date).
+     */
     public void setTransactionDate(LocalDate transactionDate) {
         this.transactionDate = transactionDate;
         this.transactionTimestamp = transactionDate
@@ -83,6 +101,15 @@ public class Transaction {
     @EqualsAndHashCode.Exclude
     private Agent agent;
 
+    /**
+     * LIFECYCLE CALLBACK: @PostLoad
+     * Se ejecuta automáticamente justo DESPUÉS de que Hibernate cargue los datos de la BD.
+     * * Utilidad:
+     * 1. Genera el código visual de la transacción (ej: "TR00123") para que esté listo.
+     * 2. Rellena el campo 'transactionDate' (LocalDate) a partir del 'transactionTimestamp'
+     * que acaba de traer de la base de datos.
+     * Sin esto, 'transactionDate' sería null al leer de la base de datos porque es @Transient.
+     */
     @PostLoad
     public void onLoad() {
         this.generateCode();
@@ -93,6 +120,15 @@ public class Transaction {
                     .toLocalDate();
         }
     }
+
+    /**
+     * LIFECYCLE CALLBACK: @PostPersist y @PostUpdate
+     * Se ejecuta automáticamente DESPUÉS de hacer un INSERT o un UPDATE en la base de datos.
+     * * Utilidad:
+     * - Asegura que el código de negocio (ej: "TR12345") se genere o actualice
+     * siempre que la entidad se guarde.
+     * - EntityCodeGenerator usa el ID (que se genera al persistir) para crear este código.
+     */
     @PostPersist
     @PostUpdate
     private void generateCode() {
