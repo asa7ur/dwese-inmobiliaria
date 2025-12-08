@@ -175,12 +175,22 @@ public class AgentController {
             RedirectAttributes redirectAttributes
     ){
         if(result.hasErrors()){
+            if (agent.getId() != null) {
+                Optional<Agent> dbAgent = agentRepository.findById(agent.getId());
+                dbAgent.ifPresent(value -> agent.setImage(value.getImage()));
+            }
+
             model.addAttribute("offices",  officeRepository.findAll());
             model.addAttribute("allProperties", propertyRepository.findAll());
             return "agent-form";
         }
 
         if(agentRepository.existsAgentByDniAndIdNot(agent.getDni(), agent.getId())){
+            if (agent.getId() != null) {
+                Optional<Agent> agentOpt = agentRepository.findById(agent.getId());
+                agentOpt.ifPresent(value -> agent.setImage(value.getImage()));
+            }
+
             String message = messageSource.getMessage("msg.agent.flash.dni-exists", null, LocaleContextHolder.getLocale());
             model.addAttribute("errorMessage", message);
 
