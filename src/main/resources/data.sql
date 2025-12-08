@@ -7,17 +7,17 @@ INSERT IGNORE INTO offices (name, address, phone, email) VALUES
 
 -- agents (12 total)
 INSERT IGNORE INTO agents (dni, name, phone, email, office_id) VALUES
-    ('47458112P', 'Walter White', '+1 505 111 2222', 'ww-broker@abqrealty.com', 3),
+    ('66554433C', 'Gojo Satoru', '+81 90 7777 1111', 's.gojo@jujutsurealty.com', 4),
     ('33256987R', 'Severus Snape', '+44 20 3333 4444', 's.snape@hogwartsagents.com', 1),
+    ('11223344Y', 'Mikasa Ackerman', '+81 3 1111 5555', 'm.ackerman@scoutsales.com', 1),
+    ('47458112P', 'Walter White', '+1 505 111 2222', 'ww-broker@abqrealty.com', 3),
     ('90123456T', 'Rick Sanchez', '+1 212 555 6666', 'ricky-s@multiversehomes.com', 2),
-    ('11223344Y', 'Eren Yeager', '+81 3 1111 5555', 'e.yeager@scoutsales.com', 1),
+    ('22110099D', 'Daenerys Targaryen', '+44 20 9999 8888', 'daenerys@westerosproperties.com', 4),
     ('55667788A', 'Tyler Durden', '+1 617 888 9999', 'tdurden@projectmayhem.org', 2),
     ('77889900B', 'Elliot Alderson', '+1 212 444 0000', 'e.alderson@fsociety.biz', 3),
-    ('66554433C', 'Gojo Satoru', '+81 90 7777 1111', 's.gojo@jujutsurealty.com', 4),
-    ('22110099D', 'Arya Stark', '+44 20 9999 8888', 'noone@westerosproperties.com', 4),
     ('88776655E', 'John Wick', '+1 212 222 3333', 'jwick@continentalbrokers.com', 2),
     ('44332211F', 'Jack Sparrow', '+34 95 123 4567', 'j.sparrow@caribbeanestates.com', 1),
-    ('99887766G', 'Shrek', '+49 30 5555 0000', 'shrek@farfarawayhomes.com', 3),
+    ('99887766G', 'Fiona', '+49 30 5555 0000', 'fiona@farfarawayhomes.com', 3),
     ('10101010H', 'Guts', '+1 310 777 8888', 'guts@berserkrealty.com', 4);
 
 -- properties (25 total)
@@ -50,26 +50,26 @@ INSERT IGNORE INTO properties (name, description, location, price, type, floors,
 
 -- clients (20 total)
 INSERT IGNORE INTO clients (dni, name, phone, email) VALUES
+    ('27654321V', 'Saitama', '+1 617 000 5555', 'saitama@clientmail.com'),
     ('19876543Z', 'Jessie Pinkman', '+1 505 000 1111', 'jesse.p@clientmail.com'),
     ('46543210Y', 'Hermione Granger', '+44 20 000 2222', 'h.granger@clientmail.com'),
+    ('16543210N', 'Vincent Vega', '+1 310 000 1313', 'v.vega@clientmail.com'),
+    ('70987654W', 'Eren Yeager', '+81 3 000 4444', 'e.yeager@clientmail.com'),
     ('13210987X', 'Morty Smith', '+1 212 000 3333', 'morty.s@clientmail.com'),
-    ('70987654W', 'Mikasa Ackerman', '+81 3 000 4444', 'mikasa.a@clientmail.com'),
-    ('27654321V', 'Saitama', '+1 617 000 5555', 'saitama@clientmail.com'),
-    ('14321098U', 'Darlene Alderson', '+1 212 000 6666', 'darlene.a@clientmail.com'),
     ('21098765S', 'Yuji Itadori', '+81 90 000 7777', 'yuji.i@clientmail.com'),
-    ('48765432R', 'Tyrion Lannister', '+44 20 000 8888', 'tyrion.l@clientmail.com'),
+    ('75432109G', 'Panda', '+81 90 000 2020', 'panda@clientmail.com'),
+    ('14321098U', 'Darlene Alderson', '+1 212 000 6666', 'darlene.a@clientmail.com'),
     ('15432109Q', 'Winston Scott', '+1 212 000 9999', 'winston.s@clientmail.com'),
     ('12109876P', 'Casca', '+34 95 000 1010', 'casca@clientmail.com'),
-    ('79876543O', 'Fiona', '+49 30 000 1212', 'fiona@clientmail.com'),
-    ('16543210N', 'Vincent Vega', '+1 310 000 1313', 'v.vega@clientmail.com'),
-    ('13210987M', 'Gus Fring', '+1 505 000 1414', 'gus.f@clientmail.com'),
-    ('40987654L', 'Ronald Weasley', '+44 20 000 1515', 'r.weasley@clientmail.com'),
     ('17654321K', 'Summer Smith', '+1 212 000 1616', 'summer.s@clientmail.com'),
+    ('48765432R', 'Tyrion Lannister', '+44 20 000 8888', 'tyrion.l@clientmail.com'),
+    ('28765432H', 'Tyrell Wellick', '+1 212 000 1919', 't.wellick@clientmail.com'),
+    ('79876543O', 'Shrek', '+49 30 000 1212', 'fiona@clientmail.com'),
+    ('40987654L', 'Ronald Weasley', '+44 20 000 1515', 'r.weasley@clientmail.com'),
     ('74321098J', 'Levi Ackerman', '+81 3 000 1717', 'levi.a@clientmail.com'),
     ('11098765I', 'Griffith', '+1 617 000 1818', 'griffith@clientmail.com'),
-    ('28765432H', 'Tyrell Wellick', '+1 212 000 1919', 't.wellick@clientmail.com'),
-    ('75432109G', 'Panda', '+81 90 000 2020', 'panda@clientmail.com'),
-    ('12109876F', 'Daenerys Targaryen', '+44 20 000 2121', 'd.targaryen@clientmail.com');
+    ('13210987M', 'Gus Fring', '+1 505 000 1414', 'gus.f@clientmail.com'),
+    ('12109876F', 'Arya Stark', '+44 20 000 2121', 'noone@clientmail.com');
 
 -- property_agent (Many-to-Many, para establecer qué agentes manejan qué propiedades)
 INSERT IGNORE INTO property_agent (property_id, agent_id) VALUES
