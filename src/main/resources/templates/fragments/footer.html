@@ -13,9 +13,8 @@
             <div>
                 <h4 class="text-lg font-bold mb-4 text-gray-200" th:text="#{msg.footer.links.title}">Enlaces Rápidos</h4>
                 <ul class="space-y-2 text-sm text-gray-400">
-                    <li><a href="#" class="hover:text-white transition-colors" th:text="#{msg.footer.links.sale}">Propiedades en Venta</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors" th:text="#{msg.footer.links.agents}">Nuestros Agentes</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors" th:text="#{msg.footer.links.contact}">Contacto</a></li>
+                    <li><a th:href="@{/properties}" class="hover:text-white transition-colors" th:text="#{msg.footer.links.sale}">Propiedades en Venta</a></li>
+                    <li><a th:href="@{/agents}" class="hover:text-white transition-colors" th:text="#{msg.footer.links.agents}">Nuestros Agentes</a></li>
                 </ul>
             </div>
             <div>
