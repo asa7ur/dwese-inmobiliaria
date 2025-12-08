@@ -1,6 +1,7 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import jakarta.validation.Valid;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.components.AgentPropertyValidator;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Appointment;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.AppointmentDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
@@ -43,6 +44,9 @@ public class AppointmentController {
 
     @Autowired
     private MessageSource messageSource;
+
+    @Autowired
+    private AgentPropertyValidator agentPropertyValidator;
 
     @GetMapping
     public String listAppointments(@RequestParam(defaultValue = "1") int page,
@@ -119,6 +123,15 @@ public class AppointmentController {
                                     RedirectAttributes redirectAttributes) {
         logger.info("Insertando nueva cita con código {}", appointment.getCode());
 
+        if (!result.hasFieldErrors("property") && !result.hasFieldErrors("agent")) {
+            agentPropertyValidator.validate(
+                appointment.getProperty().getId(),
+                appointment.getAgent().getId(),
+                result,
+                "agent"
+            );
+        }
+
         if(result.hasErrors()){
             logger.warn("Errores de validación en el formulario de nueva cita.");
             model.addAttribute("agents", agentRepository.findAll());
@@ -141,6 +154,15 @@ public class AppointmentController {
                                     Model model,
                                     RedirectAttributes redirectAttributes) {
         logger.info("Actualizando cita con ID {}", appointment.getId());
+
+        if (!result.hasFieldErrors("property") && !result.hasFieldErrors("agent")) {
+            agentPropertyValidator.validate(
+                    appointment.getProperty().getId(),
+                    appointment.getAgent().getId(),
+                    result,
+                    "agent"
+            );
+        }
 
         if(result.hasErrors()){
             logger.warn("Errores de validación al actualizar la cita.");

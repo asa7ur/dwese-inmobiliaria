@@ -1,6 +1,7 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import jakarta.validation.Valid;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.components.AgentPropertyValidator;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.*;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.TransactionDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
@@ -45,6 +46,9 @@ public class TransactionController {
 
     @Autowired
     private MessageSource messageSource;
+
+    @Autowired
+    private AgentPropertyValidator agentPropertyValidator;
 
     @GetMapping
     public String listTransactions(
@@ -137,6 +141,17 @@ public class TransactionController {
             result.rejectValue("property", "msg.transaction.error.property-busy", "Esta propiedad ya tiene una transacción asociada activa.");
         }
 
+        if (!result.hasFieldErrors("property") && !result.hasFieldErrors("agent")) {
+            if (transaction.getProperty() != null && transaction.getAgent() != null) {
+                agentPropertyValidator.validate(
+                        transaction.getProperty().getId(),
+                        transaction.getAgent().getId(),
+                        result,
+                        "agent"
+                );
+            }
+        }
+
         if(result.hasErrors()){
             logger.warn("Errores de validación en el formulario de nueva transacción.");
             model.addAttribute("properties",  propertyRepository.findAll());
@@ -161,6 +176,17 @@ public class TransactionController {
             RedirectAttributes redirectAttributes
     ){
         logger.info("Actualizando transacción con ID {}", transaction.getId());
+
+        if (!result.hasFieldErrors("property") && !result.hasFieldErrors("agent")) {
+            if (transaction.getProperty() != null && transaction.getAgent() != null) {
+                agentPropertyValidator.validate(
+                        transaction.getProperty().getId(),
+                        transaction.getAgent().getId(),
+                        result,
+                        "agent"
+                );
+            }
+        }
 
         if(result.hasErrors()){
             logger.warn("Errores de validación al actualizar la transacción.");

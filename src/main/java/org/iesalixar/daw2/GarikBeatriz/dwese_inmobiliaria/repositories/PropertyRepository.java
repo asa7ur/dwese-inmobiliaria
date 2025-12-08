@@ -15,4 +15,7 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
             "LOWER(CAST(p.type AS string)) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(CAST(p.status AS string)) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Property> searchProperties(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Property p JOIN p.agents a WHERE p.id = :propertyId AND a.id = :agentId")
+    boolean isAgentAssignedToProperty(@Param("propertyId") Long propertyId, @Param("agentId") Long agentId);
 }
