@@ -16,4 +16,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Page<Transaction> searchTransactions(@Param("keyword") String keyword, Pageable pageable);
 
     boolean existsByPropertyId(Long propertyId);
+    boolean existsByAgentId(Long agentId);
+    boolean existsByClientId(Long clientId);
 }

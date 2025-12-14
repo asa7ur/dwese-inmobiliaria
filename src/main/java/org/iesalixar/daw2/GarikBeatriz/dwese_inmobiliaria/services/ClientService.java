@@ -4,6 +4,7 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Client;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.ClientDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AppointmentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.ClientRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,9 @@ public class ClientService {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     public ClientDTO listClients(int page, int size, String sortBy, String direction, String keyword) {
         Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
@@ -54,7 +58,6 @@ public class ClientService {
 
     @Transactional
     public Client updateClient(Client client) {
-        // Verificamos si existe antes de guardar para asegurar que es un update
         if (client.getId() != null && clientRepository.existsById(client.getId())) {
             return clientRepository.save(client);
         }
@@ -67,10 +70,14 @@ public class ClientService {
         if (appointmentRepository.existsByClientId(id)) {
             throw new Exception("msg.client.flash.has-appointments");
         }
+
+        // No borrar si tiene transacciones
+        if (transactionRepository.existsByClientId(id)) {
+            throw new Exception("msg.client.flash.has-transactions");
+        }
+
         clientRepository.deleteById(id);
     }
-
-    // --- Validaciones ---
 
     public boolean existsByDni(String dni) {
         return clientRepository.existsClientByDni(dni);

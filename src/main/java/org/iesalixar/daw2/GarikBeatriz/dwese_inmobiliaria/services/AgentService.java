@@ -6,6 +6,7 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.AgentDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AppointmentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,10 @@ public class AgentService {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    // INYECCIÓN NECESARIA PARA VALIDAR INTEGRIDAD
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     @Autowired
     private FileStorageService fileStorageService;
@@ -60,13 +65,11 @@ public class AgentService {
 
     @Transactional
     public void saveAgent(Agent agent, MultipartFile imageFile, List<Long> propertyIds) {
-        // Asignar propiedades (Relación ManyToMany)
         if (propertyIds != null) {
             List<Property> selectedProperties = propertyRepository.findAllById(propertyIds);
             agent.setProperties(selectedProperties);
         }
 
-        // Guardar imagen si existe
         if (imageFile != null && !imageFile.isEmpty()) {
             String fileName = fileStorageService.saveFile(imageFile);
             if (fileName != null) {
@@ -84,14 +87,12 @@ public class AgentService {
         if (existingOpt.isPresent()) {
             Agent existingAgent = existingOpt.get();
 
-            // Actualizar datos básicos
             existingAgent.setName(agentInput.getName());
             existingAgent.setDni(agentInput.getDni());
             existingAgent.setPhone(agentInput.getPhone());
             existingAgent.setEmail(agentInput.getEmail());
             existingAgent.setOffice(agentInput.getOffice());
 
-            // Actualizar propiedades
             if (propertyIds != null) {
                 List<Property> selectedProperties = propertyRepository.findAllById(propertyIds);
                 existingAgent.setProperties(selectedProperties);
@@ -99,13 +100,10 @@ public class AgentService {
                 existingAgent.setProperties(new ArrayList<>());
             }
 
-            // Actualizar imagen (solo si viene una nueva)
             if (imageFile != null && !imageFile.isEmpty()) {
-                // Borramos la imagen antigua para no dejar basura
                 if (existingAgent.getImage() != null) {
                     fileStorageService.deleteFile(existingAgent.getImage());
                 }
-
                 String fileName = fileStorageService.saveFile(imageFile);
                 if (fileName != null) {
                     existingAgent.setImage(fileName);
@@ -124,7 +122,11 @@ public class AgentService {
             throw new Exception("msg.agent.flash.has-appointments");
         }
 
-        // Borrar imagen física si tiene
+        // No borrar si tiene transacciones (ventas/alquileres)
+        if (transactionRepository.existsByAgentId(id)) {
+            throw new Exception("msg.agent.flash.has-transactions");
+        }
+
         Optional<Agent> agent = agentRepository.findById(id);
         if (agent.isPresent() && agent.get().getImage() != null) {
             fileStorageService.deleteFile(agent.get().getImage());

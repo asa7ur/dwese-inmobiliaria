@@ -25,7 +25,7 @@ public class Agent {
     private String code;
 
     @NotEmpty(message = "{msg.agent.dni.notEmpty}")
-    @Column(name = "dni", nullable = false, length = 20)
+    @Column(name = "dni", nullable = false, length = 20, unique = true)
     private String dni;
 
     @NotEmpty(message = "{msg.agent.name.notEmpty}")

@@ -102,7 +102,7 @@ public class TransactionController {
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        // 1. Validación de Negocio: Propiedad Ocupada
+        // 1. Validación de Negocio: Propiedad Ocupada (Para insert)
         if (transaction.getProperty() != null && transactionService.isPropertyBusy(transaction.getProperty().getId())) {
             result.rejectValue("property", "msg.transaction.error.property-busy", "Esta propiedad ya tiene una transacción activa.");
         }
@@ -129,8 +129,6 @@ public class TransactionController {
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        // En update NO comprobamos isPropertyBusy porque la transacción ya existe y "ocupa" la propiedad ella misma.
-
         validateAgentProperty(transaction, result);
 
         if(result.hasErrors()){
@@ -138,15 +136,32 @@ public class TransactionController {
             return "transaction-form";
         }
 
-        Transaction updated = transactionService.updateTransaction(transaction);
+        try {
+            Transaction updated = transactionService.updateTransaction(transaction);
 
-        if (updated == null) {
-            // Caso raro si el ID no existe
-            return "redirect:/transactions";
+            if (updated == null) {
+                String message = messageSource.getMessage("msg.transaction.flash.not-found", null, LocaleContextHolder.getLocale());
+                redirectAttributes.addFlashAttribute("errorMessage", message);
+                return "redirect:/transactions";
+            }
+
+            String message = messageSource.getMessage("msg.transaction.flash.updated", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("successMessage", message);
+
+        } catch (Exception e) {
+            // Captura de error de negocio: Propiedad ocupada al cambiarla en update
+            if ("msg.transaction.error.property-busy".equals(e.getMessage())) {
+                String errorMsg = messageSource.getMessage("msg.transaction.error.property-busy", null, LocaleContextHolder.getLocale());
+                result.rejectValue("property", "error.property", errorMsg);
+                loadFormDependencies(model);
+                return "transaction-form";
+            } else {
+                // Otros errores
+                String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
+                redirectAttributes.addFlashAttribute("errorMessage", message);
+                return "redirect:/transactions";
+            }
         }
-
-        String message = messageSource.getMessage("msg.transaction.flash.updated", null, LocaleContextHolder.getLocale());
-        redirectAttributes.addFlashAttribute("successMessage", message);
 
         return "redirect:/transactions";
     }

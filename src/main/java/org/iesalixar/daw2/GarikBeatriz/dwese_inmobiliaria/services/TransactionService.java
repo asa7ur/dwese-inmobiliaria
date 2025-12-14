@@ -49,9 +49,24 @@ public class TransactionService {
     }
 
     @Transactional
-    public Transaction updateTransaction(Transaction transaction) {
-        if (transaction.getId() != null && transactionRepository.existsById(transaction.getId())) {
-            return transactionRepository.save(transaction);
+    public Transaction updateTransaction(Transaction transaction) throws Exception {
+        if (transaction.getId() != null) {
+            Optional<Transaction> existingOpt = transactionRepository.findById(transaction.getId());
+
+            if (existingOpt.isPresent()) {
+                Transaction existing = existingOpt.get();
+
+                // Si la propiedad ha cambiado, verificamos si la NUEVA propiedad está ocupada.
+                if (!existing.getProperty().getId().equals(transaction.getProperty().getId())) {
+                    if (isPropertyBusy(transaction.getProperty().getId())) {
+                        throw new Exception("msg.transaction.error.property-busy");
+                    }
+                }
+
+                // Si no ha cambiado la propiedad o la nueva está libre, guardamos.
+                // Aseguramos que los campos se actualicen correctamente
+                return transactionRepository.save(transaction);
+            }
         }
         return null;
     }
@@ -63,8 +78,6 @@ public class TransactionService {
         if (transactionOpt.isPresent()) {
             Transaction transaction = transactionOpt.get();
 
-            // IMPORTANTE: Romper la relación bidireccional con Property antes de borrar.
-            // Si la propiedad sigue apuntando a esta transacción, Hibernate podría lanzar error.
             if (transaction.getProperty() != null) {
                 transaction.getProperty().setTransaction(null);
             }
@@ -74,8 +87,6 @@ public class TransactionService {
             throw new Exception("msg.transaction.flash.not-found");
         }
     }
-
-    // --- Validaciones ---
 
     public boolean isPropertyBusy(Long propertyId) {
         return transactionRepository.existsByPropertyId(propertyId);
