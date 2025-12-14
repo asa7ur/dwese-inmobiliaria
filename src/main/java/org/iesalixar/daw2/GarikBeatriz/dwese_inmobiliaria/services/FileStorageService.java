@@ -46,7 +46,7 @@ public class FileStorageService {
 
         try {
             String fileExtension = getFileExtension(file.getOriginalFilename());
-            String uniqueFileName = UUID.randomUUID().toString() + "." + fileExtension;
+            String uniqueFileName = UUID.randomUUID() + "." + fileExtension;
             Path destinationFile = this.rootLocation.resolve(uniqueFileName).normalize().toAbsolutePath();
 
             if (!Files.exists(this.rootLocation)) {
