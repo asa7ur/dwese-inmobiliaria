@@ -1,23 +1,15 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.controllers;
 
 import jakarta.validation.Valid;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Agent;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.Property;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.PropertyDTO;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AppointmentRepository;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.TransactionRepository;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.FileStorageService;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.PropertyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,19 +25,10 @@ public class PropertyController {
     private static final Logger logger = LoggerFactory.getLogger(PropertyController.class);
 
     @Autowired
-    private PropertyRepository propertyRepository;
+    private PropertyService propertyService;
 
     @Autowired
     private AgentRepository agentRepository;
-
-    @Autowired
-    private TransactionRepository transactionRepository;
-
-    @Autowired
-    private AppointmentRepository appointmentRepository;
-
-    @Autowired
-    private FileStorageService fileStorageService;
 
     @Autowired
     private MessageSource messageSource;
@@ -56,26 +39,10 @@ public class PropertyController {
                                  @RequestParam(defaultValue = "id") String sortBy,
                                  @RequestParam(defaultValue = "asc") String direction,
                                  Model model) {
-        logger.info("Listing properties. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
 
-        int pageSize = 6;
-        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
-                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        logger.info("Listing properties via Service. Page: {}", page);
 
-        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-        Page<Property> propertyPage;
-
-        if (keyword == null || keyword.isEmpty()) {
-            propertyPage = propertyRepository.findAll(pageable);
-        } else {
-            propertyPage = propertyRepository.searchProperties(keyword, pageable);
-        }
-
-        PropertyDTO propertyDTO = new PropertyDTO(
-                propertyPage.getContent(),
-                propertyPage.getTotalPages(),
-                page
-        );
+        PropertyDTO propertyDTO = propertyService.listProperties(page, 6, sortBy, direction, keyword);
 
         model.addAttribute("listProperties", propertyDTO);
         model.addAttribute("keyword", keyword);
@@ -89,9 +56,7 @@ public class PropertyController {
     @GetMapping("/new")
     public String showNewForm(Model model) {
         model.addAttribute("property", new Property());
-        model.addAttribute("agents", agentRepository.findAll());
-        model.addAttribute("types", Property.Type.values());
-        model.addAttribute("statuses", Property.Status.values());
+        loadFormDependencies(model);
         return "property-form";
     }
 
@@ -101,8 +66,7 @@ public class PropertyController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        logger.info("Solicitando formulario para editar propiedad con ID {}", id);
-        Optional<Property> propertyOpt = propertyRepository.findById(id);
+        Optional<Property> propertyOpt = propertyService.findById(id);
 
         if (propertyOpt.isEmpty()) {
             String message = messageSource.getMessage("msg.property.flash.not-found", null, LocaleContextHolder.getLocale());
@@ -111,10 +75,7 @@ public class PropertyController {
         }
 
         model.addAttribute("property", propertyOpt.get());
-        model.addAttribute("agents", agentRepository.findAll());
-        model.addAttribute("types", Property.Type.values());
-        model.addAttribute("statuses", Property.Status.values());
-        model.addAttribute("allAgents", agentRepository.findAll());
+        loadFormDependencies(model);
         return "property-form";
     }
 
@@ -127,16 +88,11 @@ public class PropertyController {
             RedirectAttributes redirectAttributes) {
 
         if(result.hasErrors()){
-            model.addAttribute("types", Property.Type.values());
-            model.addAttribute("statuses", Property.Status.values());
+            loadFormDependencies(model);
             return "property-form";
         }
 
-        // Procesamiento de Imágenes
-        // Este servicio recorre el array 'files', guarda cada uno en el disco y
-        // añade el nombre del archivo a la lista de imágenes de la entidad 'property'.
-        fileStorageService.processImages(property, files);
-        propertyRepository.save(property);
+        propertyService.saveProperty(property, files);
 
         String message = messageSource.getMessage("msg.property.flash.created", null, LocaleContextHolder.getLocale());
         redirectAttributes.addFlashAttribute("successMessage", message);
@@ -152,39 +108,18 @@ public class PropertyController {
             RedirectAttributes redirectAttributes) {
 
         if(result.hasErrors()){
-            model.addAttribute("types", Property.Type.values());
-            model.addAttribute("statuses", Property.Status.values());
-
-            // IMPORTANTE: Si hay error, el objeto 'property' que viene del formulario ha perdido la lista de imágenes antiguas.
-            // Las recuperamos de la BD para que se sigan viendo en la vista mientras el usuario corrige el formulario.
+            loadFormDependencies(model);
+            // Recuperar imágenes antiguas para la vista en caso de error
             if (property.getId() != null) {
-                Optional<Property> optProperty = propertyRepository.findById(property.getId());
+                Optional<Property> optProperty = propertyService.findById(property.getId());
                 optProperty.ifPresent(value -> property.setImages(value.getImages()));
             }
             return "property-form";
         }
-        Optional<Property> existingOpt = propertyRepository.findById(property.getId());
 
-        if (existingOpt.isPresent()) {
-            Property existingProperty = existingOpt.get();
+        Property updated = propertyService.updateProperty(property, files);
 
-            // Actualizamos los campos manualmente para no sobrescribir accidentalmente relaciones no presentes en el form
-            existingProperty.setName(property.getName());
-            existingProperty.setDescription(property.getDescription());
-            existingProperty.setLocation(property.getLocation());
-            existingProperty.setPrice(property.getPrice());
-            existingProperty.setType(property.getType());
-            existingProperty.setFloors(property.getFloors());
-            existingProperty.setBedrooms(property.getBedrooms());
-            existingProperty.setBathrooms(property.getBathrooms());
-            existingProperty.setStatus(property.getStatus());
-
-            // Añadir NUEVAS imágenes
-            // Las imágenes antiguas ya están en 'existingProperty.getImages()'.
-            // processImages añadirá las nuevas que vengan en 'files' a esa lista existente.
-            fileStorageService.processImages(existingProperty, files);
-            propertyRepository.save(existingProperty);
-
+        if (updated != null) {
             String message = messageSource.getMessage("msg.property.flash.updated", null, LocaleContextHolder.getLocale());
             redirectAttributes.addFlashAttribute("successMessage", message);
         } else {
@@ -197,45 +132,15 @@ public class PropertyController {
 
     @PostMapping("/delete")
     public String deleteProperty(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
-        logger.info("Intentando eliminar propiedad con ID {}", id);
-
-        if (transactionRepository.existsByPropertyId(id)) {
-            logger.warn("No se puede eliminar la propiedad ID {} porque tiene transacciones.", id);
-            String message = messageSource.getMessage("msg.property.flash.has-transaction", null, LocaleContextHolder.getLocale());
-            redirectAttributes.addFlashAttribute("errorMessage", message);
-            return "redirect:/properties";
-        }
-
-        if (appointmentRepository.existsByPropertyId(id)) {
-            logger.warn("Propiedad ID {} tiene citas pendientes.", id);
-            String message = messageSource.getMessage("msg.property.flash.has-appointments", null, LocaleContextHolder.getLocale());
-            redirectAttributes.addFlashAttribute("errorMessage", message);
-            return "redirect:/properties";
-        }
-
-        Optional<Property> propertyOpt = propertyRepository.findById(id);
-
-        if (propertyOpt.isPresent()) {
-            Property property = propertyOpt.get();
-
-            // 1. Desvincular agentes (Limpiar tabla intermedia property_agent)
-            // Iteramos sobre los agentes de la propiedad y la quitamos de SU lista.
-            // Es necesario guardar el agente porque él es el "dueño" de la relación (@JoinTable).
-            for (Agent agent : property.getAgents()) {
-                agent.getProperties().remove(property);
-                agentRepository.save(agent);
-            }
-
-            // 2. Ahora podemos eliminar la propiedad sin violar la integridad referencial
-            propertyRepository.delete(property);
-
+        try {
+            propertyService.deleteProperty(id);
             String message = messageSource.getMessage("msg.property.flash.deleted", null, LocaleContextHolder.getLocale());
             redirectAttributes.addFlashAttribute("successMessage", message);
-        } else {
-            String message = messageSource.getMessage("msg.property.flash.not-found", null, LocaleContextHolder.getLocale());
+        } catch (Exception e) {
+            // Captura errores de negocio (tiene transacciones o citas)
+            String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
             redirectAttributes.addFlashAttribute("errorMessage", message);
         }
-
         return "redirect:/properties";
     }
 
@@ -245,24 +150,26 @@ public class PropertyController {
             @RequestParam("propertyId") Long propertyId,
             RedirectAttributes redirectAttributes) {
 
-        Optional<Property> propertyOpt = propertyRepository.findById(propertyId);
-        if (propertyOpt.isPresent()) {
-            Property property = propertyOpt.get();
-            property.getImages().removeIf(img -> img.getId().equals(imageId));
-            propertyRepository.save(property);
+        propertyService.deletePropertyImage(propertyId, imageId);
 
-            String message = messageSource.getMessage("msg.property.flash.image-deleted", null, LocaleContextHolder.getLocale());
-            redirectAttributes.addFlashAttribute("successMessage", message);
-        }
+        String message = messageSource.getMessage("msg.property.flash.image-deleted", null, LocaleContextHolder.getLocale());
+        redirectAttributes.addFlashAttribute("successMessage", message);
 
         return "redirect:/properties/edit?id=" + propertyId;
     }
 
-    // Redirecciones de seguridad (get methods for post actions)
+    // --- Método Auxiliar ---
+    private void loadFormDependencies(Model model) {
+        // Carga listas para los selects del formulario
+        model.addAttribute("types", Property.Type.values());
+        model.addAttribute("statuses", Property.Status.values());
+        model.addAttribute("agents", agentRepository.findAll());
+    }
+
+    // --- Redirecciones de seguridad ---
     @GetMapping("/update")
     public String redirectLostUpdate(@RequestParam(required = false) Long id) {
-        if (id != null) return "redirect:/properties/edit?id=" + id;
-        return "redirect:/properties";
+        return (id != null) ? "redirect:/properties/edit?id=" + id : "redirect:/properties";
     }
 
     @GetMapping("/insert")
