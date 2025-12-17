@@ -32,7 +32,6 @@ public class AgentService {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    // INYECCIÓN NECESARIA PARA VALIDAR INTEGRIDAD
     @Autowired
     private TransactionRepository transactionRepository;
 

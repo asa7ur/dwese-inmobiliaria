@@ -1,11 +1,13 @@
-DROP TABLE IF EXISTS property_agent;
-DROP TABLE IF EXISTS property_images;
+SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS appointments;
+DROP TABLE IF EXISTS property_agent;
+DROP TABLE IF EXISTS property_images;
 DROP TABLE IF EXISTS properties;
 DROP TABLE IF EXISTS agents;
-DROP TABLE IF EXISTS clients;
 DROP TABLE IF EXISTS offices;
+DROP TABLE IF EXISTS clients;
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- Tabla offices
 CREATE TABLE offices (
