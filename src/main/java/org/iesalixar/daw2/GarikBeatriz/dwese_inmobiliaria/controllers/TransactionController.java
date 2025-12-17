@@ -7,16 +7,12 @@ import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.dto.Transacti
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.AgentRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.ClientRepository;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.PropertyRepository;
-import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.TransactionRepository;
+import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,7 +28,7 @@ public class TransactionController {
     private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
     @Autowired
-    private TransactionRepository transactionRepository;
+    private TransactionService transactionService;
 
     @Autowired
     private PropertyRepository propertyRepository;
@@ -56,29 +52,11 @@ public class TransactionController {
             @RequestParam(defaultValue = "transactionTimestamp") String sortBy,
             @RequestParam(defaultValue = "desc") String direction,
             Model model) {
-        logger.info("Listing transactions. Page: {}, Keyword: {}, Sort: {}, Dir: {}", page, keyword, sortBy, direction);
 
-        int pageSize = 5;
+        logger.info("Listando transacciones via Service. Page: {}", page);
 
-        Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
-                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        TransactionDTO transactionDTO = transactionService.listTransactions(page, 5, sortBy, direction, keyword);
 
-        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
-
-        Page<Transaction> transactionPage;
-        if (keyword == null || keyword.isEmpty()) {
-            transactionPage = transactionRepository.findAll(pageable);
-        } else {
-            transactionPage = transactionRepository.searchTransactions(keyword, pageable);
-        }
-
-        TransactionDTO transactionDTO = new TransactionDTO(
-                transactionPage.getContent(),
-                transactionPage.getTotalPages(),
-                page
-        );
-
-        logger.info("Se han cargado {} transacciones.", transactionDTO.getTransactions().size());
         model.addAttribute("listTransactions", transactionDTO);
         model.addAttribute("keyword", keyword);
         model.addAttribute("sortBy", sortBy);
@@ -90,16 +68,11 @@ public class TransactionController {
 
     @GetMapping("/new")
     public String showNewForm(Model model) {
-        logger.info("Solicitando formulario para nueva transacción...");
-
         Transaction transaction = new Transaction();
         transaction.setTransactionDate(LocalDate.now());
 
         model.addAttribute("transaction", transaction);
-        model.addAttribute("properties", propertyRepository.findAll());
-        model.addAttribute("clients", clientRepository.findAll());
-        model.addAttribute("agents", agentRepository.findAll());
-
+        loadFormDependencies(model);
         return "transaction-form";
     }
 
@@ -109,21 +82,16 @@ public class TransactionController {
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        logger.info("Solicitando formulario para editar transacción con ID {}", id);
-        Optional<Transaction> transactionOpt = transactionRepository.findById(id);
+        Optional<Transaction> transactionOpt = transactionService.findById(id);
 
         if(transactionOpt.isEmpty()){
-            logger.warn("No se encontró la transacción con ID {}", id);
-
             String message = messageSource.getMessage("msg.transaction.flash.not-found", null, LocaleContextHolder.getLocale());
             redirectAttributes.addFlashAttribute("errorMessage", message);
             return "redirect:/transactions";
         }
 
         model.addAttribute("transaction", transactionOpt.get());
-        model.addAttribute("properties",  propertyRepository.findAll());
-        model.addAttribute("clients", clientRepository.findAll());
-        model.addAttribute("agents", agentRepository.findAll());
+        loadFormDependencies(model);
         return "transaction-form";
     }
 
@@ -134,39 +102,20 @@ public class TransactionController {
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        logger.info("Insertando nueva transacción");
-
-        // 1. Validación de Negocio: Propiedad Ocupada
-        // Verificamos si la propiedad seleccionada ya tiene una transacción activa (ej: ya está vendida).
-        // Si existe, rechazamos el valor del campo 'property' manualmente.
-        if (transaction.getProperty() != null && transactionRepository.existsByPropertyId(transaction.getProperty().getId())) {
-            result.rejectValue("property", "msg.transaction.error.property-busy", "Esta propiedad ya tiene una transacción asociada activa.");
+        // 1. Validación de Negocio: Propiedad Ocupada (Para insert)
+        if (transaction.getProperty() != null && transactionService.isPropertyBusy(transaction.getProperty().getId())) {
+            result.rejectValue("property", "msg.transaction.error.property-busy", "Esta propiedad ya tiene una transacción activa.");
         }
 
         // 2. Validación de Negocio: Asignación Agente-Propiedad
-        // Verificamos que el Agente seleccionado realmente gestiona la Propiedad seleccionada.
-        // Esto evita que asignemos una venta a un agente que no tiene permisos sobre esa casa.
-        if (!result.hasFieldErrors("property") && !result.hasFieldErrors("agent")) {
-            if (transaction.getProperty() != null && transaction.getAgent() != null) {
-                agentPropertyValidator.validate(
-                        transaction.getProperty().getId(),
-                        transaction.getAgent().getId(),
-                        result,
-                        "agent"
-                );
-            }
-        }
+        validateAgentProperty(transaction, result);
 
         if(result.hasErrors()){
-            logger.warn("Errores de validación en el formulario de nueva transacción.");
-            model.addAttribute("properties",  propertyRepository.findAll());
-            model.addAttribute("clients", clientRepository.findAll());
-            model.addAttribute("agents", agentRepository.findAll());
+            loadFormDependencies(model);
             return "transaction-form";
         }
 
-        transactionRepository.save(transaction);
-        logger.info("Transacción {} insertada con éxito", transaction.getCode());
+        transactionService.saveTransaction(transaction);
 
         String message = messageSource.getMessage("msg.transaction.flash.created", null, LocaleContextHolder.getLocale());
         redirectAttributes.addFlashAttribute("successMessage", message);
@@ -180,12 +129,68 @@ public class TransactionController {
             Model model,
             RedirectAttributes redirectAttributes
     ){
-        logger.info("Actualizando transacción con ID {}", transaction.getId());
+        validateAgentProperty(transaction, result);
 
-        // 1. Validación de Negocio: Asignación Agente-Propiedad
-        // Al editar, volvemos a comprobar que el agente asignado sea válido para esa propiedad.
-        // NOTA: Aquí NO comprobamos si la propiedad está ocupada (existsByPropertyId) porque
-        // la transacción YA existe y está ocupando esa propiedad (es ella misma).
+        if(result.hasErrors()){
+            loadFormDependencies(model);
+            return "transaction-form";
+        }
+
+        try {
+            Transaction updated = transactionService.updateTransaction(transaction);
+
+            if (updated == null) {
+                String message = messageSource.getMessage("msg.transaction.flash.not-found", null, LocaleContextHolder.getLocale());
+                redirectAttributes.addFlashAttribute("errorMessage", message);
+                return "redirect:/transactions";
+            }
+
+            String message = messageSource.getMessage("msg.transaction.flash.updated", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("successMessage", message);
+
+        } catch (Exception e) {
+            // Captura de error de negocio: Propiedad ocupada al cambiarla en update
+            if ("msg.transaction.error.property-busy".equals(e.getMessage())) {
+                String errorMsg = messageSource.getMessage("msg.transaction.error.property-busy", null, LocaleContextHolder.getLocale());
+                result.rejectValue("property", "error.property", errorMsg);
+                loadFormDependencies(model);
+                return "transaction-form";
+            } else {
+                // Otros errores
+                String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
+                redirectAttributes.addFlashAttribute("errorMessage", message);
+                return "redirect:/transactions";
+            }
+        }
+
+        return "redirect:/transactions";
+    }
+
+    @PostMapping("/delete")
+    public String deleteTransaction(
+            @RequestParam("id") Long id,
+            RedirectAttributes redirectAttributes
+    ){
+        try {
+            transactionService.deleteTransaction(id);
+            String message = messageSource.getMessage("msg.transaction.flash.deleted", null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("successMessage", message);
+        } catch (Exception e) {
+            String message = messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale());
+            redirectAttributes.addFlashAttribute("errorMessage", message);
+        }
+        return "redirect:/transactions";
+    }
+
+    // --- Métodos Auxiliares ---
+
+    private void loadFormDependencies(Model model) {
+        model.addAttribute("properties", propertyRepository.findAll());
+        model.addAttribute("clients", clientRepository.findAll());
+        model.addAttribute("agents", agentRepository.findAll());
+    }
+
+    private void validateAgentProperty(Transaction transaction, BindingResult result) {
         if (!result.hasFieldErrors("property") && !result.hasFieldErrors("agent")) {
             if (transaction.getProperty() != null && transaction.getAgent() != null) {
                 agentPropertyValidator.validate(
@@ -196,61 +201,12 @@ public class TransactionController {
                 );
             }
         }
-
-        if(result.hasErrors()){
-            logger.warn("Errores de validación al actualizar la transacción.");
-            model.addAttribute("properties",  propertyRepository.findAll());
-            model.addAttribute("clients", clientRepository.findAll());
-            model.addAttribute("agents", agentRepository.findAll());
-            return "transaction-form";
-        }
-
-        transactionRepository.save(transaction);
-        logger.info("Transacción con ID {} actualizada correctamente", transaction.getId());
-
-        String message = messageSource.getMessage("msg.transaction.flash.updated", null, LocaleContextHolder.getLocale());
-        redirectAttributes.addFlashAttribute("successMessage", message);
-
-        return "redirect:/transactions";
     }
 
-    @PostMapping("/delete")
-    public String deleteTransaction(
-            @RequestParam("id") Long id,
-            RedirectAttributes redirectAttributes
-    ){
-        logger.info("Eliminando transacción con ID {}", id);
-        Optional<Transaction> transactionOpt = transactionRepository.findById(id);
-
-        if (transactionOpt.isPresent()) {
-            Transaction transaction = transactionOpt.get();
-
-            // 2. IMPORTANTE: Romper la relación bidireccional con Property
-            // Si la propiedad sigue apuntando a la transacción borrada, Hibernate lanza el error.
-            if (transaction.getProperty() != null) {
-                transaction.getProperty().setTransaction(null);
-            }
-
-            // 3. Ahora podemos eliminar sin problemas
-            transactionRepository.delete(transaction);
-
-            logger.info("Transacción con ID {} eliminada correctamente", id);
-            String message = messageSource.getMessage("msg.transaction.flash.deleted", null, LocaleContextHolder.getLocale());
-            redirectAttributes.addFlashAttribute("successMessage", message);
-
-        } else {
-            // Manejo del caso en que no exista (opcional, pero recomendado)
-            String message = messageSource.getMessage("msg.transaction.flash.not-found", null, LocaleContextHolder.getLocale());
-            redirectAttributes.addFlashAttribute("errorMessage", message);
-        }
-        return "redirect:/transactions";
-    }
-
-    // Redirecciones de seguridad (get methods for post actions)
+    // Redirecciones de seguridad
     @GetMapping("/update")
     public String redirectLostUpdate(@RequestParam(required = false) Long id) {
-        if (id != null) return "redirect:/transactions/edit?id=" + id;
-        return "redirect:/transactions";
+        return (id != null) ? "redirect:/transactions/edit?id=" + id : "redirect:/transactions";
     }
 
     @GetMapping("/insert")
@@ -258,7 +214,7 @@ public class TransactionController {
         return "redirect:/transactions/new";
     }
 
-    @GetMapping({"/delete", "/delete-image"})
+    @GetMapping({"/delete"})
     public String redirectLostDelete() {
         return "redirect:/transactions";
     }

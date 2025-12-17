@@ -1,10 +1,8 @@
 package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.utils.EntityCodeGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
