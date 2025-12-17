@@ -1,5 +1,16 @@
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS appointments;
+DROP TABLE IF EXISTS property_agent;
+DROP TABLE IF EXISTS property_images;
+DROP TABLE IF EXISTS properties;
+DROP TABLE IF EXISTS agents;
+DROP TABLE IF EXISTS offices;
+DROP TABLE IF EXISTS clients;
+SET FOREIGN_KEY_CHECKS = 1;
+
 -- Tabla offices
-CREATE TABLE IF NOT EXISTS offices (
+CREATE TABLE offices (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
     address VARCHAR(255) NOT NULL,
@@ -8,7 +19,7 @@ CREATE TABLE IF NOT EXISTS offices (
 );
 
 -- Tabla agents
-CREATE TABLE IF NOT EXISTS agents (
+CREATE TABLE agents (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     dni VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
@@ -20,7 +31,7 @@ CREATE TABLE IF NOT EXISTS agents (
 );
 
 -- Tabla clients
-CREATE TABLE IF NOT EXISTS clients (
+CREATE TABLE clients (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     dni VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
@@ -29,7 +40,7 @@ CREATE TABLE IF NOT EXISTS clients (
 );
 
 -- Tabla properties
-CREATE TABLE IF NOT EXISTS properties (
+CREATE TABLE properties (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
     description VARCHAR(500) NOT NULL,
@@ -42,7 +53,7 @@ CREATE TABLE IF NOT EXISTS properties (
     status VARCHAR(20) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS property_images (
+CREATE TABLE property_images (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     file_name VARCHAR(255) NOT NULL,
     property_id BIGINT NOT NULL,
@@ -52,7 +63,7 @@ CREATE TABLE IF NOT EXISTS property_images (
 );
 
 -- Tabla intermedia property_agent (ManyToMany)
-CREATE TABLE IF NOT EXISTS property_agent (
+CREATE TABLE property_agent (
     property_id BIGINT NOT NULL,
     agent_id BIGINT NOT NULL,
     PRIMARY KEY (property_id, agent_id),
@@ -61,7 +72,7 @@ CREATE TABLE IF NOT EXISTS property_agent (
 );
 
 -- Tabla appointments
-CREATE TABLE IF NOT EXISTS appointments (
+CREATE TABLE appointments (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     appointment_timestamp BIGINT NOT NULL,
     notes VARCHAR(255),
@@ -74,7 +85,7 @@ CREATE TABLE IF NOT EXISTS appointments (
 );
 
 -- Tabla transactions
-CREATE TABLE IF NOT EXISTS transactions (
+CREATE TABLE transactions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     transaction_timestamp BIGINT NOT NULL,
     status VARCHAR(20) NOT NULL,
