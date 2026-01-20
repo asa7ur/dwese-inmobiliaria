@@ -7,7 +7,18 @@ DROP TABLE IF EXISTS properties;
 DROP TABLE IF EXISTS agents;
 DROP TABLE IF EXISTS offices;
 DROP TABLE IF EXISTS clients;
+DROP TABLE IF EXISTS users;
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ... (Tablas existentes: offices, properties, agents, etc.)
+
+-- Tabla users
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255),
+    role VARCHAR(50)
+);
 
 -- Tabla offices
 CREATE TABLE offices (
