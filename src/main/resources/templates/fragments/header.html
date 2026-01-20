@@ -70,28 +70,30 @@
                 </div>
             </div>
 
-            <div class="hidden md:flex items-center gap-2 pl-6 border-l border-gray-200 ml-2">
-                <i class="fa-solid fa-globe text-gray-400 text-sm"></i>
+            <div class="hidden md:flex items-center gap-4 pl-6 border-l border-gray-200 ml-2">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-gray-400 text-sm"></i>
+                    <a th:href="${@urlBuilder.replaceParam('lang', 'es')}"
+                       class="text-sm transition-colors hover:text-brand-600"
+                       th:classappend="${#locale.language == 'es'} ? 'font-bold text-brand-800' : 'text-gray-500'"
+                       th:text="#{msg.lang.code.es}">ES</a>
+                    <span class="text-gray-300">|</span>
+                    <a th:href="${@urlBuilder.replaceParam('lang', 'en')}"
+                       class="text-sm transition-colors hover:text-brand-600"
+                       th:classappend="${#locale.language == 'en'} ? 'font-bold text-brand-800' : 'text-gray-500'"
+                       th:text="#{msg.lang.code.en}">EN</a>
+                </div>
 
-                <a th:href="${@urlBuilder.replaceParam('lang', 'es')}"
-                   class="text-sm transition-colors hover:text-brand-600"
-                   th:classappend="${#locale.language == 'es'} ? 'font-bold text-brand-800' : 'text-gray-500'"
-                   th:text="#{msg.lang.code.es}">
-                    ES
-                </a>
-
-                <span class="text-gray-300">|</span>
-
-                <a th:href="${@urlBuilder.replaceParam('lang', 'en')}"
-                   class="text-sm transition-colors hover:text-brand-600"
-                   th:classappend="${#locale.language == 'en'} ? 'font-bold text-brand-800' : 'text-gray-500'"
-                   th:text="#{msg.lang.code.en}">
-                    EN
+                <a th:href="@{/login}"
+                   class="inline-flex items-center px-5 py-2 border border-transparent text-sm font-bold rounded-full text-white bg-brand-800 hover:bg-brand-700 transition-all shadow-md hover:shadow-lg active:scale-95"
+                   th:classappend="${activePage == 'login'} ? 'ring-2 ring-brand-500 ring-offset-2' : ''">
+                    <i class="fa-solid fa-user-circle mr-2"></i>
+                    <span th:text="#{msg.login.title}">Login</span>
                 </a>
             </div>
 
             <div class="flex items-center md:hidden">
-                <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-gray-500 hover:text-brand-900 focus:outline-none">
+                <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-gray-500 hover:text-brand-900 focus:outline-none p-2">
                     <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
             </div>
@@ -112,20 +114,23 @@
                 <a th:href="@{/transactions}" class="block px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50" th:text="#{msg.nav.transactions}">Transacciones</a>
             </div>
 
-            <div class="border-t border-gray-100 my-2 pt-2 flex items-center gap-4 px-3 py-2">
-                <span class="text-sm font-medium text-gray-500"><i class="fa-solid fa-globe mr-1"></i> <span th:text="#{msg.lang.label}">Idioma:</span></span>
-                <a th:href="${@urlBuilder.replaceParam('lang', 'es')}"
-                   class="px-2 py-1 rounded text-sm"
-                   th:classappend="${#locale.language == 'es'} ? 'bg-brand-50 text-brand-800 font-bold' : 'text-gray-600'"
-                   th:text="#{msg.lang.spanish}">
-                    Español
+            <div class="border-t border-gray-100 my-2 pt-4 pb-2 px-3 space-y-4">
+                <a th:href="@{/login}" class="flex items-center justify-center w-full py-3 rounded-lg bg-brand-800 text-white font-bold shadow-sm">
+                    <i class="fa-solid fa-user-circle mr-2"></i>
+                    <span th:text="#{msg.login.title}">Login</span>
                 </a>
-                <a th:href="${@urlBuilder.replaceParam('lang', 'en')}"
-                   class="px-2 py-1 rounded text-sm"
-                   th:classappend="${#locale.language == 'en'} ? 'bg-brand-50 text-brand-800 font-bold' : 'text-gray-600'"
-                   th:text="#{msg.lang.english}">
-                    English
-                </a>
+
+                <div class="flex items-center gap-4">
+                    <span class="text-sm font-medium text-gray-500"><i class="fa-solid fa-globe mr-1"></i> <span th:text="#{msg.lang.label}">Idioma:</span></span>
+                    <a th:href="${@urlBuilder.replaceParam('lang', 'es')}"
+                       class="px-2 py-1 rounded text-sm"
+                       th:classappend="${#locale.language == 'es'} ? 'bg-brand-50 text-brand-800 font-bold' : 'text-gray-600'"
+                       th:text="#{msg.lang.spanish}">Español</a>
+                    <a th:href="${@urlBuilder.replaceParam('lang', 'en')}"
+                       class="px-2 py-1 rounded text-sm"
+                       th:classappend="${#locale.language == 'en'} ? 'bg-brand-50 text-brand-800 font-bold' : 'text-gray-600'"
+                       th:text="#{msg.lang.english}">English</a>
+                </div>
             </div>
         </div>
     </div>
