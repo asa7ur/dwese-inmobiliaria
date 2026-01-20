@@ -3,34 +3,36 @@ package org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.services;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.entities.User;
 import org.iesalixar.daw2.GarikBeatriz.dwese_inmobiliaria.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
-public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+public class CustomOAuth2UserService extends OidcUserService { // Cambiado a OidcUserService
 
     @Autowired
     private UserRepository userRepository;
 
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oauth2User = super.loadUser(userRequest);
-        Map<String, Object> attributes = oauth2User.getAttributes();
-
-        String email = (String) attributes.get("email");
-        String name = (String) attributes.get("name");
+    public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
+        OidcUser oidcUser = super.loadUser(userRequest);
+        String email = oidcUser.getEmail();
+        String name = oidcUser.getFullName();
 
         if (email == null) {
             throw new OAuth2AuthenticationException("No se ha podido obtener el email de GitLab");
         }
 
-        // Persistencia: Si no existe el email, creamos el usuario; si existe, actualizamos el nombre.
-        userRepository.findByEmail(email).map(user -> {
+        // Persistencia y obtención del rol
+        User userInDb = userRepository.findByEmail(email).map(user -> {
             user.setName(name);
             return userRepository.save(user);
         }).orElseGet(() -> {
@@ -41,6 +43,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return userRepository.save(newUser);
         });
 
-        return oauth2User;
+        // Mapear autoridades: Scopes de GitLab + Rol de nuestra BD
+        Set<GrantedAuthority> authorities = new HashSet<>(oidcUser.getAuthorities());
+        authorities.add(new SimpleGrantedAuthority(userInDb.getRole()));
+
+        // Devolver el usuario OIDC con el rol incluido
+        return new DefaultOidcUser(authorities, oidcUser.getIdToken(), oidcUser.getUserInfo());
     }
 }

@@ -15,6 +15,10 @@
         </div>
 
         <div class="p-8">
+            <div th:if="${param.error}" class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm">
+                <p class="font-bold">Error de autenticación</p>
+                <p>No se pudo iniciar sesión con GitLab. Asegúrate de que tu email sea público en GitLab.</p>
+            </div>
             <div class="mb-6">
                 <a th:href="@{/oauth2/authorization/gitlab}"
                    class="w-full flex justify-center items-center py-3.5 px-4 border border-gray-300 rounded-xl shadow-sm text-sm font-bold text-gray-700 bg-white hover:bg-gray-50 hover:border-brand-500 transition-all duration-200 transform active:scale-95">
