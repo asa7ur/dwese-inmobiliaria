@@ -1,11 +1,28 @@
--- offices (4 total)
+INSERT IGNORE INTO roles (id, name)
+VALUES
+    (1, 'ROLE_ADMIN'),
+    (2, 'ROLE_MANAGER'),
+    (3, 'ROLE_USER');
+
+INSERT IGNORE INTO users (id, username, password, enabled, first_name, last_name, image, created_date, last_modified_date, last_password_change_date)
+VALUES
+    (1, 'admin', '$2a$12$0eQ6bXiDM1Q0kmhIXdwsV.6dqlOZet5X8YyoZ7qiwcTe.f7oS5Ek2', true, 'Admin', 'User', '/images/admin.jpg', NOW(), NOW(), NOW()),
+    (2, 'manager', '$2a$12$ENv8yylehTUgEy6ODkHxf.NiXtm9Otn2X/qroZRyz6TBdEnHWqqva', true, 'Manager', 'User', '/images/manager.jpg', NOW(), NOW(), NOW()),
+    (3, 'user', '$2a$12$vU1RCBoWK8Vi2NclmeZbfe/thdIf9SD.LwnLka3FL2UX/gtJCLCo6', true, 'Regular', 'User', '/images/user.jpg', NOW(), NOW(), NOW()),
+    (4, 'asa7ur@proton.me', '$2a$12$vU1RCBoWK8Vi2NclmeZbfe/thdIf9SD.LwnLka3FL2UX/gtJCLCo6', true, 'Garik', 'Asatryan', '/images/user.jpg', NOW(), NOW(), NOW());
+
+INSERT IGNORE INTO user_roles (user_id, role_id) VALUES
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 3);
+
 INSERT IGNORE INTO offices (name, address, phone, email) VALUES
     ('London Kensington Branch', '12 Kensington High St, London W8 4PT, UK', '+44 20 7946 0888', 'london@horizonrealty.com'),
     ('Manhattan Midtown HQ', '350 Fifth Avenue, Suite 4200, New York, NY 10118', '+1 212 555 0199', 'nyc@horizonrealty.com'),
     ('Santa Fe Plaza Office', '100 Lincoln Ave, Santa Fe, NM 87501', '+1 505 555 0144', 'santafe@horizonrealty.com'),
     ('Beverly Hills Luxury', '9450 Wilshire Blvd, Beverly Hills, CA 90212', '+1 310 555 0177', 'la@horizonrealty.com');
 
--- agents (12 total)
 INSERT IGNORE INTO agents (dni, name, phone, email, office_id) VALUES
     ('66554433C', 'Gojo Satoru', '+81 90 7777 1111', 's.gojo@jujutsurealty.com', 4),
     ('33256987R', 'Severus Snape', '+44 20 3333 4444', 's.snape@hogwartsagents.com', 1),
@@ -20,7 +37,6 @@ INSERT IGNORE INTO agents (dni, name, phone, email, office_id) VALUES
     ('99887766G', 'Fiona', '+49 30 5555 0000', 'fiona@farfarawayhomes.com', 3),
     ('10101010H', 'Guts', '+1 310 777 8888', 'guts@berserkrealty.com', 4);
 
--- properties (25 total)
 INSERT IGNORE INTO properties (name, description, location, price, type, floors, bedrooms, bathrooms, status) VALUES
     ('Highland Stone Castle', 'Historic stone fortress with grand restoration potential.', 'Inverness, UK', 2500000.00, 'CASTLE', 3, 10, 8, 'AVAILABLE'),
     ('Traditional Kyoto Machiya', 'Restored wooden townhouse with a zen garden.', 'Kyoto, Japan', 1200000.00, 'HOUSE', 2, 3, 2, 'AVAILABLE'),
@@ -48,7 +64,6 @@ INSERT IGNORE INTO properties (name, description, location, price, type, floors,
     ('Mid-Century Modern Gem', '1950s architectural home with iconic roofline.', 'Palm Springs, CA', 600000.00, 'HOUSE', 1, 3, 2, 'AVAILABLE'),
     ('Earth-Sheltered Home', 'Sustainable green home built into the hillside.', 'New Zealand', 550000.00, 'HOUSE', 1, 2, 1, 'AVAILABLE');
 
--- clients (20 total)
 INSERT IGNORE INTO clients (dni, name, phone, email) VALUES
     ('27654321V', 'Saitama', '+1 617 000 5555', 'saitama@clientmail.com'),
     ('19876543Z', 'Jessie Pinkman', '+1 505 000 1111', 'jesse.p@clientmail.com'),
@@ -71,7 +86,6 @@ INSERT IGNORE INTO clients (dni, name, phone, email) VALUES
     ('13210987M', 'Gus Fring', '+1 505 000 1414', 'gus.f@clientmail.com'),
     ('12109876F', 'Arya Stark', '+44 20 000 2121', 'noone@clientmail.com');
 
--- property_agent (Many-to-Many, para establecer qué agentes manejan qué propiedades)
 INSERT IGNORE INTO property_agent (property_id, agent_id) VALUES
     (1, 1),
     (1, 3),
@@ -102,7 +116,6 @@ INSERT IGNORE INTO property_agent (property_id, agent_id) VALUES
     (25, 2),
     (25, 6);
 
--- appointments (20 total)
 INSERT IGNORE INTO appointments (appointment_timestamp, notes, agent_id, client_id, property_id) VALUES
     (1736932200, 'Client asking about heating costs for stone walls.', 3, 1, 1),
     (1737370800, 'Inspection of the adobe exterior for cracks.', 2, 2, 5),
@@ -125,7 +138,6 @@ INSERT IGNORE INTO appointments (appointment_timestamp, notes, agent_id, client_
     (1750669200, 'Discussing proximity to the metro station.', 7, 19, 19),
     (1751284800, 'Tour of the vineyard and wine cellar.', 8, 20, 20);
 
--- transactions (10 total)
 INSERT IGNORE INTO transactions (transaction_timestamp, status, price, property_id, client_id, agent_id) VALUES
     (1742032800, 'COMPLETED', 3800000.00, 9, 9, 9),
     (1746876600, 'COMPLETED', 50000.00, 11, 11, 11),

@@ -10,17 +10,33 @@ DROP TABLE IF EXISTS clients;
 DROP TABLE IF EXISTS users;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ... (Tablas existentes: offices, properties, agents, etc.)
-
--- Tabla users
-CREATE TABLE IF NOT EXISTS users (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    name VARCHAR(255),
-    role VARCHAR(50)
+CREATE TABLE roles (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) UNIQUE NOT NULL
 );
 
--- Tabla offices
+CREATE TABLE users (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    enabled BOOLEAN NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    image VARCHAR(255),
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE
+    CURRENT_TIMESTAMP,
+    last_password_change_date TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS user_roles (
+    user_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
+
 CREATE TABLE offices (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
@@ -29,7 +45,6 @@ CREATE TABLE offices (
     email VARCHAR(100) NOT NULL
 );
 
--- Tabla agents
 CREATE TABLE agents (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     dni VARCHAR(20) NOT NULL UNIQUE,
@@ -41,7 +56,6 @@ CREATE TABLE agents (
     CONSTRAINT fk_agent_office FOREIGN KEY (office_id) REFERENCES offices(id)
 );
 
--- Tabla clients
 CREATE TABLE clients (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     dni VARCHAR(20) NOT NULL UNIQUE,
@@ -50,7 +64,6 @@ CREATE TABLE clients (
     email VARCHAR(100) NOT NULL
 );
 
--- Tabla properties
 CREATE TABLE properties (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
@@ -73,7 +86,6 @@ CREATE TABLE property_images (
         ON DELETE CASCADE
 );
 
--- Tabla intermedia property_agent (ManyToMany)
 CREATE TABLE property_agent (
     property_id BIGINT NOT NULL,
     agent_id BIGINT NOT NULL,
@@ -82,7 +94,6 @@ CREATE TABLE property_agent (
     CONSTRAINT fk_property_agent_agent FOREIGN KEY (agent_id) REFERENCES agents(id)
 );
 
--- Tabla appointments
 CREATE TABLE appointments (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     appointment_timestamp BIGINT NOT NULL,
@@ -95,7 +106,6 @@ CREATE TABLE appointments (
     CONSTRAINT fk_appointment_property FOREIGN KEY (property_id) REFERENCES properties(id)
 );
 
--- Tabla transactions
 CREATE TABLE transactions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     transaction_timestamp BIGINT NOT NULL,
