@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     logger.debug("Configurando autorización de solicitudes HTTP");
                     auth
-                            .requestMatchers("/", "/login", "/css/**", "/js/**", "/uploads/**").permitAll()
+                            .requestMatchers("/", "/login", "/favicon.ico", "/error", "/css/**", "/js/**", "/uploads/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .formLogin(form -> {

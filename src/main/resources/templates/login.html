@@ -2,82 +2,96 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/head :: head (#{msg.login.title} + ' - Elite Properties')}"></head>
 
-<body class="flex flex-col min-h-screen bg-gray-50 text-gray-800 font-sans">
+<body class="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 via-white to-brand-50/30 text-gray-800 font-sans">
 
 <header th:replace="~{fragments/header :: header}"></header>
 
-<main class="flex-grow flex items-center justify-center pt-32 pb-12 px-4">
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-        <div class="bg-brand-900 p-8 text-center">
-            <i class="fa-solid fa-house-chimney text-brand-500 text-4xl mb-4"></i>
-            <h1 class="text-2xl font-bold text-white" th:text="#{msg.login.title}">Iniciar Sesión</h1>
-            <p class="text-brand-200 mt-2 text-sm" th:text="#{msg.login.subtitle}"></p>
+<main class="flex-grow flex items-center justify-center pt-32 pb-20 px-4 relative overflow-hidden">
+    <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-500 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 -right-24 w-64 h-64 bg-brand-300 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="max-w-md w-full bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white relative z-10">
+        <div class="bg-brand-900 p-10 text-center relative">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl mb-4 backdrop-blur-sm border border-white/20">
+                <i class="fa-solid fa-house-chimney text-brand-400 text-3xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-white tracking-tight" th:text="#{msg.login.title}">Iniciar Sesión</h1>
+            <p class="text-brand-200 mt-2 text-sm font-medium opacity-90" th:text="#{msg.login.subtitle}"></p>
         </div>
 
-        <div class="p-8">
-            <div th:if="${param.error}" class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm">
-                <p class="font-bold">Error de autenticación</p>
-                <p>No se pudo iniciar sesión con GitLab. Asegúrate de que tu email sea público en GitLab.</p>
+        <div class="p-8 md:p-10">
+            <div th:if="${param.error}" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl text-red-700 text-sm animate-pulse">
+                <div class="flex items-center mb-1">
+                    <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                    <p class="font-bold">Error de acceso</p>
+                </div>
+                <p>Credenciales incorrectas o cuenta de GitLab no configurada correctamente.</p>
             </div>
-            <div class="mb-6">
+
+            <div class="mb-8">
                 <a th:href="@{/oauth2/authorization/gitlab}"
-                   class="w-full flex justify-center items-center py-3.5 px-4 border border-gray-300 rounded-xl shadow-sm text-sm font-bold text-gray-700 bg-white hover:bg-gray-50 hover:border-brand-500 transition-all duration-200 transform active:scale-95">
-                    <i class="fa-brands fa-gitlab text-orange-500 mr-3 text-xl"></i>
-                    <span>Continuar con GitLab</span>
+                   class="group w-full flex justify-center items-center py-4 px-4 border border-gray-200 rounded-2xl shadow-sm text-sm font-bold text-gray-700 bg-white hover:bg-gray-50 hover:border-brand-500 hover:text-brand-900 transition-all duration-300 transform active:scale-[0.98]">
+                    <i class="fa-brands fa-gitlab text-[#fc6d26] mr-3 text-2xl group-hover:scale-110 transition-transform"></i>
+                    <span>Acceder con GitLab</span>
                 </a>
             </div>
 
-            <div class="relative my-8">
+            <div class="relative my-10">
                 <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-200"></div>
+                    <div class="w-full border-t border-gray-100"></div>
                 </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-3 bg-white text-gray-400 font-medium">O accede con tu cuenta corporativa</span>
+                <div class="relative flex justify-center text-xs uppercase tracking-widest">
+                    <span class="px-4 bg-white text-gray-400 font-semibold">O cuenta corporativa</span>
                 </div>
             </div>
 
-            <form action="#" method="POST" class="space-y-5">
-                <div>
-                    <label for="username" class="block text-sm font-semibold text-gray-700 mb-2" th:text="#{msg.login.username}">Usuario</label>
+            <form th:action="@{/login}" method="POST" class="space-y-6">
+                <div class="group">
+                    <label for="username" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1" th:text="#{msg.login.username}">Usuario</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
-                            <i class="fa-solid fa-envelope"></i>
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-brand-600 transition-colors">
+                            <i class="fa-solid fa-at"></i>
                         </span>
                         <input type="text" id="username" name="username" required
-                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all"
-                               placeholder="ejemplo@elite.com">
+                               class="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 text-sm transition-all outline-none"
+                               placeholder="nombre@elite.com">
                     </div>
                 </div>
 
-                <div>
-                    <label for="password" class="block text-sm font-semibold text-gray-700 mb-2" th:text="#{msg.login.password}">Contraseña</label>
+                <div class="group">
+                    <label for="password" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1" th:text="#{msg.login.password}">Contraseña</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
-                            <i class="fa-solid fa-lock"></i>
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-brand-600 transition-colors">
+                            <i class="fa-solid fa-shield-halved"></i>
                         </span>
                         <input type="password" id="password" name="password" required
-                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 text-sm transition-all">
+                               class="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 text-sm transition-all outline-none"
+                               placeholder="••••••••">
                     </div>
                 </div>
 
                 <div class="flex items-center justify-between text-sm">
-                    <div class="flex items-center">
-                        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded-md">
-                        <label for="remember-me" class="ml-2 block text-gray-500">Recordarme</label>
-                    </div>
-                    <a href="#" class="font-bold text-brand-700 hover:text-brand-500" th:text="#{msg.login.forgot}"></a>
+                    <label class="flex items-center cursor-pointer group">
+                        <input id="remember-me" name="remember-me" type="checkbox"
+                               class="h-5 w-5 text-brand-600 focus:ring-brand-500 border-gray-300 rounded-lg transition-all cursor-pointer">
+                        <span class="ml-3 text-gray-500 group-hover:text-gray-700 transition-colors">Recordarme</span>
+                    </label>
+                    <a href="#" class="font-bold text-brand-700 hover:text-brand-500 hover:underline decoration-2 underline-offset-4 transition-all" th:text="#{msg.login.forgot}"></a>
                 </div>
 
                 <button type="submit"
-                        class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all">
-                    <span th:text="#{msg.login.button}">Entrar</span>
+                        class="w-full flex justify-center items-center py-4 px-4 border border-transparent rounded-2xl shadow-xl shadow-brand-600/20 text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-500/50 transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0">
+                    <span th:text="#{msg.login.button}">Entrar al portal</span>
+                    <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>
                 </button>
             </form>
 
-            <div class="mt-10 pt-6 border-t border-gray-100 text-center">
+            <div class="mt-12 pt-8 border-t border-gray-50 text-center">
                 <p class="text-sm text-gray-500">
-                    <span th:text="#{msg.login.no-account}"></span>
-                    <a href="#" class="font-bold text-brand-800 hover:text-brand-600 ml-1" th:text="#{msg.login.register}"></a>
+                    <span th:text="#{msg.login.no-account}">¿No tienes cuenta?</span>
+                    <a href="#" class="font-extrabold text-brand-900 hover:text-brand-600 ml-1 transition-colors" th:text="#{msg.login.register}"></a>
                 </p>
             </div>
         </div>

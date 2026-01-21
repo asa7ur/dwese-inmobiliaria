@@ -1,19 +1,35 @@
-html, body {
-    height: 100%;
+/* Configuración de colores de marca para Elite Properties */
+:root {
+    --brand-50: #f0f7ff;
+    --brand-100: #e0effe;
+    --brand-200: #bae0fd;
+    --brand-300: #7cc8fb;
+    --brand-400: #38aef7;
+    --brand-500: #0e91e9;
+    --brand-600: #0274c7;
+    --brand-700: #035da1;
+    --brand-800: #074f85;
+    --brand-900: #0c436f;
 }
 
-.content-wrapper {
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-}
+/* Utilidades para que Tailwind reconozca los colores brand */
+.bg-brand-500 { background-color: var(--brand-500); }
+.bg-brand-600 { background-color: var(--brand-600); }
+.bg-brand-700 { background-color: var(--brand-700); }
+.bg-brand-800 { background-color: var(--brand-800); }
+.bg-brand-900 { background-color: var(--brand-900); }
 
-main {
-    flex: 1;
-}
+.text-brand-200 { color: var(--brand-200); }
+.text-brand-400 { color: var(--brand-400); }
+.text-brand-500 { color: var(--brand-500); }
+.text-brand-600 { color: var(--brand-600); }
+.text-brand-700 { color: var(--brand-700); }
+.text-brand-900 { color: var(--brand-900); }
 
-.footer {
-    background-color: #f8f9fa;
-    padding: 1rem 0;
-    text-align: center;
-}
+.border-brand-500 { border-color: var(--brand-500); }
+
+/* Efectos de Hover */
+.hover\:bg-brand-50:hover { background-color: var(--brand-50); }
+.hover\:bg-brand-700:hover { background-color: var(--brand-700); }
+.hover\:text-brand-500:hover { color: var(--brand-500); }
+.hover\:text-brand-600:hover { color: var(--brand-600); }

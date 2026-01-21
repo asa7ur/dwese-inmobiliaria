@@ -21,10 +21,10 @@ public class CustomOAuth2FailureHandler implements
                                         HttpServletResponse response,
                                         org.springframework.security.core.AuthenticationException exception)
             throws IOException, ServletException {
-        logger.warn("Falló la autenticación: {}", exception.getMessage());
+        logger.error("Error detallado de OAuth2: {}", exception.getMessage());
         SecurityContextHolder.clearContext();
         request.getSession().invalidate();
-        request.getSession().setAttribute("errorMessage", "El usuario no está registrado en esta aplicación");
-        response.sendRedirect("/login");
+        request.getSession().setAttribute("error.message", exception.getMessage());
+        response.sendRedirect("/login?error=true");
     }
 }

@@ -57,8 +57,7 @@
                 <div sec:authorize="isAuthenticated()" class="flex items-center gap-4">
                     <div class="flex flex-col items-end">
                         <span class="text-[10px] font-bold text-brand-500 uppercase tracking-tighter">Conectado como</span>
-                        <span class="text-sm font-bold text-gray-800"
-                              th:text="${#authentication.principal.attributes['name'] ?: #authentication.name}">Usuario</span>
+                        <span class="text-sm font-bold text-gray-800" th:text="${#authentication.name}">Usuario</span>
                     </div>
                     <form th:action="@{/logout}" method="post">
                         <button type="submit" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all" title="Cerrar Sesión">
@@ -102,8 +101,7 @@
                             <span th:text="${#strings.substring(#authentication.name,0,1).toUpperCase()}">U</span>
                         </div>
                         <div>
-                            <p class="text-sm font-bold text-gray-800" th:text="${#authentication.principal.attributes['name'] ?: #authentication.name}"></p>
-                            <p class="text-xs text-gray-500" th:text="${#authentication.principal.attributes['email']}"></p>
+                            <p class="text-sm font-bold text-gray-800" th:text="${#authentication.name}"></p>
                         </div>
                     </div>
                     <form th:action="@{/logout}" method="post">
