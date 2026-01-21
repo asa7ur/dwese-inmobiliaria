@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     logger.debug("Configurando autorización de solicitudes HTTP");
                     auth
-                            .requestMatchers("/", "/login", "/favicon.ico", "/error", "/css/**", "/js/**", "/uploads/**").permitAll()
+                            .requestMatchers("/", "/login", "/favicon.ico", "/error", "/css/**", "/js/**", "/uploads", "/uploads/**").permitAll()
                             // Restricción para Agentes
                             .requestMatchers("/agents/new", "/agents/edit/**", "/agents/delete/**").hasAnyRole("ADMIN", "MANAGER")
                             // Restricción para Propiedades
