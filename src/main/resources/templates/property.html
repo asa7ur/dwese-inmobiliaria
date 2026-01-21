@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
 <head th:replace="~{fragments/head :: head ('Propiedades - Elite Properties')}"></head>
 
 <body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
@@ -13,7 +15,7 @@
             <h1 class="text-3xl font-heading font-bold text-gray-900" th:text="#{msg.property.title}"></h1>
             <p class="text-gray-500 mt-1" th:text="#{msg.property.description}"></p>
         </div>
-        <a th:href="@{/properties/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
+        <a sec:authorize="hasAnyRole('ADMIN', 'MANAGER')" th:href="@{/properties/new}" class="mt-4 md:mt-0 bg-brand-800 hover:bg-brand-900 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
             <i class="fa-solid fa-plus"></i>
             <span th:text="#{msg.property.add}"></span>
         </a>
@@ -46,24 +48,28 @@
 
             <div class="flex flex-wrap gap-2 items-center text-sm">
                 <span class="text-gray-500 font-medium mr-1" th:text="#{msg.common.order}"></span>
+
                 <a th:href="@{/properties(page=${listProperties.currentPage}, keyword=${keyword}, sortBy='name', direction=${sortBy == 'name' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'name'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
                     <span th:text="#{msg.property.name}"></span>
                     <i th:if="${sortBy == 'name'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
+
                 <a th:href="@{/properties(page=${listProperties.currentPage}, keyword=${keyword}, sortBy='location', direction=${sortBy == 'location' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'location'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
                     <span th:text="#{msg.property.location}"></span>
                     <i th:if="${sortBy == 'location'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
+
                 <a th:href="@{/properties(page=${listProperties.currentPage}, keyword=${keyword}, sortBy='type', direction=${sortBy == 'type' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'type'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
                     <span th:text="#{msg.property.type}"></span>
                     <i th:if="${sortBy == 'type'}" class="fa-solid" th:classappend="${direction == 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
                 </a>
+
                 <a th:href="@{/properties(page=${listProperties.currentPage}, keyword=${keyword}, sortBy='price', direction=${sortBy == 'price' ? reverseSortDir : 'asc'})}"
                    class="px-3 py-1 rounded-full border transition-colors flex items-center gap-1"
                    th:classappend="${sortBy == 'price'} ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-gray-200 text-gray-600 hover:border-brand-300'">
@@ -88,9 +94,7 @@
                 <div th:if="${property.images != null and !property.images.isEmpty()}" class="h-full w-full relative">
                     <img th:src="@{'/uploads/' + ${property.images[0].fileName}}"
                          th:id="'img-' + ${property.id}"
-
                          th:data-images="${@imgHelper.getImagesAsString(property.images)}"
-
                          data-index="0"
                          alt="#{msg.property.photo}"
                          class="w-full h-full object-cover transition-transform duration-700"/>
@@ -102,16 +106,6 @@
                         <button type="button" th:onclick="'nextImage(' + ${property.id} + ')'" class="bg-white bg-opacity-80 hover:bg-white text-gray-800 rounded-full w-8 h-8 flex items-center justify-center shadow-lg transform active:scale-95 transition-all">
                             <i class="fa-solid fa-chevron-right text-xs"></i>
                         </button>
-                    </div>
-                    <span th:if="${property.images.size() > 1}" class="absolute bottom-3 right-3 bg-black bg-opacity-60 text-white px-2 py-1 rounded-full text-xs font-medium pointer-events-none">
-                            <i class="fa-solid fa-images mr-1"></i> <span th:text="${property.images.size()}"></span>
-                        </span>
-                </div>
-
-                <div th:unless="${property.images != null and !property.images.isEmpty()}" class="h-full w-full flex items-center justify-center bg-gray-100 text-gray-400">
-                    <div class="text-center">
-                        <i class="fa-regular fa-image text-4xl mb-2"></i>
-                        <p class="text-sm" th:text="#{msg.property.no-image}"></p>
                     </div>
                 </div>
             </div>
@@ -129,39 +123,7 @@
                     <span th:text="${property.location}" class="line-clamp-1"></span>
                 </div>
 
-                <div class="flex items-center justify-between py-4 border-t border-gray-100">
-                    <div class="flex items-center gap-1 text-gray-600">
-                        <i class="fa-solid fa-bed text-brand-300"></i>
-                        <span class="font-bold text-sm" th:text="${property.bedrooms}"></span>
-                    </div>
-                    <div class="flex items-center gap-1 text-gray-600">
-                        <i class="fa-solid fa-bath text-brand-300"></i>
-                        <span class="font-bold text-sm" th:text="${property.bathrooms}"></span>
-                    </div>
-                    <div class="flex items-center gap-1 text-gray-600">
-                        <i class="fa-solid fa-layer-group text-brand-300"></i>
-                        <span class="font-bold text-sm" th:text="${property.floors}"></span>
-                    </div>
-                </div>
-
-                <div class="py-3 border-t border-gray-100 mt-auto">
-                    <p class="text-xs text-gray-400 uppercase font-semibold mb-2" th:text="#{msg.property.agent}"></p>
-
-                    <div th:if="${not #lists.isEmpty(property.agents)}" class="flex flex-wrap gap-2">
-                            <span th:each="agent : ${property.agents}"
-                                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-50 text-brand-700 border border-blue-100">
-                                <i class="fa-solid fa-user-tie mr-1.5"></i>
-                                <span th:text="${agent.name}"></span>
-                            </span>
-                    </div>
-
-                    <div th:if="${#lists.isEmpty(property.agents)}" class="text-xs text-gray-400 italic">
-                        <i class="fa-regular fa-circle-question mr-1"></i>
-                        <span th:text="#{msg.common.no-assigned}"></span>
-                    </div>
-                </div>
-
-                <div class="pt-4 grid grid-cols-2 gap-3">
+                <div sec:authorize="hasAnyRole('ADMIN', 'MANAGER')" class="pt-4 grid grid-cols-2 gap-3 mt-auto">
                     <a th:href="@{/properties/edit(id=${property.id})}" class="text-center bg-gray-50 border border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-300 py-2 rounded-lg text-sm font-medium transition-colors" th:text="#{msg.common.edit}"></a>
                     <form th:action="@{/properties/delete}" method="post" class="w-full">
                         <input type="hidden" name="id" th:value="${property.id}"/>
@@ -192,7 +154,7 @@
                 <a th:href="@{/properties(page=${i}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"
                    th:text="${i}"
                    th:classappend="${i == listProperties.currentPage} ? 'bg-brand-800 text-white border-brand-800' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
-                   class="px-4 py-2 rounded-lg border font-medium transition-colors">1</a>
+                   class="px-4 py-2 rounded-lg border font-medium transition-colors"></a>
             </li>
             <li>
                 <a th:href="@{/properties(page=${listProperties.currentPage + 1}, keyword=${keyword}, sortBy=${sortBy}, direction=${direction})}"

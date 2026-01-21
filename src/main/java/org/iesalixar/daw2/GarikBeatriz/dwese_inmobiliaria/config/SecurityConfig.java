@@ -38,6 +38,10 @@ public class SecurityConfig {
                     logger.debug("Configurando autorización de solicitudes HTTP");
                     auth
                             .requestMatchers("/", "/login", "/favicon.ico", "/error", "/css/**", "/js/**", "/uploads/**").permitAll()
+                            // Restricción para Agentes
+                            .requestMatchers("/agents/new", "/agents/edit/**", "/agents/delete/**").hasAnyRole("ADMIN", "MANAGER")
+                            // Restricción para Propiedades
+                            .requestMatchers("/properties/new", "/properties/edit/**", "/properties/delete/**").hasAnyRole("ADMIN", "MANAGER")
                             .anyRequest().authenticated();
                 })
                 .formLogin(form -> {
