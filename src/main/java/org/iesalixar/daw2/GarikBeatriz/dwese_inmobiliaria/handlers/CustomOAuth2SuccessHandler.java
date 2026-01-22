@@ -44,6 +44,11 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             if (username == null) {
                 username = oAuth2User.getAttribute("preferred_username");
             }
+        } else if ("azure".equals(provider) || "microsoft".equals(provider)) {
+            username = oAuth2User.getAttribute("preferred_username");
+            if (username == null) {
+                username = oAuth2User.getAttribute("email");
+            }
         } else {
             // Caso por defecto o para otros proveedores
             username = oAuth2User.getAttribute("login");
