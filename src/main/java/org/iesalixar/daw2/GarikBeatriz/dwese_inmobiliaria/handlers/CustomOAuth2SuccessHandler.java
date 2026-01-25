@@ -44,6 +44,15 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             if (username == null) {
                 username = oAuth2User.getAttribute("preferred_username");
             }
+        } else if ("discord".equals(provider)) {
+            // Puedes usar email si tu sistema usa correos como username
+            username = oAuth2User.getAttribute("username");
+
+            // Si no quieres depender del email:
+            if (username == null) {
+                username = "discord_" + oAuth2User.getAttribute("id");
+            }
+
         } else if ("azure".equals(provider) || "microsoft".equals(provider)) {
             username = oAuth2User.getAttribute("preferred_username");
             if (username == null) {

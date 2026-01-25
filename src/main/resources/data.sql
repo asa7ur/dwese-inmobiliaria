@@ -9,13 +9,15 @@ VALUES
     (1, 'admin', '$2a$12$0eQ6bXiDM1Q0kmhIXdwsV.6dqlOZet5X8YyoZ7qiwcTe.f7oS5Ek2', true, 'Admin', 'User', '/images/admin.jpg', NOW(), NOW(), NOW()),
     (2, 'manager', '$2a$12$ENv8yylehTUgEy6ODkHxf.NiXtm9Otn2X/qroZRyz6TBdEnHWqqva', true, 'Manager', 'User', '/images/manager.jpg', NOW(), NOW(), NOW()),
     (3, 'user', '$2a$12$vU1RCBoWK8Vi2NclmeZbfe/thdIf9SD.LwnLka3FL2UX/gtJCLCo6', true, 'Regular', 'User', '/images/user.jpg', NOW(), NOW(), NOW()),
-    (4, 'asa7ur', '$2a$12$vU1RCBoWK8Vi2NclmeZbfe/thdIf9SD.LwnLka3FL2UX/gtJCLCo6', true, 'Garik', 'Asatryan', '/images/user.jpg', NOW(), NOW(), NOW());
+    (4, 'asa7ur', '$2a$12$vU1RCBoWK8Vi2NclmeZbfe/thdIf9SD.LwnLka3FL2UX/gtJCLCo6', true, 'Garik', 'Asatryan', '/images/user.jpg', NOW(), NOW(), NOW()),
+    (5, 'bbarper657', '$2a$12$vU1RCBoWK8Vi2NclmeZbfe/thdIf9SD.LwnLka3FL2UX/gtJCLCo6', true, 'Bea', 'Barrachina', '/images/user.jpg', NOW(), NOW(), NOW());
 
 INSERT IGNORE INTO user_roles (user_id, role_id) VALUES
     (1, 1),
     (2, 2),
     (3, 3),
-    (4, 3);
+    (4, 3),
+    (5, 3);
 
 INSERT IGNORE INTO offices (name, address, phone, email) VALUES
     ('London Kensington Branch', '12 Kensington High St, London W8 4PT, UK', '+44 20 7946 0888', 'london@horizonrealty.com'),
